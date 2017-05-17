@@ -1,0 +1,226 @@
+<link href="/styles/jquery.multiselect.css" media="screen" rel="stylesheet" type="text/css" >
+<link href="/styles/jquery.multiselect.filter.css" media="screen" rel="stylesheet" type="text/css" >
+<script type="text/javascript" src="/js/jquery.multiselect.js"></script>
+<script type="text/javascript" src="/js/jquery.multiselect.filter.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+     $( "#siteName" ).autocomplete({
+        close: function(event, ui){ $('#siteName').css('background', 'url("/images/inpBg.png") no-repeat scroll left top transparent'); },
+        open: function(event, ui){ $('input[name=site]').val(''); },
+        source: function( request, response ) {
+
+              $.getJSON( "/administrator/pubmatic/get-ajax-tag/", { term: extractLast( request.term ) }, response );
+        },
+        search: function(){
+            clearData();
+            $('#siteName').css('background', 'url("/images/ui-anim_basic_16x16.gif") no-repeat scroll right center white');  
+            var term = extractLast( this.value );
+            if ( term.length < 2 ) { return false; }
+                                            
+        },
+        focus: function(){ return false; },
+        select: function( event, ui ){     
+
+            this.value = ui.item.name;
+            $('#publisherId').val(ui.item.PubmaticID);
+            $('#siteId').val(ui.item.PubmaticSiteID);
+            $('#adTagId').val(ui.item.adTagId);
+            $('#tagName').val(ui.item.name);
+            $('#size').val(ui.item.size);
+            getTagPlacementId(ui.item.PubmaticID, ui.item.PubmaticSiteID, ui.item.adTagId, $('input[name=type]:checked').val());
+            return false;
+        }
+     });   
+     
+     $("#sendMasBtn").click(function(){
+		$.ajax({
+		        'url'			:  '/administrator/pubmatic/update-ad-tag-placement/',
+				'data'			:  'publisherId='+$("#publisherId").val()+'&siteId='+$("#siteId").val()+'&adTagId='+$("#adTagId").val()+'&adNetworkId='+$("#adNetworkId").val()+'&adTagPlacementId='+$("#adTagPlacementId").val()+'&placementId='+$("#placementId").val(),	        
+		        'type'			:  'POST',
+		        'dataType'		:  'json',
+		        'beforeSend'	:	function(){
+			        					$('#siteName').css('background', 'url("/images/ui-anim_basic_16x16.gif") no-repeat scroll right center white');
+		        					},
+		        'error'			:	function(XMLHttpRequest, textStatus, errorThrown){
+										$('#siteName').css('background', 'url("/images/inpBg.png") no-repeat scroll left top transparent');			        
+			        					alert('ERROR: '+textStatus);
+		        					},
+		        'success'		:   function(data){
+										$('#siteName').css('background', 'url("/images/inpBg.png") no-repeat scroll left top transparent');			        		        
+		                        if(data.error){
+			                        alert(data.error);
+		                        }else if(data.status=='OK'){
+									$("#generateTags").css('color', 'green');
+									$("#generateTags").html('The tags have been updated!');									
+		                        }else{
+		                            alert("Application ERROR!!!");
+		                        }
+		                }
+		});                                
+		return false;			     
+     });
+
+    $(".radioType").change(function(){
+        if($("#siteName").val()==''){
+            alert("Select site!!!");
+        }else{
+            getTagPlacementId($('#publisherId').val(), $('#siteId').val(), $('#adTagId').val(), $('input[name=type]:checked').val());
+        }
+    });
+});	
+
+function split( val ) {
+    return val.split( /,\s*/ );
+}
+
+function extractLast( term ) {
+    return split( term ).pop();
+}  
+
+function getTagPlacementId(publisherId, siteId, adTagId, type)
+{
+	$.ajax({
+	        'url'			:  '/administrator/pubmatic/get-tag-placement-id/',
+			'data'			:  'publisherId='+publisherId+'&siteId='+siteId+'&adTagId='+adTagId+'&type='+type,
+	        'type'			:  'POST',
+	        'dataType'		:  'json',
+	        'beforeSend'	:	function(){
+                                    $('#placementId').find('option').remove();
+                $('#siteName').css('background', 'url("/images/ui-anim_basic_16x16.gif") no-repeat scroll right center white');
+	        					},
+	        'error'			:	function(XMLHttpRequest, textStatus, errorThrown){
+									$('#siteName').css('background', 'url("/images/inpBg.png") no-repeat scroll left top transparent');			        
+		        					alert('ERROR: '+textStatus);
+	        					},
+	        'success'		:   function(data){
+									$('#siteName').css('background', 'url("/images/inpBg.png") no-repeat scroll left top transparent');			        		        
+	                        if(data.error){
+		                        alert(data.error);
+	                        }else if(data.status=='OK'){
+								$('#adNetworkId').val(data.adNetwId);
+								$('#adTagPlacementId').val(data.adTagPlacementId);
+								getAdNetworkPlacements(publisherId, data.adNetwId);
+	                        }else{
+	                            alert("Application ERROR!!!");
+	                        }
+	                }
+	});                                
+	return false;		
+} 
+
+function getAdNetworkPlacements(publisherId, adNetwId)
+{
+	$.ajax({
+	        'url'			:  '/administrator/pubmatic/get-network-placements/',
+			'data'			:  'publisherId='+publisherId+'&adNetwId='+adNetwId+'&size='+$("#size").val(),      
+	        'type'			:  'POST',
+	        'dataType'		:  'json',
+	        'beforeSend'	:	function(){
+		        					$('#siteName').css('background', 'url("/images/ui-anim_basic_16x16.gif") no-repeat scroll right center white');
+	        					},
+	        'error'			:	function(XMLHttpRequest, textStatus, errorThrown){
+									$('#siteName').css('background', 'url("/images/inpBg.png") no-repeat scroll left top transparent');			        		        
+		        					alert('ERROR: '+textStatus);
+	        					},
+	        'success'		:   function(data){
+									$('#siteName').css('background', 'url("/images/inpBg.png") no-repeat scroll left top transparent');			        		        
+	                        if(data.error){
+		                        alert(data.error);
+	                        }else if(data.status=='OK'){
+								$.each(data.placements, function (i, item) {
+								    $('#placementId').append($('<option>', { 
+								        value: item.id,
+								        text : item.name 
+								    }));
+								});	
+								$("#placementId").prop('disabled', false);
+								$("#sendMasBtn").css('display', 'block');							
+	                        }else{
+	                            alert("Application ERROR!!!");
+	                        }
+	                }
+	});                                
+	return false;			
+}
+function clearData()
+{
+	$("#generateTags").html('');
+	$("#sendMasBtn").css('display', 'none');
+	$("#adTagPlacementId").val('');
+	$("#adNetworkId").val('');
+	$("#adTagId").val('');
+	$("#siteId").val('');
+	$("#publisherId").val('');
+	$("#tagName").val('');
+	$("#size").val('');
+	$('#placementId').empty().append('whatever');
+	$("#placementId").prop('disabled', true);
+}
+</script>
+<div class="contUsL" style="width: 700px;">
+
+<p>
+   <div class="ui-widget" style="margin-top: 50px;">
+   <label style="width: 50px;">Site: </label>
+   <input type="text" name="siteName" id="siteName" value="" placeholder="id or name" />
+   </div>
+</p>
+<p>
+<div class="ui-widget">
+        <label style="width: 80px;">Desktop</label>
+        <input class="radioType" style="width: 20px; height: 15px;" type="radio" name="type" value="desktop" checked>
+        <br><br>
+        <label style="width: 80px;">Mobile</label>
+        <input class="radioType" style="width: 20px; height: 15px;" type="radio" name="type" value="mobile">
+</div>
+</p>
+<p>
+   <div class="ui-widget">
+   <select id="placementId" name="placementId" disabled="disable"></select>
+   </div>
+</p>
+   <input type="hidden" name="size" id="size" value=""/>
+   <input type="hidden" name="tagName" id="tagName" value=""/>
+   <input type="hidden" name="publisherId" id="publisherId" value=""/>
+   <input type="hidden" name="siteId" id="siteId" value=""/>
+   <input type="hidden" name="adTagId" id="adTagId" value=""/>
+   <input type="hidden" name="adNetworkId" id="adNetworkId" value=""/>
+   <input type="hidden" name="adTagPlacementId" id="adTagPlacementId" value=""/>
+<p>
+   <div class="ui-widget">
+   <a href="#" title="" style="float: left; display: none" id="sendMasBtn" class="sendMasBtn">Update</a>
+   </div>
+</p>   
+<p id="generateTags"></p>
+</div>
+<script type="text/javascript" src="/font/cufon-yui.js"></script>
+<script type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#topMenu a', {hover: true});	
+		Cufon.replace('#topMenu a');
+    Cufon.replace('.error', {color: 'red'});	    
+
+</script>
+<script type="text/javascript" src="/font/Headline_Two_400.font.js"></script>
+<script type="text/javascript">
+	Cufon.replace('.footerBann h5');		
+	Cufon.replace('.footerBann p');	
+	Cufon.replace('.footerBann a', {hover: true});	
+	Cufon.replace('.contactUs h1');		
+    Cufon.replace('h1');				
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Lt_300.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#footCopyr');	
+		Cufon.replace('.fMenu a');		
+		Cufon.replace('.contactUs p');	
+		Cufon.replace('.contUsL label');		
+		Cufon.replace('#location');		
+		Cufon.replace('.contBtn p');			
+		Cufon.replace('.sendMasBtn',{textShadow: '-1px -1px #5F5F5F'});		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Rg_700.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('.fMenu h4');
+		Cufon.replace('.headquaters');		
+</script>

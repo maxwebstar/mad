@@ -1,0 +1,119 @@
+<style type="text/css">
+    
+    #status_active{ height: 20px; }
+    .error-js{ display: block; width: 700px; font-size: 14px; font-weight: 600; color: red; }
+    
+</style>
+<script type="text/javascript" src="/js/validate.1.9.0.js"></script>
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        
+//        $("#form-contact-add").validate({
+//
+//               onkeyup : false,
+//               errorClass: "error-js", 
+//               errorElement: "div",
+//
+//               rules : {  name : { required: true},
+//                          mail : { required: true, email: true},
+//                          host : { requiredHost: true},
+//                          user_login : { requiredLogin: true},
+//                          user_pass : { requiredPass: true},
+//                          port : { requiredPort: true},
+//                          ssl : { requiredSsl: true} 
+//                       }, 
+//               
+//               messages : { name : { required: "Fileld is required" },
+//                            mail : { required: "Fileld is required", email: "Data must be email" },
+//                            host : { requiredHost: "Fileld is required or checkbox 'Active' checked off" },
+//                            user_login : { requiredLogin: "Fileld is required or checkbox 'Active' checked off" },
+//                            user_pass : { requiredPass: "Fileld is required or checkbox 'Active' checked off" },
+//                            port : { requiredPort: "Fileld is required or checkbox 'Active' checked off" },
+//                            ssl : { requiredSsl: "Fileld is required or checkbox 'Active' checked off" } 
+//                          },
+//
+//               errorPlacement: function(error, element) {
+//                        if (element.attr("name") == "name") error.insertAfter($("input[name=name]"));
+//                        if (element.attr("name") == "mail") error.insertAfter($("input[name=mail]"));
+//                        if (element.attr("name") == "host") error.insertAfter($("input[name=host]"));
+//                        if (element.attr("name") == "user_login") error.insertAfter($("input[name=user_login]"));
+//                        if (element.attr("name") == "user_pass") error.insertAfter($("input[name=user_pass]"));
+//                        if (element.attr("name") == "port") error.insertAfter($("input[name=port]"));
+//                        if (element.attr("name") == "ssl") error.insertAfter($("input[name=ssl]"));
+//
+//               }
+//         });  
+//
+//         $.validator.addMethod("requiredHost", function(value, element) {  if(jQuery('input#status_active:checked').val()){
+//                                                                                   if(jQuery('input[name=host]').val()) 
+//                                                                                        return true; 
+//                                                                                   else return false;
+//                                                                               } else   return true; 
+//                                                                            });
+//
+//         $.validator.addMethod("requiredLogin", function(value, element) {  if(jQuery('input#status_active:checked').val()){
+//                                                                                   if(jQuery('input[name=user_login]').val()) 
+//                                                                                        return true; 
+//                                                                                   else return false;
+//                                                                               } else   return true; 
+//                                                                            });
+//                                                                            
+//         $.validator.addMethod("requiredPass", function(value, element) {  if(jQuery('input#status_active:checked').val()){
+//                                                                           if(jQuery('input[name=user_pass]').val()) 
+//                                                                                return true; 
+//                                                                           else return false;
+//                                                                       } else   return true; 
+//                                                                    });
+//                                                                            
+//         $.validator.addMethod("requiredPort", function(value, element) {  if(jQuery('input#status_active:checked').val()){
+//                                                                           if(jQuery('input[name=port]').val()) 
+//                                                                                return true; 
+//                                                                           else return false;
+//                                                                       } else   return true; 
+//                                                                    });
+//                                                                            
+//         $.validator.addMethod("requiredSsl", function(value, element) {  if(jQuery('input#status_active:checked').val()){
+//                                                                           if(jQuery('input[name=ssl]').val()) 
+//                                                                                return true; 
+//                                                                           else return false;
+//                                                                       } else   return true; 
+//                                                                    });
+        
+    });
+
+</script>
+
+<h1>Add Contact Notification</h1>
+<br /><br />
+   <?php echo $this->form; ?>
+ 
+<script type="text/javascript" src="/font/cufon-yui.js"></script>
+<script type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#topMenu a', {hover: true});	
+		Cufon.replace('#topMenu a');
+</script>
+<script type="text/javascript" src="/font/Headline_Two_400.font.js"></script>
+<script type="text/javascript">
+	Cufon.replace('.contInf h3', {hover: true});	
+	Cufon.replace('.contInf h3');
+	Cufon.replace('.contInf h3.white', {color: '#FFF'});	
+	Cufon.replace('.footerBann h5');		
+	Cufon.replace('.footerBann p');	
+	Cufon.replace('.footerBann a', {hover: true});		
+    Cufon.replace('h1');		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Lt_300.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#footCopyr');	
+		Cufon.replace('.contInf p', {hover: true});		
+		Cufon.replace('.contInf p', {color: '#333333'});	
+		Cufon.replace('.contInf p.white', {color: '#FFF'});	
+		Cufon.replace('.fMenu a', {textDecoration: 'underline'});		
+		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Rg_700.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('.fMenu h4');
+</script>

@@ -1,0 +1,227 @@
+<style type="text/css">
+    
+    .file{ width: 265px; }
+    .file a { cursor: pointer; }
+    
+</style>
+<link href="/fancybox/jquery.fancybox-1.3.4.css" media="screen" rel="stylesheet" type="text/css" />
+
+<script type="text/javascript" src="/fancybox/jquery.fancybox-1.3.4.js"></script>
+<script type="text/javascript" charset="utf-8">
+
+$(document).ready(function() {   
+   
+        $('#filterDate').datepicker({'dateFormat' : "yy-mm-dd"});
+   
+        var filterMostValue = $('#filterMostValue').val(); 
+        var filterFloorPricing = $('#filterFloorPricing').val(); 
+        var filterTag = $('#filterTag').val(); 
+        var filterDifference = $('#filterDifference').val();
+        var filterDate = $('#filterDate').val();
+
+        var oTable1 = $('#difference_impressions').dataTable( {
+                "bProcessing": true,
+                "bServerSide": true,
+                "sAjaxSource": '/administrator/difference/ajax-impressions',
+                "fnServerParams": function ( aoData ) {  aoData.push( { "name": "filterMostValue", "value": filterMostValue }, { "name": "filterFloorPricing", "value": filterFloorPricing }, { "name": "filterTag", "value": filterTag }, { "name": "filterDifference", "value": filterDifference }, { "name": "filterDate", "value": filterDate } ); },
+                "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+                "iDisplayLength": 100
+                ,
+                "aoColumns": [
+                    { 
+                      "sTitle": "PubID",
+                      "fnRender": function(obj){ return obj.aData[0]; } 
+                    },
+                    { 
+                      "sTitle": "SiteID",
+                      "fnRender": function(obj){ return obj.aData[1]; } 
+                    },
+                    { 
+                      "sTitle": "Website",
+                      "fnRender": function(obj){ return '<a href="/administrator/sites/view/id/'+obj.aData[1]+'">'+obj.aData[2]+'</a>'; } 
+                    },
+                    { 
+                      "sTitle": "Difference",
+                      "fnRender": function(obj){ return obj.aData[3]; } 
+                    },
+                    { 
+                      "sTitle": "Impressions Estim",
+                      "fnRender": function(obj){ return obj.aData[4]; } 
+                    },
+                    { 
+                      "sTitle": "Impressions Final",
+                      "fnRender": function(obj){ return obj.aData[5]; } 
+                    },
+                    { 
+                      "sTitle": "Most Value",
+                      "fnRender": function(obj){ return obj.aData[6] == 1 ? 'Estimated' : 'Final'; } 
+                    },
+                    { 
+                      "sTitle": "Date Estim",
+                      "fnRender": function(obj){ return obj.aData[7]; } 
+                    },
+                    { 
+                      "sTitle": "Date Final",
+                      "fnRender": function(obj){ return obj.aData[8]; } 
+                    },
+                    { 
+                      "sTitle": "Cpm",
+                      "fnRender": function(obj){ return obj.aData[9] ? obj.aData[9] : '' ; } 
+                    },
+                    { 
+                      "sTitle": "Cpm Approved",
+                      "fnRender": function(obj){ return obj.aData[10] ? obj.aData[10] : '' ; } 
+                    },
+                    { 
+                      "sTitle": "Floor Pricing",
+                      "fnRender": function(obj){ if(obj.aData[11] == 1) return '<img src="/images/status-green-check.gif"/>';
+                                                                   else return '<img src="/images/stats-red-x.gif"/>';      } 
+                    },
+                    { 
+                      "sTitle": "Tag Type",
+                      "fnRender": function(obj){ var result = '';
+                          
+                                                 switch(obj.aData[12]){ case '4': result = 'Google'; break;
+                                                                        case '5': result = 'Rubicon'; break;
+                                                                        case '6': result = 'Burst'; break; }
+                                                 return result; } 
+                    },
+                    { 
+                      "sTitle": "",
+                      "bSortable": false,
+                      "fnRender": function(obj){ return '<a target="_blank" href="/administrator/index/auth/id/'+obj.aData[0]+'">login</a>'; } 
+                    },
+                 
+                ],                                                
+                "aaSorting": [[ 7, "desc" ]]
+
+        });     
+              
+        
+        $('#filterMostValue').change(function(){ filterMostValue = $('#filterMostValue').val(); oTable1.fnClearTable();  });
+        $('#filterFloorPricing').change(function(){ filterFloorPricing = $('#filterFloorPricing').val(); oTable1.fnClearTable();  });
+        $('#filterTag').change(function(){ filterTag = $('#filterTag').val(); oTable1.fnClearTable();  });  
+        $('#filterDifference').change(function(){ filterDifference = $('#filterDifference').val(); oTable1.fnClearTable();  });
+        $('#filterDate').change(function(){ filterDate = $('#filterDate').val(); oTable1.fnClearTable();  });
+        
+        
+});
+
+
+
+</script>
+
+<div class="contUsL" style="width: 750px;">
+<h1>Difference Impressions</h1>
+
+    <p>
+        <select id="filterMostValue">
+                <option value="all" selected="selected">No Filter Most Value</option>
+                <option value="1">Estimated Impressions</option>
+                <option value="0">Final Impressions</option>
+        </select>
+        <select id="filterDifference" style="margin-left: 75px;">
+                <option value="0" selected="selected">Show all difference</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+                <option value="200">200</option>
+                <option value="500">500</option>
+                <option value="1000">1000</option>
+                <option value="10000">10000</option>
+        </select>
+    </p>
+    <p>
+        <select id="filterFloorPricing">
+                <option value="all" selected="selected">No Filter Floor Pricing</option>
+                <option value="1">Floor Pricing</option>
+                <option value="0">No Floor Pricing</option>
+        </select>
+        <select id="filterTag" style="margin-left: 75px;">
+                <option value="0" selected="selected">No Filter Tag</option>
+                <option value="4">Google AdManadger</option>
+                <option value="5">Rubicon</option>
+                <option value="6">Burst</option>
+        </select>
+    </p>
+    <p>
+        <select id="filterEstimated">
+                <option value="all" selected="selected">No Filter Status Data</option>
+                <option value="1">Estimated Data</option>
+                <option value="0">Final Data</option>
+        </select>
+        
+        <input type="text" name="filterDate" id="filterDate" style="margin-left: 75px;" placeholder="Filter Date" value=""/>
+    </p>
+
+    <table width="870px" cellpadding="0" cellspacing="0" border="0" class="display" id="difference_impressions">
+            <thead>
+                    <tr>                        
+                        <th width="5%">PubID</th>
+                        <th width="5%">SiteID</th>                        
+                        <th width="20%">Website</th>
+                        <th width="5%">Difference</th>
+                        <th width="10%">Impressions Estim</th>
+                        <th width="10%">Impressions Final</th>
+                        <th width="20%">Most Value</th>
+                        <th width="10%">Date Estim</th>
+                        <th width="10%">Date Final</th>
+                        <th width="5%">Cpm</th> 
+                        <th width="10%">Cpm Approved</th> 
+                        <th width="5%">Previous Floor</th>
+                        <th width="5%">Tag Type</th>
+                        <th width="5%"></th> 
+                    </tr>
+            </thead>
+            <tbody></tbody>
+            <tfoot>
+                    <tr>
+                        <th>PubID</th>
+                        <th>SiteID</th>                        
+                        <th>Website</th>
+                        <th>Difference</th>
+                        <th>Impressions Estim</th>
+                        <th>Impressions Final</th>
+                        <th>Most Value</th>
+                        <th>Date Estim</th>
+                        <th>Date Final</th>
+                        <th>Cpm</th> 
+                        <th>Cpm Approved</th> 
+                        <th>Previous Floor</th>
+                        <th>Tag Type</th>
+                        <th></th> 
+                    </tr>
+            </tfoot>
+    </table>  
+    
+</div>
+
+
+<script type="text/javascript" src="/font/cufon-yui.js"></script>
+<script type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#topMenu a', {hover: true});	
+		Cufon.replace('#topMenu a');
+</script>
+<script type="text/javascript" src="/font/Headline_Two_400.font.js"></script>
+<script type="text/javascript">
+	Cufon.replace('.contInf h3', {hover: true});	
+	Cufon.replace('.contInf h3');
+	Cufon.replace('.contInf h3.white', {color: '#FFF'});	
+	Cufon.replace('.footerBann h5');		
+	Cufon.replace('.footerBann p');	
+	Cufon.replace('.footerBann a', {hover: true});		
+    Cufon.replace('h1');		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Lt_300.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#footCopyr');	
+		Cufon.replace('.contInf p', {hover: true});		
+		Cufon.replace('.contInf p', {color: '#333333'});	
+		Cufon.replace('.contInf p.white', {color: '#FFF'});	
+		Cufon.replace('.fMenu a', {textDecoration: 'underline'});		
+		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Rg_700.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('.fMenu h4');
+</script>

@@ -1,0 +1,491 @@
+<link rel="stylesheet" type="text/css" href="/fancybox/jquery.fancybox-1.3.4.css" media="screen" />
+<style>
+    
+    #mask{
+        position: fixed;
+        height: 100%;
+        width: 100%;
+        display: none;
+        opacity: 0.3;
+        filter: alpha(opacity=30);
+        background-color: #000000;
+        z-index: 9000;
+        left:0;
+        top:0;
+    }
+    
+    #loading{ 
+        position: fixed;
+        display: none;
+        height: 50px;
+        width: 200px;
+        z-index: 10000;
+        border: 1px solid #B7B7B7;
+        border-radius: 4px;
+        background-color: #F4F4F4;
+        left: 43%;
+        top: 44%;
+    }
+    
+    #loading span{
+        font-size: 14px;
+        display: block;
+        margin: 15px 0px 0px 62px; 
+    }    
+    
+    input.datepicker
+    {
+            border: 1px silver solid;
+            width: 200px; 
+    }
+    input[type=checkbox].response{ width: 10px; }
+
+    .linkCalendar{ cursor: pointer; }
+    
+    input[name="selectMethod"]{ margin-right: 4px; }
+    #selectDiv .errorClose{ 
+        color: red;
+        font-family: Arial,Helvetica,sans-serif;
+        font-size: 13px;
+        font-weight: 600;
+        width: 150px;
+        clear: both;
+        display: none;
+        margin-top: 15px;
+    }
+
+</style>
+<link rel="stylesheet" type="text/css" href="/fancybox/jquery.fancybox-1.3.4.css" media="screen" />
+<script type="text/javascript" src="/fancybox/jquery.fancybox-1.3.4.js"></script>
+<script type="text/javascript">
+    
+var respondedTable;
+
+$(function(){
+	
+
+        $( ".datepicker" ).datepicker({ showOn:'focus', 'dateFormat'  : "yy-mm-dd" });	
+
+                var filterFollowUp = $('#hide_date_follow_up:checked').val() ? 1 : 0; 
+                var filterSetDate = $('#hide_set_date:checked').val() ? 1 : 0;
+                var updatedDate = $("#selectUpdated").val();
+		var startDate = $('#startDate').val();
+		var endDate = $('#endDate').val();  
+                var accounts = $('#accounts').val();     
+
+		var options =  {
+	        "bProcessing": true,
+	        "bServerSide": true,
+	        "sAjaxSource": null,
+	        "fnServerParams": function ( aoData ) {  aoData.push( { "name": "startDate", "value": startDate }, { "name": "endDate", "value": endDate }, { "name": "updatedDate", "value": updatedDate }, { "name": "filterFollowUp", "value": filterFollowUp }, { "name": "filterSetDate", "value": filterSetDate }, { "name": "accounts", "value": accounts } ); },
+	        "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+	        "iDisplayLength": 50,
+	        "aoColumns": [
+	            { 
+	              "sTitle": "ID#",
+	              "fnRender": function(obj){ 
+	            	    return obj.aData[0];
+	              	}
+	            },
+	            { 
+	              "sTitle": "Website",
+	              "fnRender": function(obj){ 
+	            	    return obj.aData[1];
+	              	}
+	            },
+                    { 
+	              "sTitle": "Owner",
+	              "fnRender": function(obj){ 
+	            	    return obj.aData[2];
+	              	}
+	            },
+	            { 
+	              "sTitle": "Opp. Created Date",
+	              "fnRender": function(obj){ 
+                          
+                          var result = '<center>-</center>';
+                          
+                          if(obj.aData[3]){
+                          
+                              var date = new Date(obj.aData[3]);   
+                                  date.setDate(date.getUTCDate());
+                                  result = $.format.date(date, "yyyy MMM dd");
+                          }
+                          
+	            	  return result;                          
+	              	}
+	            },
+	            { 
+	              "sTitle": "Last Update",
+	              "fnRender": function(obj){                           
+                          
+	            	  var result = '<center>-</center>';
+                          
+                          if(obj.aData[4]){
+                          
+                              var date = new Date(obj.aData[4]);   
+                                  date.setDate(date.getUTCDate());
+                                  result = $.format.date(date, "yyyy MMM dd");
+                          }
+                          
+	            	  return result; 
+	              	}
+	            },
+                    
+                    { 
+	              "sTitle": "Follow Up Date",
+	              "fnRender": function(obj){                           
+                          
+                          var id = obj.aData[9]; 
+	            	  var result = '';
+                          
+                          if(obj.aData[5]){
+                          
+                              var date = new Date(obj.aData[5]);   
+                                  date.setDate(date.getUTCDate());
+                                  date = $.format.date(date, "yyyy MMM dd");
+                                  
+                                  result = '<a class="linkCalendar" onClick="showDatePicker('+id+')">'+date+'</a>';                                   
+                          } else  result = '<center><a class="linkCalendar" onClick="showDatePicker('+id+')">Set date</a><center>';
+                          
+	            	  return result; 
+	              	}
+	            },
+                    
+	            { 
+	              "sTitle": "Stage",
+	              "fnRender": function(obj){ 
+	            	  return getLabelResponsedOpportunity(obj.aData[6]);
+	              	}
+	            },
+	            { 
+	              "sTitle": "Contact",
+	              "bSortable": false,
+	              "fnRender": function(obj){ 
+	            	  return '<button style="cursor: pointer" onClick="mailContact('+obj.aData[7]+')">Contact</button>';
+	              	}
+	            },
+	            { 
+	              "sTitle": "Change Stage",
+	              "bSortable": false,
+	              "fnRender": function(obj){
+                          
+	            	  var id = obj.aData[9]; 
+                          
+	            	  if(parseInt(obj.aData[8]))
+	            	       return '<a href="#" data-start="0" data-opportunity="'+parseInt(obj.aData[8])+'" real="'+id+'" style="width:60px;" class="sendMasBtn OpenOpportunity">Change</a>';
+	            	  else return '<a href="#" data-start="1" data-opportunity="1" real="'+id+'" style="width:60px;" class="sendMasBtn OpenOpportunity">Change</a>';
+	              	}
+	            },
+					            
+
+	        ],
+	        "fnDrawCallback": function(){ 
+                
+	    		$(".response").click(function(e){
+
+	    			if ($(this).is(":checked")){
+	    				var email_id = $(this).attr("email_id");
+	    				var response = ($(this).attr("name")=="responded") ? "responded" : "never_responded" ;
+
+	    				if (response == "responded" && $(this).next("input").is(":checked"))
+	    					$(this).next("input").attr("checked",null);
+	    				else if (response == "never_responded" && $(this).prev("input").is(":checked"))
+	    					$(this).prev("input").attr("checked",null);
+	    				
+	    				$.get("/administrator/recruiting/response", { "email_id" : email_id, "response" : response  }, function(res){
+
+	    					if (!res.error) respondedTable.fnClearTable(true);
+	    				});
+	    			}
+	    		});
+                        
+                        display('none');
+	        },
+	        "aaSorting": [[ 4, "desc" ]]
+		};
+
+	    options.sAjaxSource = "/administrator/recruiting/get-ajax-responded";
+	    respondedTable = $('#respondedTable').dataTable(options);	
+
+
+	$('#selectDate').change(function(){
+
+            var period = $('#selectDate option:selected').val();
+            var str = period.split('_');  
+
+            startDate = str[0];
+            endDate = str[1];
+
+            $('#startDate').val(startDate);
+            $('#endDate').val(endDate);
+            
+            display('block');
+            respondedTable.fnDraw();
+        });
+
+        $('#startDate').change(function () {startDate = $('#startDate').val(); endDate = $('#endDate').val(); display('block'); respondedTable.fnDraw();});
+        $('#endDate').change(function () {startDate = $('#startDate').val(); endDate = $('#endDate').val(); display('block'); respondedTable.fnDraw();});    
+	$('#selectUpdated').change(function () {updatedDate = $('#selectUpdated').val(); display('block'); respondedTable.fnDraw();});            
+        $('#hide_date_follow_up').change(function(){ filterFollowUp = ($('#hide_date_follow_up:checked').val() ? 1 : 0); respondedTable.fnClearTable(); display('block'); });
+        $('#hide_set_date').change(function(){ filterSetDate = ($('#hide_set_date:checked').val() ? 1 : 0); respondedTable.fnClearTable(); display('block'); });    
+        $('#accounts').change(function(){ accounts = $('#accounts').val(); respondedTable.fnClearTable(); display('block'); });    
+            
+            $(".CloseLead").live('click', function(){
+                var id = $(this).attr('real');
+                $("#lineID").val(id);
+                    $.fancybox({
+                        'titlePosition'		: 'inside',
+                        'transitionIn'		: 'fade',
+                        'transitionOut'		: 'fade',
+                        'autoDimensions'	: false,
+                        'width'			: 260,
+                        'height'		: 280,
+                        'href'			: '#selectDiv',
+                        'onComplete'		: function () { $("#selectDiv").css('display', 'block'); },
+                        'onClosed'		: function () { $("#selectDiv").css('display', 'none'); 
+                            
+                                                                $("#lineID").val('');
+                                                                $('#note_short').val('');
+                                                                $('input[name="selectMethod"]').attr('checked', false);
+                                                                $('input[name="never_contact"]').attr('checked', false); }
+
+                    });
+                return false;            
+            }); 
+            
+            $("#selectPost").click(function(){
+            
+                    var validClose = true;
+                    var notes = $('#note_short').val(); 
+                    var action = $('input[name="selectMethod"]:checked').val();
+                    var never_contact = $('input[name="never_contact"]:checked').val() ? 1 : 0;
+                    
+                    if(action){ $('#selectDiv .errorClose').css('display', 'none');  validClose = true;  }
+                          else{ $('#selectDiv .errorClose').css('display', 'block'); validClose = false; } 
+            
+                    if(validClose){ 
+            
+                        $("#AjaxLoader").css('display', 'block');
+                        $.ajax({
+                                'url'	:  '/administrator/recruiting/setclosed/',
+                                'data'	:  'id='+$("#lineID").val()+action+'&notes='+notes+'&never_contact='+never_contact,
+                                'type'	:  'POST',
+                                'dataType'	:  'json',
+                                'success'	:   function(data){
+                                                if(data.error){
+                                                        alert(data.error);
+                                                        $("#AjaxLoader").css('display', 'none');
+                                                }else if(data.status=='OK'){
+                                                        $respondedTable.fnClearTable();
+                                                        $("#AjaxLoader").css('display', 'none');
+                                                        $.fancybox.close();
+                                                }else{
+                                                        alert("Application ERROR!!!");
+                                                }
+                                        }
+                        });
+                    }
+                    return false;
+            });
+
+
+            $(".OpenOpportunity").live('click', function(){
+            
+                    var id = $(this).attr('real');
+                    var start = $(this).attr('data-start');
+                    
+                    $.fancybox({
+                        'width'	        : '90%',
+                        'height'	: '75%',
+                        'href'          : '/administrator/recruiting/stage-opportunities/id/'+id+'/start/'+start,
+                        'autoScale'    	: false,
+                        'transitionIn'	: 'none',
+                        'transitionOut'	: 'none',
+                        'type'		: 'iframe',
+                        'onClosed'      : function(){ display('block'); respondedTable.fnClearTable(); }
+                    });
+            
+                return false;            
+            }); 
+	});
+        
+    function mailContact(id)
+    {
+        $.fancybox({
+            'width'	: '75%',
+            'height'	: '80%',
+            'href'          : '/administrator/recruiting/contact/id/'+id,
+            'autoScale'    	: false,
+            'transitionIn'	: 'none',
+            'transitionOut'	: 'none',
+            'type'		: 'iframe',
+            'onClosed'      : function(){ respondedTable.fnClearTable(); }
+        }); 
+    }
+    
+    function getLabelResponsedOpportunity(id)
+    {
+        switch(id)
+        {
+            case "1" : return "Qualify"; break;
+            case "2" : return "CPM Goals & Available Impressions"; break;
+            case "3" : return "Proposal"; break;
+            case "4" : return "Regstration"; break;
+            case "5" : return "Awaiting ADX Review"; break;
+            case "6" : return "Tags Ready But Not Live"; break;
+            case "7" : return "Won Opportunity Tags Live"; break;
+            case "8" : return "Lost Opportunity"; break;
+            default  : return "<center>-</center>"; break;    
+        }
+    }
+    
+    function showDatePicker(id)
+    {        
+        $.fancybox({
+     
+            'width'		: 350,
+            'height'		: 375,
+            
+            'autoScale'    	: false,
+            'transitionIn'	: 'none',
+            'transitionOut'	: 'none',
+            'type'		: 'iframe',
+            
+            'href'              : '/administrator/recruiting/follow-up-manual/id/'+id,
+            'onComplete'	: function () {  },
+            'onClosed'		: function () { display('block'); respondedTable.fnClearTable(); }
+
+        });   
+    }
+    
+    function display(status)
+    {
+        $('#mask').css('display', status);
+        $('#loading').css('display', status);         
+    }
+    
+</script>
+
+<div class="contUsL" style="float:left; width:950px;">
+	<h1>Open Opportunities</h1>
+	<br /><br />
+        
+        <p>
+            <input type="checkbox" name="hide_set_date" id="hide_set_date" value="1" <?php echo $this->filterSetDate ? 'checked' : ''; ?> style="background: none; height: 15px; width: 20px; margin-left: 57px;"/>
+            <span style="">Hide Set Follow Up Opportunities</span>
+            
+            <select id="accounts" style="margin-left: 53px;">
+                <?php if($this->dataAuth->role == 'super'):?>
+                    <option value="-1">Show All Accounts</option>
+                    <?php foreach($this->contactManager as $iter):?>
+                         <option value="<?php echo $iter['staff_id']?>" <?php if($iter['staff_id'] == $this->name):?>selected<?php endif;?>><?php echo $iter['mail'];?></option>
+                    <?php endforeach;?>
+                <?php else: ?>
+                        <option value="-1">Show All Accounts</option>
+                        <?php if(!empty($this->personalManager['staff_id'])):?>
+                           <option value="<?php echo $this->personalManager['staff_id']; ?>" <?php if($iter['staff_id'] == $this->name):?>selected<?php endif;?>>Show My Account</option> 
+                        <?php endif;?>
+                <?php endif;?>    
+            </select>
+        </p>
+        <p>        
+            <input type="checkbox" name="hide_date_follow_up" id="hide_date_follow_up" value="1" checked style="background: none; height: 15px; width: 20px; margin-left: 57px;"/>
+            <span style="">Hide Future Follow Up Opportunities</span>
+
+            <select id="selectUpdated" name="selectUpdated" style="margin-left: 36px;">
+                    <option value="">Select Last Updated</option>
+                    <option value="<?php echo date("Y-m-d", strtotime('-1 day'));?>" <?php echo date("Y-m-d", strtotime('-1 day')) == date("Y-m-d", strtotime('-'.$this->filterUpdated.' day')) ? 'selected' : '';?>>1+ Days</option>
+                    <option value="<?php echo date("Y-m-d", strtotime('-2 day'));?>" <?php echo date("Y-m-d", strtotime('-2 day')) == date("Y-m-d", strtotime('-'.$this->filterUpdated.' day')) ? 'selected' : '';?>>2+ Days</option>                    
+                    <option value="<?php echo date("Y-m-d", strtotime('-3 day'));?>" <?php echo date("Y-m-d", strtotime('-3 day')) == date("Y-m-d", strtotime('-'.$this->filterUpdated.' day')) ? 'selected' : '';?>>3+ Days</option>
+                    <option value="<?php echo date("Y-m-d", strtotime('-4 day'));?>" <?php echo date("Y-m-d", strtotime('-4 day')) == date("Y-m-d", strtotime('-'.$this->filterUpdated.' day')) ? 'selected' : '';?>>4+ Days</option> 
+                    <option value="<?php echo date("Y-m-d", strtotime('-5 day'));?>" <?php echo date("Y-m-d", strtotime('-5 day')) == date("Y-m-d", strtotime('-'.$this->filterUpdated.' day')) ? 'selected' : '';?>>5+ Days</option>                              
+                    <option value="<?php echo date("Y-m-d", strtotime('-6 day'));?>" <?php echo date("Y-m-d", strtotime('-6 day')) == date("Y-m-d", strtotime('-'.$this->filterUpdated.' day')) ? 'selected' : '';?>>6+ Days</option>  
+                    <option value="<?php echo date("Y-m-d", strtotime('-7 day'));?>" <?php echo date("Y-m-d", strtotime('-7 day')) == date("Y-m-d", strtotime('-'.$this->filterUpdated.' day')) ? 'selected' : '';?>>7+ Days</option> 
+            </select>        
+        </p>
+                
+<br/><br/>
+	<p >Start Date: <input type="text" class="datepicker" name="startDate" value="<?php echo $this->startDate ?>" id="startDate" /> End Date: <input type="text" class="datepicker" name="endDate" value="<?php echo $this->endDate ?>" id="endDate" /></p>
+	<br/>
+        
+
+        
+	<div>
+		<table class="display" id="respondedTable" width="900px" cellpadding="0" cellspacing="0" border="0">
+			<thead>
+				<tr>
+                                    <th width="5%">ID #</th>
+                                    <th width="15%">Website</th>
+                                    <th width="15%">Owner</th>
+                                    <th width="10%">Opp. Created Date</th>
+                                    <th width="10%">Last Update</th>
+                                    <th width="10%">Follow Up Date</th>
+                                    <th width="10%">Stage</th>
+                                    <th width="10%">Contact</th>
+                                    <th width="10%">Change Stage</th>
+				</tr>
+			</thead>
+			<tbody></tbody>
+			<tfoot>
+				<tr>
+                                    <th>ID #</th>
+                                    <th>Website</th>
+                                    <th>Owner</th>
+                                    <th>Opp. Created Date</th>
+                                    <th>Last Update</th>
+                                    <th>Follow Up Date</th>
+                                    <th>Stage</th>
+                                    <th>Contact</th>
+                                    <th>Change Stage</th>
+				</tr>
+			</tfoot>
+		</table>	
+	</div>
+
+        <div id="selectDiv" style="display: none;">
+        <img alt="" id="AjaxLoader" src="/images/ajax-loader.gif" style="display: none">
+                <form action="#" method="post">
+                        <input type="hidden" id="lineID" value="" />                        
+                            <p style="padding-bottom: 2px;"><input name="selectMethod" type="radio" value="1"/><span>Not interested (undisclosed reason)</span></p>
+                            <p style="padding-bottom: 2px;"><input name="selectMethod" type="radio" value="2"/><span>Asking CPM Too High</span></p>
+                            <p style="padding-bottom: 2px;"><input name="selectMethod" type="radio" value="3"/><span>Never Responded</span></p>
+                            <p style="padding-bottom: 2px;"><input name="selectMethod" type="radio" value="5"/><span>Site Does Not Have Ads</span></p> 
+                            <p><input name="selectMethod" type="radio" value="4"/><span>Other</span></p>  
+                            <span class="errorClose">Fileld is required</span>
+                        <p style="margin-top: 12px">
+                            <input type="checkbox" name="never_contact"/><span style="margin-left: 5px;">Never Contact Site Again</span>
+                        </p>
+                        <p style="margin-top: 10px;">
+                            <textarea name="note_short" id="note_short" style="width: 223px; height: 100px; padding: 3px 5px;" placeholder="Notes (keep it short)"></textarea>
+                        </p>
+                        <br /><br />
+                        <a class="sendMasBtn" style="width: 60px; margin-top: 10px;" id="selectPost" title="" href="#">Save</a>
+                </form>
+        </div>	
+        </div>
+        
+        <div id="setDateFollowUp" style="display: none;">
+        <img alt="" id="AjaxLoader" src="/images/ajax-loader.gif" style="display: none">
+                <form action="#" method="post">
+                        <input type="hidden" id="lineFollowUp" value="" />
+                        <p>
+                           <input type="text" id="valDateFollowUp" value="" />
+                        </p>
+
+                        <br><br>
+                        <a class="sendMasBtn" style="width: 60px;" id="submitDateFollowUp" title="" href="#">Save</a>
+                </form>
+        </div>
+	
+</div>
+
+<div id="mask"></div>
+<div id="loading"><span>processing...</span></div>
+
+<script type="text/javascript" src="/font/cufon-yui.js"></script>
+<script	type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script	type="text/javascript" src="/font/Headline_Two_400.font.js"></script>
+<script type="text/javascript">
+    Cufon.replace('h1');		
+</script>

@@ -1,0 +1,716 @@
+<?php $this->headScript()->offsetSetFile(20,$this->baseUrl().'/js/payment.js', 'text/javascript'); ?>
+<style type="text/css">
+
+    #wait{ width: 427px; border-collapse: collapse; border: 1px #B7B7B7 solid;  margin-left: 85px; }
+    #wait tr td{
+
+        border: 1px #B7B7B7 solid;
+        font-size: 13px;
+        font-family: Arial,Helvetica,sans-serif;
+        padding: 5px;
+     }
+
+    #wait tr th{
+
+        border: 1px #B7B7B7 solid;
+        font-size: 16px;
+        font-family: Arial,Helvetica,sans-serif;
+        padding: 5px;
+        text-align: center;
+    }
+
+    #history_title
+    {
+    	margin-left: 85px;
+    	margin-top: 50px;
+    	font-size: 14px;
+    	font-weight: bold;
+    	color: red;
+    	padding-bottom: 3px;
+    }
+
+    #history_item
+    {
+    	margin-left: 85px;
+	    font-size: 13px;
+    	color: red;
+    }
+    
+    #cannot_change
+    {
+    	font-size: 26px;
+    }
+
+</style>
+
+<script type="text/javascript">
+	function make_mask(str)
+	{
+		if(str.length > 3)
+		{		
+		    var masked_str = '';
+		    for(var i = 0; i < str.length -3 ; i++)
+		    {
+				masked_str += '*';
+		    }
+		    masked_str += str.substr(str.length - 3);
+		    return masked_str;
+	    }
+		else
+			return str;	
+	}
+	
+    $(document).ready(function(){
+
+
+		//ACC NAME
+        var accName = $("input[name='accNameReal']").val();
+        $("input[name='accName']").val(make_mask(accName));
+
+        $("input[name='accName']").focusout(function()
+        {
+        	accName = $("input[name='accNameReal']").val();
+        	$("input[name='accName']").val(make_mask(accName));
+        });
+        
+        $("input[name='accName']").focus(function()
+        {
+            $("input[name='accName']").val('');
+        });
+
+        $("input[name='accName']").change(function()
+        {
+        	$("input[name='accNameReal']").val($("input[name='accName']").val());	
+        });
+		//ACC NUMBER
+        var accNumber = $("input[name='accNumberReal']").val();
+        $("input[name='accNumber']").val(make_mask(accNumber));
+
+        $("input[name='accNumber']").focusout(function()
+        {
+        	accNumber = $("input[name='accNumberReal']").val();
+        	$("input[name='accNumber']").val(make_mask(accNumber));
+        });
+        
+        $("input[name='accNumber']").focus(function()
+        {
+            $("input[name='accNumber']").val('');
+        });
+
+        $("input[name='accNumber']").change(function()
+        {
+        	$("input[name='accNumberReal']").val($("input[name='accNumber']").val());	
+        });
+        //CONFIRM ACC NUMBER
+		var confirmAccNumber = $("input[name='confirmAccNumberReal']").val();
+        $("input[name='confirmAccNumber']").val(make_mask(confirmAccNumber));
+
+        $("input[name='confirmAccNumber']").focusout(function()
+        {
+        	confirmAccNumber = $("input[name='confirmAccNumberReal']").val();
+        	$("input[name='confirmAccNumber']").val(make_mask(confirmAccNumber));
+        });
+        
+        $("input[name='confirmAccNumber']").focus(function()
+        {
+            $("input[name='confirmAccNumber']").val('');
+        });
+
+        $("input[name='confirmAccNumber']").change(function()
+        {
+        	$("input[name='confirmAccNumberReal']").val($("input[name='confirmAccNumber']").val());	
+        });
+        //ROUTE NUMBER
+        var routNumber = $("input[name='routNumberReal']").val();
+        $("input[name='routNumber']").val(make_mask(routNumber));
+
+        $("input[name='routNumber']").focusout(function()
+        {
+        	routNumber = $("input[name='routNumberReal']").val();
+        	$("input[name='routNumber']").val(make_mask(routNumber));
+        });
+        
+        $("input[name='routNumber']").focus(function()
+        {
+            $("input[name='routNumber']").val('');
+        });
+
+        $("input[name='routNumber']").change(function()
+        {
+        	$("input[name='routNumberReal']").val($("input[name='routNumber']").val());	
+        });
+
+        //CONFIRM ROUTE NUMBER
+        var confirmRoutNumber = $("input[name='confirmRoutNumberReal']").val();
+        $("input[name='confirmRoutNumber']").val(make_mask(confirmRoutNumber));
+
+        $("input[name='confirmRoutNumber']").focusout(function()
+        {
+        	confirmRoutNumber = $("input[name='confirmRoutNumberReal']").val();
+        	$("input[name='confirmRoutNumber']").val(make_mask(confirmRoutNumber));
+        });
+        
+        $("input[name='confirmRoutNumber']").focus(function()
+        {
+            $("input[name='confirmRoutNumber']").val('');
+        });
+
+        $("input[name='confirmRoutNumber']").change(function()
+        {
+        	$("input[name='confirmRoutNumberReal']").val($("input[name='confirmRoutNumber']").val());	
+        });
+        //ACC NUMBER 2
+        var accNumber2 = $("input[name='accNumber2Real']").val();
+        $("input[name='accNumber2']").val(make_mask(accNumber2));
+
+        $("input[name='accNumber2']").focusout(function()
+        {
+        	accNumber2 = $("input[name='accNumber2Real']").val();
+        	$("input[name='accNumber2']").val(make_mask(accNumber2));
+        });
+        
+        $("input[name='accNumber2']").focus(function()
+        {
+            $("input[name='accNumber2']").val('');
+        });
+
+        $("input[name='accNumber2']").change(function()
+        {
+        	$("input[name='accNumber2Real']").val($("input[name='accNumber2']").val());	
+        });
+
+
+
+        if(<?php echo $this->formValues['paymentBy'] ? $this->formValues['paymentBy'] : 0;?> == 4){
+            $("#paypal").css('display', 'none');
+            $("#paydirect").css('display', 'none');
+            $("#wire_transfer").css('display', 'block');
+        }
+
+        $("#paymentBy").change(function(){
+
+            if($(this).val()==2){
+                $("#wire_transfer").css('display', 'none');
+                $("#paydirect").css('display', 'none');
+                $("#paypal").css('display', 'block');
+            }else if($(this).val()==3){
+                $("#wire_transfer").css('display', 'none');
+                $("#paypal").css('display', 'none');
+                $("#paydirect").css('display', 'block');
+            }else if($(this).val()==1){
+                $("#paypal").css('display', 'none');
+                $("#paydirect").css('display', 'none');
+                $("#wire_transfer").css('display', 'none');
+            }else if($(this).val()==4){
+                $("#paypal").css('display', 'none');
+                $("#paydirect").css('display', 'none');
+                $("#wire_transfer").css('display', 'block');
+            }
+        });
+
+        $("#country").change(function(){
+            if($(this).val()==237){
+                $("#stateTxt").css('display', 'none');
+                $("#stateTxt").attr('name', '');
+                $("#stateTxt").val('');
+                $("#stateSel").css('display', 'block');
+                $("#stateSel").attr('name', 'state');
+                $("#stateSel").val('');
+
+            }else{
+                $("#stateTxt").css('display', 'block');
+                $("#stateTxt").attr('name', 'state');
+                $("#stateTxt").val('');
+                $("#stateSel").css('display', 'none');
+                $("#stateSel").attr('name', '');
+                $("#stateSel").val('');
+            }
+        })
+
+    })
+</script>
+                <div class="contUsLi">
+                <h1>Payment Profile</h1>
+                <?php if($this->userData->country == 237 || $this->userData->country == 238):?>
+
+                        <h3>W-9 MANAGEMENT</h3>
+
+                        <?php if(count($this->pdf)):?>
+                              <p>
+                                  <label style="width: 420px;"><?php echo $this->userData['company'];?> Submitted on <?php echo $this->pdf->date;?></label>
+                                  <button style="cursor: pointer;" onclick="location.href='/w-9'">Update</button>
+                              </p>
+                        <?php else:?>
+                              <a href="/w-9" style="color: red">Your W-9 is incomplete. Please complete your W-9 in order to receive payment</a>
+                        <?php endif;?>
+
+                        <br /><br />
+
+                 <?php endif;?>
+<?php if($this->can_change_info OR $this->auth->role == 'admin' OR $this->auth->role == 'super'):?>
+				<form method="post" class="sign-up" style="margin:0; padding:0;">
+                            <h3>General Information</h3>
+                            <p><label>Account ID: </label><?php echo $this->userData['id'] ?></p>
+                            <p><label>Payee Name: </label><input type="text" name="name" value="<?php echo $this->formValues['name']; ?>" /></p>
+                                <?php if(isset($this->formErrors['name'])): ?>
+                          <ul class="error">
+                                    <?php foreach($this->formErrors['name'] as $errors): ?>
+                                        <li><?php echo $errors ?></li>
+                                    <?php endforeach; ?>
+                          </ul>
+                                <?php endif; ?>
+
+                            <p><label>Payee Type: </label>
+                                <label class="checkBox"><input type="radio" name="payType" class="checkBoxInp" value="1" <?php echo $this->formValues['payType']==1 ? 'checked' : '' ?> />Individual/Sole Proprietor</label>
+                                <label class="checkBox"><input type="radio" name="payType" class="checkBoxInp" value="2" <?php echo $this->formValues['payType']==2 ? 'checked' : '' ?> />Business</label>
+                            </p>
+                                <?php if(isset($this->formErrors['payType'])): ?>
+                          <ul class="error">
+                                    <?php foreach($this->formErrors['payType'] as $errors): ?>
+                                        <li><?php echo $errors ?></li>
+                                    <?php endforeach; ?>
+                          </ul>
+                                <?php endif; ?>
+
+                                <p><label>Street</label><input type="text" name="street1" value="<?php echo $this->formValues['street1'] ?>" /></p>
+                                    <?php if(isset($this->formErrors['street1'])): ?>
+                            <ul class="error">
+                                        <?php foreach($this->formErrors['street1'] as $errors): ?>
+                                            <li><?php echo $errors ?></li>
+                                        <?php endforeach; ?>
+                            </ul>
+                                    <?php endif; ?>
+
+                                <p><label>&nbsp;</label><input type="text" name="street2" value="<?php echo $this->formValues['street2'] ?>" /></p>
+                                    <?php if(isset($this->formErrors['street2'])): ?>
+                            <ul class="error">
+                                        <?php foreach($this->formErrors['street2'] as $errors): ?>
+                                            <li><?php echo $errors ?></li>
+                                        <?php endforeach; ?>
+                            </ul>
+                                    <?php endif; ?>
+
+                            <p><label>Country: </label>
+                                <select name="country" id="country">
+                                    <option>Please Select...</option>
+                                    <?php foreach($this->country as $item): ?>
+                                    <option value="<?php echo $item['key'] ?>" <?php echo $item['key']==$this->formValues['country'] ? 'selected' : '' ?> ><?php echo $item['value'] ?></option>
+                                    <?php endforeach; ?>
+                                </select></p>
+                                <?php if(isset($this->formErrors['country'])): ?>
+                          <ul class="error">
+                                    <?php foreach($this->formErrors['country'] as $errors): ?>
+                                        <li><?php echo $errors ?></li>
+                                    <?php endforeach; ?>
+                          </ul>
+                                <?php endif; ?>
+
+                            <p><label>State or Province:</label>
+                                <input type="text" <?php echo $this->formValues['country']==237 ? "name=\"\" style=\"display:none;\"" : "name=\"state\" style=\"display:block;\""  ?> id="stateTxt" value="<?php echo $this->formValues['state'] ?>" />
+                                <select id="stateSel" <?php echo $this->formValues['country']==237 ? "name=\"state\" style=\"display:block;\"" : "name=\"\" style=\"display:none;\""  ?>>
+                                        <?php foreach($this->state as $item): ?>
+                                        <option value="<?php echo $item['key'] ?>" <?php echo $item['key']==$this->formValues['state'] ? 'selected' : '' ?> ><?php echo $item['value'] ?></option>
+                                        <?php endforeach; ?>
+                                </select></p>
+                                <?php if(isset($this->formErrors['state'])): ?>
+                          <ul class="error">
+                                    <?php foreach($this->formErrors['state'] as $errors): ?>
+                                        <li><?php echo $errors ?></li>
+                                    <?php endforeach; ?>
+                          </ul>
+                                <?php endif; ?>
+
+                            <p><label>City: </label><input type="text" name="city" value="<?php echo $this->formValues['city'] ?>" /></p>
+                                <?php if(isset($this->formErrors['city'])): ?>
+                          <ul class="error">
+                                    <?php foreach($this->formErrors['city'] as $errors): ?>
+                                        <li><?php echo $errors ?></li>
+                                    <?php endforeach; ?>
+                          </ul>
+                                <?php endif; ?>
+
+                            <p><label>Zip / Postal Code:</label><input type="text" name="zip" value="<?php echo $this->formValues['zip'] ?>" /></p>
+                                <?php if(isset($this->formErrors['zip'])): ?>
+                          <ul class="error">
+                                    <?php foreach($this->formErrors['zip'] as $errors): ?>
+                                        <li><?php echo $errors ?></li>
+                                    <?php endforeach; ?>
+                          </ul>
+                                <?php endif; ?>
+
+                            <p><label>Minimum Payment Amount:</label>
+                                <select name="paymentAmout" id="payment_amount">
+                                    <option value="1">Please Select...</option>
+                                    <?php foreach($this->payment as $item): ?>
+                                    <option value="<?php echo $item['key'] ?>" <?php echo $item['key']==$this->formValues['paymentAmout'] ? 'selected' : '' ?> ><?php echo $item['value'] ?></option>
+                                    <?php endforeach; ?>
+                                </select></p>
+                                <?php if(isset($this->formErrors['paymentAmout'])): ?>
+                          <ul class="error">
+                                    <?php foreach($this->formErrors['paymentAmout'] as $errors): ?>
+                                        <li><?php echo $errors ?></li>
+                                    <?php endforeach; ?>
+                          </ul>
+                                <?php endif; ?>
+                            <br /><br />
+
+                            <h3>Payment Info</h3>
+                            <p><label>Payment Method: </label>
+                                <select name="paymentBy" id="paymentBy">
+
+                                    <option value="1" <?php echo 1==$this->formValues['paymentBy'] ? 'selected' : '' ?> >Payment by Check</option>
+                                    <option value="2" <?php echo 2==$this->formValues['paymentBy'] ? 'selected' : '' ?> >Payment by PayPal</option>
+                                    <option value="3" <?php echo 3==$this->formValues['paymentBy'] ? 'selected' : '' ?> >Payment by ACH</option>
+
+                                    <?php if($this->userData['enable_wire_transfer']):?>
+                                          <option value="4" <?php echo 4==$this->formValues['paymentBy'] ? 'selected' : '' ?> >Payment by Wire Transfer</option>
+                                    <?php endif;?>
+
+                                </select>
+                            </p>
+                                <?php if(isset($this->formErrors['paymentBy'])): ?>
+                          <ul class="error">
+                                    <?php foreach($this->formErrors['paymentBy'] as $errors): ?>
+                                        <li><?php echo $errors ?></li>
+                                    <?php endforeach; ?>
+                          </ul>
+                                <?php endif; ?>
+
+                            <br />
+
+                            <div style="display: <?php echo $this->formValues['paymentBy']==2 ? 'block' : 'none' ?>; padding: 10px 2px 10px 10px;" id="paypal">
+                                <p><label>PayPal Email:</label><input type="text" name="paypalmail" value="<?php if($this->formValues['paypalmail'] != 'NULL') :?><?php echo $this->formValues['paypalmail'] ?><?php endif;?>" /></p>
+                                <?php if(isset($this->formErrors['paypalmail'])): ?>
+                              <ul class="error">
+                                    <?php foreach($this->formErrors['paypalmail'] as $errors): ?>
+                                        <li><?php echo $errors ?></li>
+                                    <?php endforeach; ?>
+                              </ul>
+                                <?php endif; ?>
+                            </div>
+
+
+                            <div style="display: <?php echo $this->formValues['paymentBy']==3 ? 'block' : 'none' ?>; padding: 10px 2px 10px 10px;" id="paydirect">
+                                <span style="color: red; font-size: 11px;">All Payments are in US dollars. Receiving account must be<br />able to accept US dollars.</span>
+                                <p><label>Bank Country:</label>
+                                    <!--<label class="checkBox"><input type="radio" name="bank" class="checkBoxInp" value="1" <?php echo $this->formValues['bank']==1 ? 'checked' : '' ?> />Canadian Bank</label>-->
+                                    <label class="checkBox" style="width: 420px;"><input type="radio" name="bank" class="checkBoxInp" value="2" <?php echo $this->formValues['bank']==2 ? 'checked' : '' ?> />US Bank</label>
+                                </p>
+                                <?php if(isset($this->formErrors['bank'])): ?>
+                              <ul class="error">
+                                    <?php foreach($this->formErrors['bank'] as $errors): ?>
+                                        <li><?php echo $errors ?></li>
+                                    <?php endforeach; ?>
+                              </ul>
+                                <?php endif; ?>
+
+                                <p><label>Beneficiary Name:</label>
+	                                <input type="text" name="accName" value="<?php echo $this->formValues['accName'] ?>" />
+	                                <input type="hidden" name="accNameReal" value="<?php echo $this->formValues['accName'] ?>" />
+                                </p>
+                                <?php if(isset($this->formErrors['accNameReal'])): ?>
+                              <ul class="error">
+                                    <?php foreach($this->formErrors['accNameReal'] as $errors): ?>
+                                        <li><?php echo $errors ?></li>
+                                    <?php endforeach; ?>
+                              </ul>
+                                <?php endif; ?>
+
+                                <p><label>Bank Name:</label><input type="text" name="bankName" value="<?php echo $this->formValues['bankName'] ?>" /></p>
+                                <?php if(isset($this->formErrors['bankName'])): ?>
+                              <ul class="error">
+                                    <?php foreach($this->formErrors['bankName'] as $errors): ?>
+                                        <li><?php echo $errors ?></li>
+                                    <?php endforeach; ?>
+                              </ul>
+                                <?php endif; ?>
+
+                            <p><label>Account Type:</label>
+                                <select name="accType">
+                                    <option value="1" <?php echo $this->formValues['accType']==1 ? 'selected' : '' ?> >Checking</option>
+                                    <option value="2" <?php echo $this->formValues['accType']==2 ? 'selected' : '' ?> >Savings</option>
+                                </select></p>
+                                <?php if(isset($this->formErrors['accType'])): ?>
+                              <ul class="error">
+                                    <?php foreach($this->formErrors['accType'] as $errors): ?>
+                                        <li><?php echo $errors ?></li>
+                                    <?php endforeach; ?>
+                              </ul>
+                                <?php endif; ?>
+
+                            <p><label>Account Number:</label>
+	                            <input type="text" name="accNumber" value="<?php echo $this->formValues['accNumber'] ?>" />
+	                            <input type="hidden" name="accNumberReal" value="<?php echo $this->formValues['accNumber'] ?>" />
+                            </p>
+                                <?php if(isset($this->formErrors['accNumberReal'])): ?>
+                              <ul class="error">
+                                    <?php foreach($this->formErrors['accNumberReal'] as $errors): ?>
+                                        <li><?php echo $errors ?></li>
+                                    <?php endforeach; ?>
+                              </ul>
+                                <?php endif; ?>
+
+                            <p><label>Confirm Account Number:</label>
+	                            <input type="text" name="confirmAccNumber" value="<?php echo $this->formValues['confirmAccNumber'] ?>" />
+	                            <input type="hidden" name="confirmAccNumberReal" value="<?php echo $this->formValues['confirmAccNumber'] ?>" />
+                            </p>
+                                <?php if(isset($this->formErrors['confirmAccNumberReal'])): ?>
+                              <ul class="error">
+                                    <?php foreach($this->formErrors['confirmAccNumberReal'] as $errors): ?>
+                                        <li><?php echo $errors ?></li>
+                                    <?php endforeach; ?>
+                              </ul>
+                                <?php endif; ?>
+
+                            <p><label>Routing Number:</label>
+                            	<input type="text" name="routNumber" value="<?php echo $this->formValues['routNumber'] ?>" />
+                            	<input type="hidden" name="routNumberReal" value="<?php echo $this->formValues['routNumber'] ?>" />
+                            </p>
+                                <?php if(isset($this->formErrors['routNumberReal'])): ?>
+                              <ul class="error">
+                                    <?php foreach($this->formErrors['routNumberReal'] as $errors): ?>
+                                        <li><?php echo $errors ?></li>
+                                    <?php endforeach; ?>
+                              </ul>
+                                <?php endif; ?>
+
+                            <p><label>Confirm Routing Number:</label>
+                            	<input type="text" name="confirmRoutNumber" value="<?php echo $this->formValues['confirmRoutNumber'] ?>" />
+                            	<input type="hidden" name="confirmRoutNumberReal" value="<?php echo $this->formValues['confirmRoutNumber'] ?>" />
+                            </p>
+                                <?php if(isset($this->formErrors['confirmRoutNumberReal'])): ?>
+                              <ul class="error">
+                                    <?php foreach($this->formErrors['confirmRoutNumberReal'] as $errors): ?>
+                                        <li><?php echo $errors ?></li>
+                                    <?php endforeach; ?>
+                              </ul>
+                                <?php endif; ?>
+
+                            </div>
+                            <div id="wire_transfer">
+                                <p><label>Bank Name:</label><input type="text" name="bankName2" value="<?php echo $this->formValues['bankName2'] ?>" /></p>
+                                    <?php if(isset($this->formErrors['bankName2'])): ?>
+                                  <ul class="error">
+                                        <?php foreach($this->formErrors['bankName2'] as $errors): ?>
+                                            <li><?php echo $errors ?></li>
+                                        <?php endforeach; ?>
+                                  </ul>
+                                    <?php endif; ?>
+
+                                <p><label>Bank Adress:</label><input type="text" name="bankAdress" value="<?php echo $this->formValues['bankAdress'] ?>" /></p>
+                                    <?php if(isset($this->formErrors['bankAdress'])): ?>
+                                  <ul class="error">
+                                        <?php foreach($this->formErrors['bankAdress'] as $errors): ?>
+                                            <li><?php echo $errors ?></li>
+                                        <?php endforeach; ?>
+                                  </ul>
+                                    <?php endif; ?>
+
+                                <p><label>Beneficiary Name:</label><input type="password" name="accName2" value="<?php echo $this->formValues['accName2'] ?>" /></p>
+                                    <?php if(isset($this->formErrors['accName2'])): ?>
+                                  <ul class="error">
+                                        <?php foreach($this->formErrors['accName2'] as $errors): ?>
+                                            <li><?php echo $errors ?></li>
+                                        <?php endforeach; ?>
+                                  </ul>
+                                    <?php endif; ?>
+
+                                <p><label>Account Number:</label>
+                                	<input type="text" name="accNumber2" value="<?php echo $this->formValues['accNumber2'] ?>" />
+                                	<input type="hidden" name="accNumber2Real" value="<?php echo $this->formValues['accNumber2'] ?>" />
+                                </p>
+                                    <?php if(isset($this->formErrors['accNumber2Real'])): ?>
+                                  <ul class="error">
+                                        <?php foreach($this->formErrors['accNumber2Real'] as $errors): ?>
+                                            <li><?php echo $errors ?></li>
+                                        <?php endforeach; ?>
+                                  </ul>
+                                    <?php endif; ?>
+
+                                <p><label>Swift:</label><input type="text" name="swift" value="<?php echo $this->formValues['swift'] ?>" /></p>
+                                    <?php if(isset($this->formErrors['swift'])): ?>
+                                  <ul class="error">
+                                        <?php foreach($this->formErrors['swift'] as $errors): ?>
+                                            <li><?php echo $errors ?></li>
+                                        <?php endforeach; ?>
+                                  </ul>
+                                    <?php endif; ?>
+
+                                <p><label>IBAN:</label><input type="text" name="iban" value="<?php echo $this->formValues['iban'] ?>" /></p>
+                                    <?php if(isset($this->formErrors['iban'])): ?>
+                                  <ul class="error">
+                                        <?php foreach($this->formErrors['iban'] as $errors): ?>
+                                            <li><?php echo $errors ?></li>
+                                        <?php endforeach; ?>
+                                  </ul>
+                                    <?php endif; ?>
+								  
+                            </div>
+                            <div><a href="#" title="" class="subAplBtn" onclick="document.getElementById('subForm').click(); return false;" style="float: left;">Submit</a></div>
+                <input type="hidden" id="csrf" value="<?php echo $this->csrf;?>" name="csrf">
+                <input type="submit" id="subForm" style="display: none;" />
+
+                </form>
+                <br/>
+             <?php if($this->changes):?>
+             <div id='history_title'>Payment Change History</div>
+             <?php foreach ($this->changes as $change):?>
+             <span id='history_item'><?php echo date('m/d/Y, g:i a',strtotime($change['changed'])) .' - '.'Payment details were changed from IP: ' . $change['ip'];?></span><br/>
+             <?php endforeach;?>
+             </br>
+             <?php endif;?>
+                <?php if($this->pending_data):?>
+                <p></p>
+                <br/></br/><br/>
+                 <table id="wait">
+                     <thead>
+                         <tr>
+                             <th colspan="2">Your payment profile change is pending approval</th>
+                         </tr>
+                     </thead>
+                     <tbody>
+                         <tr>
+                             <td>Email</td>
+                             <td><?php echo $this->pending_data['new']['email'];?></td>
+                         </tr>
+                         <tr>
+                             <td>Name</td>
+                             <td><?php echo $this->pending_data['new']['name'];?></td>
+                         </tr>
+                         <tr>
+                             <td>Type</td>
+                             <td><?php echo $this->pending_data['new']['payType'];?></td>
+                         </tr>
+                         <tr>
+                             <td>Street</td>
+                             <td><?php echo $this->pending_data['new']['street1'];?></td>
+                         </tr>
+                         <tr>
+                             <td>Street</td>
+                             <td><?php echo $this->pending_data['new']['street2'];?></td>
+                         </tr>
+                         <tr>
+                             <td>Country</td>
+                             <td><?php echo $this->pending_data['new']['country'];?></td>
+                         </tr>
+                         <tr>
+                             <td>State</td>
+                             <td><?php echo $this->pending_data['new']['state'];?></td>
+                         </tr>
+                         <tr>
+                             <td>City</td>
+                             <td><?php echo $this->pending_data['new']['city'];?></td>
+                         </tr>
+                         <tr>
+                             <td>Zip/Postal</td>
+                             <td><?php echo $this->pending_data['new']['zip'];?></td>
+                         </tr>
+                         <tr>
+                             <td>Payment Amount</td>
+                             <td><?php echo $this->pending_data['new']['paymentAmout'];?></td>
+                         </tr>
+                         <tr>
+                             <td>Payment Method</td>
+                             <td><?php echo $this->pending_data['new']['paymentBy'];?></td>
+                         </tr>
+                     <?php if($this->pending_data['new']['paymentBy']=='Payment By PayPal'): ?>
+                        <tr>
+                            <td>PayPal Email</td>
+                            <td><?php echo $this->pending_data['new']['paypalmail'];?></td>
+                        </tr>
+                     <?php elseif($this->pending_data['new']['paymentBy']=='Payment By ACH'): ?>
+                        <tr>
+                            <td>Bank Country</td>
+                            <td><?php echo $this->pending_data['new']['bank'];?></td>
+                        </tr>
+                        <tr>
+                            <td>Beneficiary Name</td>
+                            <td><?php echo $this->pending_data['new']['accName'];?></td>
+                        </tr>
+                        <tr>
+                            <td>Bank Name</td>
+                            <td><?php echo $this->pending_data['new']['bankName'];?></td>
+                        </tr>
+                        <tr>
+                            <td>Account Type</td>
+                            <td><?php echo $this->pending_data['new']['accType'];?></td>
+                        </tr>
+                        <tr>
+                            <td>Account Number</td>
+                            <td><?php echo $this->pending_data['new']['accNumber'];?></td>
+                        </tr>
+                        <tr>
+                            <td>Routing Number</td>
+                            <td><?php echo $this->pending_data['new']['routNumber'];?></td>
+                        </tr>
+                     <?php elseif($this->pending_data['new']['paymentBy']=='Payment by Wire Transfer'): ?>
+                        <tr>
+                            <td>Bank Name</td>
+                            <td><?php echo $this->pending_data['new']['bankName2'];?></td>
+                        </tr>
+                        <tr>
+                            <td>Bank Adress</td>
+                            <td><?php echo $this->pending_data['new']['bankAdress'];?></td>
+                        </tr>
+                        <tr>
+                            <td>Beneficiary Name</td>
+                            <td><?php echo $this->pending_data['new']['accName2'];?></td>
+                        </tr>
+                        <tr>
+                            <td>Account Number</td>
+                            <td><?php echo $this->pending_data['new']['accNumber2'];?></td>
+                        </tr>
+                        <tr>
+                            <td>Swift</td>
+                            <td><?php echo $this->pending_data['new']['swift'];?></td>
+                        </tr>
+                        <tr>
+                            <td>IBAN</td>
+                            <td><?php echo $this->pending_data['new']['iban'];?></td>
+                        </tr>
+                     <?php endif; ?>
+
+                     </tbody>
+                 </table>
+             <?php endif;?>
+             <?php else:?>
+             	<div id="cannot_change">
+	             	<p style="font-size: 16px;">
+	             	Payments are currently being processed.  At this time, you will be unable to update your payment profile.<br/>
+	                Please check back on the 18th of the month.
+	                </p>
+             	</div>
+             <?php endif;?>
+                </div>
+
+<script type="text/javascript" src="/font/cufon-yui.js"></script>
+<script type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#topMenu a', {hover: true});
+		Cufon.replace('#topMenu a');
+        Cufon.replace('.error', {color: 'red'});
+</script>
+<script type="text/javascript" src="/font/Headline_Two_400.font.js"></script>
+<script type="text/javascript">
+	Cufon.replace('.footerBann h5');
+	Cufon.replace('.footerBann p');
+	Cufon.replace('.footerBann a', {hover: true});
+	Cufon.replace('.contactUs h1');
+    Cufon.replace('.contUsLi h1');
+
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Lt_300.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#footCopyr');
+		Cufon.replace('.fMenu a');
+		Cufon.replace('.contactUs p');
+		Cufon.replace('.contUsLi label');
+		Cufon.replace('.contBtn p');
+		Cufon.replace('.sendMasBtn',{textShadow: '-1px -1px #5F5F5F'});
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Rg_700.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('.fMenu h4');
+        Cufon.replace('.contUsLi h3');
+</script>
+

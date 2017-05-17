@@ -1,0 +1,180 @@
+<link href="/styles/jquery.multiselect.css" media="screen" rel="stylesheet" type="text/css" >
+<link href="/styles/jquery.multiselect.filter.css" media="screen" rel="stylesheet" type="text/css" >
+<script type="text/javascript" src="/js/jquery-ui-1.9.2.custom.min.js"></script>
+<script type="text/javascript" src="/js/jquery.multiselect.js"></script>
+<script type="text/javascript" src="/js/jquery.multiselect.filter.js"></script>
+ <style>
+.ui-autocomplete-loading {
+background: white url('/images/ui-anim_basic_16x16.gif') right center no-repeat;
+}
+</style>
+<script type="text/javascript">
+    $(document).ready(function(){
+        $("#updat").click(function(){
+            if($(this).attr('checked')){
+                if(confirm("Are you sure? This option may lead to loss of some important data")){
+                    $(this).attr('checked', true);
+                }else{
+                    $(this).attr('checked', false)
+                }
+            }
+        });
+        $("#siteSearch").multiselect().multiselectfilter();		        
+        $("#sizeSearch").multiselect().multiselectfilter();		        
+        $("#siteTypeSearch").multiselect().multiselectfilter();		        
+        
+        $( ".datepicker" ).datepicker({
+                        showOn:'focus',
+                        'dateFormat'  : "yy-mm-dd"
+                        })	
+                        
+        $("#all_sites").click(function(){
+            if($(this).prop('checked')==false){
+                $("#view_sites").css('display', 'block');
+            }else{
+                $("#view_sites").css('display', 'none');
+            }
+        })
+        
+        function split( val ) {
+            return val.split( /,\s*/ );
+        }
+        
+        function extractLast( term ) {
+            return split( term ).pop();
+        }        
+
+
+ $( "#sites" )
+// don't navigate away from the field on tab when selecting an item
+.bind( "keydown", function( event ) {
+if ( event.keyCode === $.ui.keyCode.TAB &&
+$( this ).data( "autocomplete" ).menu.active ) {
+event.preventDefault();
+}
+})
+.autocomplete({
+close: function(event, ui){
+  $('#sites').css('background', 'url("/images/inpBg.png") no-repeat scroll left top transparent');  
+},
+source: function( request, response ) {
+$.getJSON( "/administrator/report/get/", {
+term: extractLast( request.term )
+}, response );
+},
+search: function() {
+// custom minLength
+$('#sites').css('background', 'url("/images/ui-anim_basic_16x16.gif") no-repeat scroll right center white');  
+var term = extractLast( this.value );
+if ( term.length < 2 ) {
+return false;
+}
+},
+focus: function() {
+// prevent value inserted on focus
+return false;
+},
+select: function( event, ui ) {
+var terms = split( this.value );
+// remove the current input
+terms.pop();
+// add the selected item
+terms.push( ui.item.value );
+// add placeholder to get the comma-and-space at the end
+terms.push( "" );
+this.value = terms.join( ", " );
+return false;
+}
+});        
+
+    });    
+</script>
+<h1>Execute the report generation</h1>
+<?php if($this->message): ?>
+<div style="background-color:#EBF8A4; margin-left: 200px; border:1px solid #D73A3A; display:block; width:700px; color:#000; font-weight:bold; font-size:16px; text-align:center; padding:3px; margin-bottom:2px;"><?php echo $this->message; ?></div>
+<?php endif; ?>
+
+<div class="contUsL" style="width: 750px;">
+    <form action="" method="post" class="sign-up">        
+        <p>
+            <label>Site: </label>
+            All <input type="checkbox" id="all_sites" name="all_sites" value="1" checked="checked" />
+       </p>
+       <p id="view_sites" style="display: none">            
+           <label>&nbsp;</label>
+           <input type="text" id="sites" name="sites" value="" />
+       </p>
+            
+        <p>
+            <label>Size: </label>
+            <select name="size[]" multiple="multiple" id="sizeSearch">
+                <?php foreach($this->sizes as $item): ?>
+                       <option selected="selected" value="<?php echo $item->id ?>"><?php echo $item->name ?></option>
+                <?php endforeach; ?>
+            </select>
+       </p>
+        <p>
+            <label>Site Type: </label>
+            <select name="type[]" multiple="multiple" id="siteTypeSearch">
+                <option selected="selected" value="1">Google Admanager</option>
+                <option selected="selected" value="2">Rubicon Direct</option>
+                <option selected="selected" value="4">Google Admanager New</option>
+                <option selected="selected" value="5">Rubicon Direct New</option>
+                <option selected="selected" value="6">Burst</option>
+                <option selected="selected" value="7">MadX</option>
+                <option selected="selected" value="8">Pubmatic</option>
+                <option selected="selected" value="9">Amazon</option>
+                <option selected="selected" value="10">PulsePoint</option>
+            </select>
+       </p>
+        <p>
+            <label>Only floor pricing: </label>
+            <input type="checkbox" name="floor_pricing" value="1" />
+        </p>
+        <p>
+            <label>Start Date: </label>
+            <input type="text" class="datepicker" name="start_date" value="<?php echo date("Y-m-d") ?>" />
+        </p>
+        <p>
+            <label>End Date: </label>
+            <input type="text" class="datepicker" name="end_date" value="<?php echo date("Y-m-d") ?>" />
+        </p>
+        <p>
+            <label>Update floor price, RevShare and site type: </label>
+            <input type="checkbox" name="updat" id="updat" value="1" />
+        </p>
+        
+       <p><a onclick="document.getElementById('sub').click(); return false;" class="sendMasBtn link">Start</a></p>
+       <input type="submit" style="display: none" id="sub" />
+    </form>
+</div>
+
+<script type="text/javascript" src="/font/cufon-yui.js"></script>
+<script type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#topMenu a', {hover: true});	
+		Cufon.replace('#topMenu a');
+</script>
+<script type="text/javascript" src="/font/Headline_Two_400.font.js"></script>
+<script type="text/javascript">
+	Cufon.replace('.contInf h3', {hover: true});	
+	Cufon.replace('.contInf h3');
+	Cufon.replace('.contInf h3.white', {color: '#FFF'});	
+	Cufon.replace('.footerBann h5');		
+	Cufon.replace('.footerBann p');	
+	Cufon.replace('.footerBann a', {hover: true});		
+    Cufon.replace('h1');		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Lt_300.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#footCopyr');	
+		Cufon.replace('.contInf p', {hover: true});		
+		Cufon.replace('.contInf p', {color: '#333333'});	
+		Cufon.replace('.contInf p.white', {color: '#FFF'});	
+		Cufon.replace('.fMenu a', {textDecoration: 'underline'});		
+		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Rg_700.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('.fMenu h4');
+</script>

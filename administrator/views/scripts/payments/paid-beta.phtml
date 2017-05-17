@@ -1,0 +1,22 @@
+<?php if(count($this->formErrors)): ?>
+    <div class="alert alert-danger" role="alert">
+        <ul>
+            <?php foreach($this->formErrors as $error): ?>
+                <?php foreach($error as $item): ?>
+                    <li><?php echo $item; ?></li>
+                <?php endforeach; ?>
+            <?php endforeach; ?>
+        </ul>
+    </div>
+<?php endif; ?>
+
+<form class="form-horizontal" method="post">
+    <input type="hidden" name="pub_id" value="<?php echo $this->formValues['pub_id'] ?>">
+    <input type="hidden" name="year" value="<?php echo $this->formValues['year'] ?>">
+    <input type="hidden" name="month" value="<?php echo $this->formValues['month'] ?>">
+    <div class="form-group <?php if(isset($this->formErrors['comment'])) echo "has-error" ?>">
+        <label for="comment">Comment: </label>
+        <textarea name="comment" id="comment" class="form-control" rows="7"><?php echo $this->formValues['comment'] ?></textarea>
+    </div>
+    <button type="submit" class="btn btn-success">Paid</button>
+</form>

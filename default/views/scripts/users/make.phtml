@@ -1,0 +1,78 @@
+<!DOCTYPE html PUBLIC>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<script type="text/javascript" src="/js/jquery-1.6.2.min.js"></script>
+<?php
+$js = 'var users = new Array(';
+if($this->users){
+    $users = array();
+    $counter = 0;
+    $arrCount = count($this->users);
+    foreach ($this->users as $user){
+        $counter++;
+        if($counter!=$arrCount)
+            $js.=$user['id'].',';
+        else
+            $js.=$user['id'];            
+    }
+}
+$js.=");";    
+ ?>
+<script type="text/javascript">
+$(document).ready(function(){
+
+    <?php echo $js; ?>
+/*
+    for(var i=0; i<users.length; i++){
+        if(i==0)
+            t = setTimeout(function(){ajaxStart(users[i])}, 1000);
+        else
+            t = setTimeout(function(){ajaxStart(users[i])}, 100000000000000000);
+    }
+*/
+var count = 0;
+ajaxStart(users[count]);
+    
+    function ajaxStart(id){
+     $.ajax({
+       type: "POST",
+       url: "/users/setcache/",
+       data: "id="+id,
+       dataType: "json",
+       beforeSend: function(){
+        $('#content').append('<div id="user_'+id+'">Started: Publisher ID: '+id+' <img src="/images/ajax-loader.gif"/></div>')
+       },
+       error: function(XMLHttpRequest, textStatus, errorThrown){
+         $('#user_'+id+' img').remove();
+         $('#user_'+id).append('<span style="color:red;">ERROR: '+textStatus+' '+errorThrown+'</span>'); 
+         count++;
+        if(users[count])
+            ajaxStart(users[count]);
+        else
+            return false
+       },
+       success: function(data){
+         //alert( "Data Saved: " + msg );
+         $('#user_'+id+' img').remove();
+         if(data.error)
+            $('#user_'+id).append('<span style="color:red;">, Email: '+data.email+' '+data.success+'</span>');         
+         else
+            $('#user_'+id).append('<span style="color:green;">, Email: '+data.email+' '+data.success+'</span>');
+         
+         count++;
+        if(users[count])
+            ajaxStart(users[count]);
+        else
+            return false
+         
+       }
+     });    
+    }
+    
+})
+</script>
+</head>
+<body>
+<div id="content"></div>
+</body>
+</html>

@@ -1,0 +1,379 @@
+<link href="/fancybox/jquery.fancybox-1.3.4.css" media="screen" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="/fancybox/jquery.fancybox-1.3.4.js"></script>
+
+<script type="text/javascript" charset="utf-8">
+    var filter = null;
+    var oTable = new Object();
+    
+        $(document).ready(function() {     
+            
+            filter = $('#filter').val();
+            <?php if($this->dataAuth->role == 'super'):?>
+                var accounts = $('#accounts').val();
+            <?php else:?>
+                var accounts = <?php echo $this->manager['id'] ? $this->manager['id'] : -1; ?>;
+            <?php endif;?>    
+            
+                oTable = $('#users').dataTable( {
+                        "bProcessing": true,
+                        "bServerSide": true,
+                        "sAjaxSource": '/administrator/pending-correction/ajax-get',
+                        "fnServerParams": function ( aoData ) {  aoData.push( { "name": "filter", "value": filter }, { "name": "accounts", "value": accounts } ); },
+                        "aLengthMenu": [[10, 20, 30, 40, 50, 60, 70, 80, 90, 100, -1], [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, "All"]],
+                        "iDisplayLength": 20,
+                        "aoColumns": [ 
+                            { 
+                              "sTitle": "",
+                              "bSortable": false,
+                              "fnRender": function(obj){ 
+                            	   var res = null;
+                            	   if(obj.aData[0]==1){
+                            	   		res = '<input type="checkbox" style="width: 10px;" name="content_checker['+obj.aData[1]+']" value="1">';                            	   		
+                            	   }else{
+                            		   res = '<input type="checkbox" style="width: 10px;" checked="checked" name="content_checker['+obj.aData[1]+']" value="1">';
+                            	   }                           	
+                            	   res += '<input type="hidden" name="siteID['+obj.aData[1]+']" value="'+obj.aData[1]+'">';
+                                   return res
+                               }
+                            },                                                        
+                            { 
+                              "sTitle": "SiteID",
+                              "fnRender": function(obj){ return obj.aData[1]; } 
+                            },                            
+                            { 
+                              "sTitle": "SiteName",
+                               "fnRender": function(obj){ return '<a style="cursor: pointer;" href="/administrator/sites/view/id/'+obj.aData[1]+'" target="_blank">'+obj.aData[2]+'</a>'; }                             
+                            },
+                            {
+                              "sTitle": "From Page",
+                              "fnRender": function(obj){  var rPage = '<a href="/administrator/sites/denied-url/" target="_blank">Denied Url</a>'; if(obj.aData[3] == 2){ rPage = '<a href="/administrator/checker/" target="_blank">Content Checker</a>'; } return rPage; }
+                            },
+                            {
+                              "sTitle": "Date Reported",
+                              "fnRender": function(obj){ var date = new Date(obj.aData[4]);
+                                                             date.setDate(date.getUTCDate()); 
+                                                         return $.format.date(date, "yyyy MMM, dd"); }
+                            },
+                            {
+                              "sTitle": "Follow Up",
+                              "fnRender": function(obj){ var date = new Date(obj.aData[5]); 
+                                                             date.setDate(date.getUTCDate() + 2); 
+                                                             
+                                                             return $.format.date(date, "MMM, dd"); }
+                            },
+                            {
+                              "sTitle": "Disable Date",
+                              "fnRender": function(obj){ var date = new Date(obj.aData[6]); 
+                                                             date.setDate(date.getUTCDate() + 3); 
+                                                             
+                                                             return $.format.date(date, "MMM, dd"); }
+                            },
+                            { 
+                              "sTitle": "Reason",
+                              "bSortable": false,
+                              "fnRender": function(obj){return '<a style="cursor: pointer;" onClick="fancySend('+obj.aData[1]+'); return false;">View Reason</a>'; } 
+                            },
+                            { 
+                              "sTitle": "",  
+                              "bSortable": false,
+                              "fnRender": function(obj){ if(obj.aData[8] == 0) return '<span onClick="siteFixed('+obj.aData[13]+')" class="sendMasBtn link" style="width: 60px; cursor: pointer">Fixed</span>';
+                                                    else if(obj.aData[8] == 1) return '<span onClick="alert(\'This site is already Fixed\');" class="sendMasBtn link" style="width: 60px; cursor: pointer; background-color: #D4D4D4;">Fixed</span>'; 
+                              }
+                            }, 
+                            { 
+                              "sTitle": "",  
+                              "bSortable": false,
+                              "fnRender": function(obj){ if(obj.aData[9] == 3) return '<span onClick="disableSite('+obj.aData[1]+')" class="sendMasBtn link" style="width: 70px; cursor: pointer">Disable</span>'; 
+                                                    else if(obj.aData[9] == 2) return '<span onClick="alert(\'This site is already Disabled\');" class="sendMasBtn link" style="width: 70px; cursor: pointer; background-color: #D4D4D4;">Disabled</span>'; 
+                              }
+                            }, 
+                            { 
+                              "sTitle": "",
+                              "bSortable": false,
+                              "fnRender": function(obj){ return '<a href="/administrator/index/auth/id/'+obj.aData[10]+'" target="_blank">Login</a>'; } 
+                            },
+                            { 
+                              "sTitle": "",
+                              "bSortable": false,
+                              "fnRender": function(obj){ return '<img src="/images/details_open.png">'; } 
+                            },                                                      
+                            { 
+                              "sTitle": "",
+                              "bSortable": false,
+                              "bVisible": false,
+                              "fnRender": function(obj){return obj.aData[12]; } 
+                            }                                                            
+                        ],                       
+                        "aaSorting": [[ 2, "asc" ]],
+                        "fnDrawCallback": function( oSettings ) {      
+                            var url = '';
+                            var urlNude = '';
+                            var urlPorn = '';
+                            var urlSex = '';
+                            var urlNSFW = '';
+                            var urlFuck = '';
+                            var count = 0;
+                            $.each(oTable.fnGetData(), function(key, iter){
+                                var urlsData = iter[12].split(/[\n]/);
+                                $.each(urlsData, function(key2, iter2){
+                                    iter2 = iter2.replace('http://', '');
+                                    iter2 = iter2.replace('https://', '');
+                                    iter2 = iter2.replace('www.', '');
+                                    if(count==0)
+                                        url+='q=site:'+iter2;
+                                    else    
+                                        url+='+OR+site:'+iter2;
+                                    count++;
+                                });
+                            });  
+                            urlNude = 'https://www.google.com/search?'+url+'+%22nude%22&hl=en&tbo=d&tbm=isch+%22nude%22&hl=en&tbo=d&tbm=isch';
+                            urlPorn = 'https://www.google.com/search?'+url+'+%22porn%22&hl=en&tbo=d&tbm=isch+%22porn%22&hl=en&tbo=d&tbm=isch';
+                            urlSex = 'https://www.google.com/search?'+url+'+%22sex%22&hl=en&tbo=d&tbm=isch+%22sex%22&hl=en&tbo=d&tbm=isch';
+                            urlNSFW = 'https://www.google.com/search?'+url+'+%22nsfw%22&hl=en&tbo=d&tbm=isch+%22nsfw%22&hl=en&tbo=d&tbm=isch';
+                            urlFuck = 'https://www.google.com/search?'+url+'+%22fuck%22&hl=en&tbo=d&tbm=isch+%22fuck%22&hl=en&tbo=d&tbm=isch';
+               
+                            $('#urlNude').attr('href',urlNude);
+                            $('#urlPorn').attr('href',urlPorn);
+                            $('#urlSex').attr('href',urlSex);
+                            $('#urlNSFW').attr('href',urlNSFW);
+                            $('#urlFuck').attr('href',urlFuck);
+                        }
+                } );
+
+                $('#filter').change(function(){ 
+                    filter = $('#filter').val(); 
+                    oTable.fnClearTable();  
+                });
+                
+                $('#accounts').change(function(){ accounts = $('#accounts').val(); oTable.fnClearTable();});
+                
+                $("#fancybox-close").click(function(){
+                    oTable.fnClearTable(); 
+                })                
+                
+                $('#users tbody td img').live('click', function () {
+                    var nTr = $(this).parents('tr')[0];                
+                    if ( oTable.fnIsOpen(nTr) )
+                    {
+                        /* This row is already open - close it */
+                        this.src = "/images/details_open.png";
+                        oTable.fnClose( nTr );
+                    }
+                    else
+                    {
+                        /* Open this row */
+                        this.src = "/images/details_close.png";
+                        var objTr = oTable.fnOpen( nTr, fnFormatDetails(oTable, nTr), 'details' );
+                    }
+                } );                
+                
+                $('.selectUrls').live('change', function () {
+                    var id = $(this).attr('real');
+                    var value = $(this).val();
+                    $("#urlNude_"+id).attr('href', 'https://www.google.com/search?'+value+'+%22nude%22&hl=en&tbo=d&tbm=isch+%22nude%22&hl=en&tbo=d&tbm=isch');
+                    $("#urlPorn_"+id).attr('href', 'https://www.google.com/search?'+value+'+%22porn%22&hl=en&tbo=d&tbm=isch+%22porn%22&hl=en&tbo=d&tbm=isch');
+                    $("#urlSex_"+id).attr('href', 'https://www.google.com/search?'+value+'+%22sex%22&hl=en&tbo=d&tbm=isch+%22sex%22&hl=en&tbo=d&tbm=isch');
+                    $("#urlNSFW_"+id).attr('href', 'https://www.google.com/search?'+value+'+%22nsfw%22&hl=en&tbo=d&tbm=isch+%22nsfw%22&hl=en&tbo=d&tbm=isch');
+                    $("#urlFuck_"+id).attr('href', 'https://www.google.com/search?'+value+'+%22fuck%22&hl=en&tbo=d&tbm=isch+%22fuck%22&hl=en&tbo=d&tbm=isch');
+                });
+
+        } );     
+        
+function fancySend(id)
+{   
+   $.fancybox({
+		'width'	: '75%',
+		'height': '75%',
+                'href'  : '/administrator/pending-correction/send/id/'+id,
+                'autoScale'     : false,
+                'transitionIn'  : 'none',
+		'transitionOut'	: 'none',
+		'type'		: 'iframe'
+   });    
+}  
+
+function disableSite(id)
+{
+    $.fancybox({
+		'width'	: '75%',
+		'height': '75%',
+                'href'  : '/administrator/sites/block/SiteID/'+id,
+                'autoScale'     : false,
+                'transitionIn'  : 'none',
+		'transitionOut'	: 'none',
+		'type'		: 'iframe',
+                onClosed: function(){ oTable.fnClearTable(); }
+   });   
+}
+
+function siteFixed(id)
+{
+     if(!confirm("Are you sure ?")) return false;
+    
+     $.ajax({ url : '/administrator/ajax/fixed-site',
+                     data : { id : id },
+                     type : "POST",
+                     async: false,
+                     dataType : "json",
+
+     success : function(response) { if(response.result) oTable.fnClearTable();  
+
+     }, error : function(){ alert('ajax request for fixed site return error'); }});
+}
+
+function fnFormatDetails ( oTable, nTr )
+{
+    var aData = oTable.fnGetData( nTr );
+    var urls = aData[12];
+    var siteID = aData[1];
+    var urlsData = urls.split(/[\n]/);
+
+    if(urlsData.length>10){
+        var txt = '';
+        var count = 0;
+        var countPage = 1;
+        var url = '';  
+        var urlFirst = '';  
+        txt='<select class="selectUrls" real="'+siteID+'" style="width:30px;">';
+        $.each(urlsData, function(key, iter){
+            iter = iter.replace('http://', '');
+            iter = iter.replace('https://', '');
+            iter = iter.replace('www.', '');
+            if(count==0)
+                url+='q=site:'+iter;
+            else    
+                url+='+OR+site:'+iter;
+            count++;
+            
+            if(count==10){
+                count=0;
+                txt+='<option value="'+url+'">'+countPage+'</option>';
+                if(countPage==1)
+                    urlFirst=url;
+                url = '';
+                countPage++;
+            }
+        });        
+        txt+='</select>';
+        
+        txt+='<a class="sendMasBtn" id="urlNude_'+siteID+'" style="float: left" title="" href="https://www.google.com/search?'+urlFirst+'+%22nude%22&hl=en&tbo=d&tbm=isch+%22nude%22&hl=en&tbo=d&tbm=isch" target="_blank">Nude</a> \n\
+                <a class="sendMasBtn" id="urlPorn_'+siteID+'" style="float: left" title="" href="https://www.google.com/search?'+urlFirst+'+%22porn%22&hl=en&tbo=d&tbm=isch+%22porn%22&hl=en&tbo=d&tbm=isch" target="_blank">Porn</a> \n\
+                <a class="sendMasBtn" id="urlSex_'+siteID+'" style="float: left" title="" href="https://www.google.com/search?'+urlFirst+'+%22sex%22&hl=en&tbo=d&tbm=isch+%22sex%22&hl=en&tbo=d&tbm=isch" target="_blank">Sex</a> \n\
+                <a class="sendMasBtn" id="urlNSFW_'+siteID+'" style="float: left" title="" href="https://www.google.com/search?'+urlFirst+'+%22nsfw%22&hl=en&tbo=d&tbm=isch+%22nsfw%22&hl=en&tbo=d&tbm=isch" target="_blank">NSFW</a> \n\
+                <a class="sendMasBtn" id="urlFuck_'+siteID+'" style="float: left" title="" href="https://www.google.com/search?'+urlFirst+'+%22fuck%22&hl=en&tbo=d&tbm=isch+%22fuck%22&hl=en&tbo=d&tbm=isch" target="_blank">Fuck</a>';
+        
+        return txt;
+    }else{
+        var count = 0;
+        var url = '';
+        $.each(urlsData, function(key, iter){
+            iter = iter.replace('http://', '');
+            iter = iter.replace('https://', '');
+            iter = iter.replace('www.', '');
+            if(count==0)
+                url+='q=site:'+iter;
+            else    
+                url+='+OR+site:'+iter;
+            count++;
+        });
+        
+        return '<a class="sendMasBtn" style="float: left" title="" href="https://www.google.com/search?'+url+'+%22nude%22&hl=en&tbo=d&tbm=isch+%22nude%22&hl=en&tbo=d&tbm=isch" target="_blank">Nude</a> \n\
+                <a class="sendMasBtn" style="float: left" title="" href="https://www.google.com/search?'+url+'+%22porn%22&hl=en&tbo=d&tbm=isch+%22porn%22&hl=en&tbo=d&tbm=isch" target="_blank">Porn</a> \n\
+                <a class="sendMasBtn" style="float: left" title="" href="https://www.google.com/search?'+url+'+%22sex%22&hl=en&tbo=d&tbm=isch+%22sex%22&hl=en&tbo=d&tbm=isch" target="_blank">Sex</a> \n\
+                <a class="sendMasBtn" style="float: left" title="" href="https://www.google.com/search?'+url+'+%22nsfw%22&hl=en&tbo=d&tbm=isch+%22nsfw%22&hl=en&tbo=d&tbm=isch" target="_blank">NSFW</a> \n\
+                <a class="sendMasBtn" style="float: left" title="" href="https://www.google.com/search?'+url+'+%22fuck%22&hl=en&tbo=d&tbm=isch+%22fuck%22&hl=en&tbo=d&tbm=isch" target="_blank">Fuck</a>';
+    }
+}
+</script>
+
+    <h1>Pending Correction</h1>
+<div class="contUsL" style="width: 950px;">
+    
+<p>  
+   <select style="margin-left: 3px;" id="filter">
+     <option value="all">Show All Sites</option>
+     <option value="pending" selected>Pending</option>
+     <option value="disabled">Disabled</option>
+     <option value="fixed">Fixed</option>
+   </select> 
+    
+    <select id="accounts">
+    <?php if($this->dataAuth->role == 'super'):?>
+        <option value="-1">All</option>
+        <?php foreach($this->contactManager as $iter):?>
+             <option value="<?php echo $iter['id']?>"><?php echo $iter['mail'];?></option>
+        <?php endforeach;?>
+    <?php else: ?>
+        <option value="<?php echo $this->manager['id'] ? $this->manager['id'] : -1; ?>">Show My Accounts</option>                 
+        <option value="-1">Show All Accounts</option>
+    <?php endif;?>    
+    </select>        
+</p>
+    
+<table width="940px" cellpadding="0" cellspacing="0" border="0" class="display" id="users">
+	<thead>
+		<tr>
+                    <th width="2%"></th>
+                    <th width="5%">SiteID</th>
+                    <th width="25%">SiteName</th>
+                    <th width="10">From Page</th>
+                    <th width="10">Date Reported</th> 
+                    <th width="10">Follow Up</th>
+                    <th width="10">Disable Date</th>
+                    <th width="5%">Reason</th>
+                    <th width="5%"></th>
+                    <th width="5%"></th>
+                    <th width="5%"></th>
+                    <th width="5%"></th>
+		</tr>
+	</thead>
+        
+	<tbody></tbody>
+        
+	<tfoot>
+		<tr>
+                    <th></th>
+                    <th>SiteID</th>
+                    <th>SiteName</th>
+                    <th>From Page</th>
+                    <th>Date Reported</th>
+                    <th>Follow Up</th>
+                    <th>Disable Date</th>
+                    <th>Notify</th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+		</tr>
+	</tfoot>
+</table>
+</div>    
+<script type="text/javascript" src="/font/cufon-yui.js"></script>
+<script type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#topMenu a', {hover: true});	
+		Cufon.replace('#topMenu a');
+</script>
+<script type="text/javascript" src="/font/Headline_Two_400.font.js"></script>
+<script type="text/javascript">
+	Cufon.replace('.contInf h3', {hover: true});	
+	Cufon.replace('.contInf h3');
+	Cufon.replace('.contInf h3.white', {color: '#FFF'});	
+	Cufon.replace('.footerBann h5');		
+	Cufon.replace('.footerBann p');	
+	Cufon.replace('.footerBann a', {hover: true});		
+    Cufon.replace('h1');		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Lt_300.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#footCopyr');	
+		Cufon.replace('.contInf p', {hover: true});		
+		Cufon.replace('.contInf p', {color: '#333333'});	
+		Cufon.replace('.contInf p.white', {color: '#FFF'});	
+		Cufon.replace('.fMenu a', {textDecoration: 'underline'});		
+		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Rg_700.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('.fMenu h4');
+</script>

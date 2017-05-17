@@ -1,0 +1,224 @@
+<form action="" method="post" class="sign-up">
+<div class="contUsL" style="width: 700px;">    
+    <p><label>Name: </label> <input type="text" name="name" value="<?php echo $this->formValues['name'] ?>" />
+    <?php if(isset($this->formErrors['name'])): ?>
+        <ul class="error">
+        <?php foreach($this->formErrors['name'] as $errors): ?>
+            <li><?php echo $errors ?></li>
+        <?php endforeach; ?>
+        </ul>
+    <?php endif; ?>                
+    </p>
+    
+    <p><label>Width: </label><input type="text" name="width" value="<?php echo $this->formValues['width'] ?>" />
+    <?php if(isset($this->formErrors['width'])): ?>
+        <ul class="error">
+        <?php foreach($this->formErrors['width'] as $errors): ?>
+            <li><?php echo $errors ?></li>
+        <?php endforeach; ?>
+        </ul>
+    <?php endif; ?>                
+    </p>
+
+    <p><label>Height: </label><input type="text" name="height" value="<?php echo $this->formValues['height'] ?>" />
+    <?php if(isset($this->formErrors['height'])): ?>
+        <ul class="error">
+        <?php foreach($this->formErrors['height'] as $errors): ?>
+            <li><?php echo $errors ?></li>
+        <?php endforeach; ?>
+        </ul>
+    <?php endif; ?>                
+    </p>
+    
+    <p><label>rp_zonesize: </label><input type="text" name="rp_zonesize" value="<?php echo $this->formValues['rp_zonesize'] ?>" />
+    <?php if(isset($this->formErrors['rp_zonesize'])): ?>
+        <ul class="error">
+        <?php foreach($this->formErrors['rp_zonesize'] as $errors): ?>
+            <li><?php echo $errors ?></li>
+        <?php endforeach; ?>
+        </ul>
+    <?php endif; ?>                
+    </p>
+    
+    <p><label style="width: 200px;">rp_account(Max Fill): </label><input type="text" name="rp_account_max_fill" value="<?php echo $this->formValues['rp_account_max_fill'] ?>" />
+    <?php if(isset($this->formErrors['rp_account_max_fill'])): ?>
+        <ul class="error">
+        <?php foreach($this->formErrors['rp_account_max_fill'] as $errors): ?>
+            <li><?php echo $errors ?></li>
+        <?php endforeach; ?>
+        </ul>
+    <?php endif; ?>                
+    </p>
+    <p><label style="width: 200px;">rp_account(Floor Tag): </label><input type="text" name="rp_account_floor_tag" value="<?php echo $this->formValues['rp_account_floor_tag'] ?>" />
+    <?php if(isset($this->formErrors['rp_account_floor_tag'])): ?>
+        <ul class="error">
+        <?php foreach($this->formErrors['rp_account_floor_tag'] as $errors): ?>
+            <li><?php echo $errors ?></li>
+        <?php endforeach; ?>
+        </ul>
+    <?php endif; ?>                
+    </p>
+    <p><label style="width: 200px;">rp_account(Limited): </label><input type="text" name="rp_account_limited" value="<?php echo $this->formValues['rp_account_limited'] ?>" />
+    <?php if(isset($this->formErrors['rp_account_limited'])): ?>
+        <ul class="error">
+        <?php foreach($this->formErrors['rp_account_limited'] as $errors): ?>
+            <li><?php echo $errors ?></li>
+        <?php endforeach; ?>
+        </ul>
+    <?php endif; ?>                
+    </p>
+    
+    <p><label style="width: 200px;">rp_site(Max Fill): </label><input type="text" name="rp_site_max_fill" value="<?php echo $this->formValues['rp_site_max_fill'] ?>" />
+    <?php if(isset($this->formErrors['rp_site_max_fill'])): ?>
+        <ul class="error">
+        <?php foreach($this->formErrors['rp_site_max_fill'] as $errors): ?>
+            <li><?php echo $errors ?></li>
+        <?php endforeach; ?>
+        </ul>
+    <?php endif; ?>                
+    </p>
+    <p><label style="width: 200px;">rp_site(Floor Tag): </label><input type="text" name="rp_site_floor_tag" value="<?php echo $this->formValues['rp_site_floor_tag'] ?>" />
+    <?php if(isset($this->formErrors['rp_site_floor_tag'])): ?>
+        <ul class="error">
+        <?php foreach($this->formErrors['rp_site_floor_tag'] as $errors): ?>
+            <li><?php echo $errors ?></li>
+        <?php endforeach; ?>
+        </ul>
+    <?php endif; ?>                
+    </p>
+    <p><label style="width: 200px;">rp_site(Limited): </label><input type="text" name="rp_site_limited" value="<?php echo $this->formValues['rp_site_limited'] ?>" />
+    <?php if(isset($this->formErrors['rp_site_limited'])): ?>
+        <ul class="error">
+        <?php foreach($this->formErrors['rp_site_limited'] as $errors): ?>
+            <li><?php echo $errors ?></li>
+        <?php endforeach; ?>
+        </ul>
+    <?php endif; ?>                
+    </p>
+
+        <p><label style="width: 200px;">rp_zonesize(Max Fill): </label><input type="text" name="rp_zonesize_max_fill" value="<?php echo $this->formValues['rp_zonesize_max_fill'] ?>" />
+    <?php if(isset($this->formErrors['rp_zonesize_max_fill'])): ?>
+        <ul class="error">
+        <?php foreach($this->formErrors['rp_zonesize_max_fill'] as $errors): ?>
+            <li><?php echo $errors ?></li>
+        <?php endforeach; ?>
+        </ul>
+    <?php endif; ?>                
+    </p>
+    <p><label style="width: 200px;">rp_zonesize(Floor Tag): </label><input type="text" name="rp_zonesize_floor_tag" value="<?php echo $this->formValues['rp_zonesize_floor_tag'] ?>" />
+    <?php if(isset($this->formErrors['rp_zonesize_floor_tag'])): ?>
+        <ul class="error">
+        <?php foreach($this->formErrors['rp_zonesize_floor_tag'] as $errors): ?>
+            <li><?php echo $errors ?></li>
+        <?php endforeach; ?>
+        </ul>
+    <?php endif; ?>                
+    </p>
+    <p><label style="width: 200px;">rp_zonesize(Limited): </label><input type="text" name="rp_zonesize_limited" value="<?php echo $this->formValues['rp_zonesize_limited'] ?>" />
+    <?php if(isset($this->formErrors['rp_zonesize_limited'])): ?>
+        <ul class="error">
+        <?php foreach($this->formErrors['rp_zonesize_limited'] as $errors): ?>
+            <li><?php echo $errors ?></li>
+        <?php endforeach; ?>
+        </ul>
+    <?php endif; ?>                
+    </p>
+    
+    <p><label>File name: </label><input type="text" name="file_name" value="<?php echo $this->formValues['file_name'] ?>" />
+    <?php if(isset($this->formErrors['file_name'])): ?>
+        <ul class="error">
+        <?php foreach($this->formErrors['file_name'] as $errors): ?>
+            <li><?php echo $errors ?></li>
+        <?php endforeach; ?>
+        </ul>
+    <?php endif; ?>                
+    </p>
+    
+    <p><label>Position: </label><input type="text" name="position" value="<?php echo $this->formValues['position'] ?>" />
+    <?php if(isset($this->formErrors['position'])): ?>
+        <ul class="error">
+        <?php foreach($this->formErrors['position'] as $errors): ?>
+            <li><?php echo $errors ?></li>
+        <?php endforeach; ?>
+        </ul>
+    <?php endif; ?>                
+    </p>    
+
+    <p><label>Video: </label> <input id="video" <?php echo $this->formValues['video']==1 ? 'checked="checked"' : '' ?> type="checkbox" style="width: 20px;" value="1" name="video" /><br>
+    <?php if(isset($this->formErrors['video'])): ?>
+        <ul class="error">
+        <?php foreach($this->formErrors['video'] as $errors): ?>
+            <li><?php echo $errors ?></li>
+        <?php endforeach; ?>
+        </ul>
+    <?php endif; ?>                
+    </p>
+    
+    <p><label>Active: </label> <input id="video" <?php echo $this->formValues['active']==1 ? 'checked="checked"' : '' ?> type="checkbox" style="width: 20px;" value="1" name="active" /><br>
+    <?php if(isset($this->formErrors['active'])): ?>
+        <ul class="error">
+        <?php foreach($this->formErrors['active'] as $errors): ?>
+            <li><?php echo $errors ?></li>
+        <?php endforeach; ?>
+        </ul>
+    <?php endif; ?>                
+    </p>
+    
+    <p><label>Description: </label> <textarea name="description" style="width:500px; height:100px; "><?php echo $this->formValues['description'] ?></textarea><br>
+    <?php if(isset($this->formErrors['description'])): ?>
+        <ul class="error">
+        <?php foreach($this->formErrors['description'] as $errors): ?>
+            <li><?php echo $errors ?></li>
+        <?php endforeach; ?>
+        </ul>
+    <?php endif; ?>                
+    </p>
+    <p>
+        <label style="width: 220px;">Manually Enable for Websites: </label>
+        <input id="individual" <?php echo !empty($this->formValues['individual']) ? 'checked="checked"' : '' ?> type="checkbox" style="width: 30px;" value="1" name="individual" />
+        <?php if(isset($this->formErrors['individual'])): ?>
+            <ul class="error">
+            <?php foreach($this->formErrors['individual'] as $errors): ?>
+                <li><?php echo $errors ?></li>
+            <?php endforeach; ?>
+            </ul>
+        <?php endif; ?>   
+    </p>    
+
+    
+<p><a href="#" title="" onclick="document.getElementById('subForm').click(); return false;" class="sendMasBtn">Save</a></p>
+<input type="submit" id="subForm" style="display: none;" />
+</div>
+</form>
+
+<script type="text/javascript" src="/font/cufon-yui.js"></script>
+<script type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#topMenu a', {hover: true});	
+		Cufon.replace('#topMenu a');
+    Cufon.replace('.error', {color: 'red'});	    
+
+</script>
+<script type="text/javascript" src="/font/Headline_Two_400.font.js"></script>
+<script type="text/javascript">
+	Cufon.replace('.footerBann h5');		
+	Cufon.replace('.footerBann p');	
+	Cufon.replace('.footerBann a', {hover: true});	
+	Cufon.replace('.contactUs h1');		
+    Cufon.replace('h1');				
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Lt_300.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#footCopyr');	
+		Cufon.replace('.fMenu a');		
+		Cufon.replace('.contactUs p');	
+		Cufon.replace('.contUsL label');		
+		Cufon.replace('#location');		
+		Cufon.replace('.contBtn p');			
+		Cufon.replace('.sendMasBtn',{textShadow: '-1px -1px #5F5F5F'});		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Rg_700.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('.fMenu h4');
+		Cufon.replace('.headquaters');		
+</script>    

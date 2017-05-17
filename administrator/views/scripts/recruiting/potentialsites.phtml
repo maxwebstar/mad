@@ -1,0 +1,115 @@
+<?php $staffID = $this->staffID; ?>
+<script type="text/javascript">
+    $(function() {
+
+        var $potentialsitesTable;
+
+        var options = {
+            "bProcessing": true,
+            "bServerSide": true,
+            "sAjaxSource": null,
+            "fnServerParams": function(aoData) {
+
+            },
+            "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+            "iDisplayLength": 50,
+            "aoColumns": [
+                {
+                    "sType": "num-html",
+                    "sTitle": "ID#",
+                    "bSortable": false,
+                    "fnRender": function(obj) {
+                        var id = obj.aData["website_id"];
+                        return id;
+                    }
+                },
+                {
+                    "sTitle": "Website",
+                    "fnRender": function(obj) {
+                        return obj.aData["website"];
+                    }
+                },
+                {
+                    "sTitle": "Email",
+                    "bSortable": false,
+                    "fnRender": function(obj) {
+                        return obj.aData["emails"];
+                    }
+                },
+                {
+                    "sTitle": "Alexa",
+                    "sType":'numeric',
+                    "fnRender": function(obj) {
+                        return obj.aData["alexa"];
+                    }
+                },
+                {
+                    "sTitle": "Add",
+                    "bSortable": false,
+                    "fnRender": function(obj) {
+                        return obj.aData["add"];
+                    }
+                },
+                {
+                    "sTitle": "Remove",
+                    "bSortable": false,
+                    "fnRender": function(obj) {
+                        return obj.aData["remove"];
+                    }
+                }
+            ]
+        };
+        options.sAjaxSource = "/administrator/recruiting/data/status/potentialsites";
+        $potentialsitesTable = $('#potentialsitesTable').dataTable(options);
+    });
+</script>
+
+<?php $staffer=$this->staffer; ?>
+
+<div style="float:left; width:900px;">
+    <h1>Potential Recruiting Websites</h1>
+    <h2>Current Staff: <?= $staffer ?></h2>
+    Change: <form action="potentialsites">
+        <select id="upSel1" name="staffID">
+            <?php
+
+            foreach ($this->staff as $staff) {
+                echo "<option value=\"".$staff['staff_id']."\">" . $staff['name'] . "</option>";
+            }
+            ?>
+        </select>
+        <input type="submit" value="submit">
+    </form>
+    <div>
+        <table class="display" id="potentialsitesTable">
+            <thead>
+            <tr>
+                <th width="5%">ID #</th>
+                <th width="40%">Website</th>
+                <th width="10%">Emails</th>
+                <th width="15%">Alexa</th>
+                <th width="15%">Add</th>
+                <th width="15%">Remove</th>
+            </tr>
+            </thead>
+            <tbody></tbody>
+            <tfoot>
+            <tr>
+                <th>ID #</th>
+                <th>Website</th>
+                <th>Emails</th>
+                <th>Alexa</th>
+                <th>Add</th>
+                <th>Remove</th>
+            </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+
+<script type="text/javascript" src="/font/cufon-yui.js"></script>
+<script	type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script	type="text/javascript" src="/font/Headline_Two_400.font.js"></script>
+<script type="text/javascript">
+    Cufon.replace('h1');
+</script>

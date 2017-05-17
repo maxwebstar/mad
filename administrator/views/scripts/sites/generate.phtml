@@ -1,0 +1,74 @@
+<script type="text/javascript" src="/js/jquery.js"></script>
+<script type="text/javascript">
+
+
+function mySubmit()
+{
+    var year = $('#year').val();
+    var month = $('#month').val();
+
+    generate(year, month);
+}
+
+function generate(year, month)
+{
+    $('#get_load').css('display', 'block');
+    $('#message').html('');
+    
+    $.ajax({ url : '/administrator/ajax/generate-due',
+                 data : { year : year, month : month },
+                 type : "POST",
+                 async: true, /* java script wait ajax */
+                 dataType : "json",
+
+         success : function(response){ 
+
+           $('#get_load').css('display', 'none');
+     
+           if(response.result.status)
+                $('#message').html('<span style="color: green">Request is accepted it will be processed within 7-10 minutes</span>');
+           else $('#message').html('<span style="color: red">Request already is at the processing</span>');
+
+         }, error : function(){ $('#get_load').css('display', 'none'); 
+             
+                                $('#message').html('<span style="color: red">ajax request return error</span>'); 
+         }}); 
+         
+}
+
+
+</script>
+
+
+<form action="/reporting/due.php" method="get">
+<p><strong>Year:</strong>
+<select name="year" id="year">
+<?php
+    for($i=2011; $i<=date("Y"); $i++){
+    	if($i==date("Y"))
+    		$selected = 'selected="selected"';
+    	else
+    		$selected = '';
+       echo "<option value='$i' $selected>$i</option>";
+    }
+?>
+</select>
+</p>
+<p><strong>Month:</strong>
+<select name="month" id="month">
+<?php
+    for($i=1; $i<=12; $i++){
+    	if($i==date("n"))
+    		$selected = 'selected="selected"';
+    	else
+    		$selected = '';
+    	 
+    	echo "<option value='$i' $selected>".date("F", mktime(0,0,0,$i,date("d"),date("Y")))."</option>";
+    }
+?>
+</select>
+</p>
+<input type="button" onClick="mySubmit()" value="Generate">
+</form>
+<div id="message"></div>
+<img alt="" src="/reporting/ajax-loader.gif" id="get_load" style="display: none"/>

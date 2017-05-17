@@ -1,0 +1,15 @@
+<form action="" method="post" class="sign-up">
+<div class="contUsL" style="width: 630px;">
+    <?php if($this->placments): ?>
+        <?php foreach($this->placments as $items): ?>
+            <p><label style="width: 160px;"><?php echo $items['UName'] ?> </label><select name="site[<?php echo $items['id'] ?>]"><option>Select Site...</option>
+            <?php foreach($this->sites as $sites): ?>
+                <option value="<?php echo $sites['SiteID'] ?>" <?php echo $items['UName']==$sites['SiteName'] ? 'selected="selected"' : '' ?> ><?php echo $sites['SiteName'] ?></option>
+            <?php endforeach; ?>
+            </select></p>
+        <?php endforeach; ?>
+    <?php endif; ?>
+<p><a href="#" title="" onclick="document.getElementById('subForm').click(); return false;" class="sendMasBtn">Save</a></p>
+<input type="submit" id="subForm" style="display: none;" />
+</div>
+</form>

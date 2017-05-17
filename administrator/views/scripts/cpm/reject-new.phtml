@@ -1,0 +1,101 @@
+
+<style type="text/css">
+    
+    
+    #main{ display: block; width: 1024px; }
+    #main #left{ display: block; float: left; width: 350px; margin-right: 10px; }
+    #main #left #mySubmit{ display: block; float: left; height: 28px; width: 129px; font-size: 16px; background-color: #8E8E8E; color: #FFFFFF; cursor: pointer; margin-top: 7px; }
+    #main #left #mySubmit span{ float: left; margin: 5px 0px 0px 50px; }
+    #main #left form textarea { width: 350px; height: 210px; }
+    #main #left #label-reason { display: block; float: left; font-size: 17px; margin:  10px 33px 0px; }
+    #main #right{ display: block; float: left; width: 550px; }
+    
+    #main #right table { border: 1px solid #DBDFE6; }
+    #main #right table #label-mail {}
+    #main #right table #value-mail { width: 650px; border: 1px solid #DBDFE6; padding: 5px; }
+    #main #right table #label-subject {}
+    #main #right table #value-subject { width: 650px; border: 1px solid #DBDFE6; padding: 5px; }
+    #main #right table #label-body { vertical-align: top; padding-top: 5px; }
+    #main #right table #value-body { width: 650px; border: 1px solid #DBDFE6; padding: 5px; }
+    
+    
+</style>
+
+<script type="text/javascript" src="/js/jquery-1.6.2.min.js"></script>
+<script type="text/javascript">
+
+  $(document).ready(function(){
+      
+      $('#left #reason').keyup(function(){ 
+     
+           var value = $('#left #reason').val();
+                                           
+           $('#right #reason-target').html(value.replace(/\n/g,"<br>"));
+           
+           if(value.length) $('#space').html('<br />');
+           else             $('#space').html('');  
+               
+      });
+      
+      $('#mySubmit').click(function(){
+          
+          $('#subject').val($('#value-subject').html());
+          $('#text').val($('#value-body').html());
+          
+          $('#left form').submit();
+      });
+            
+  });        
+
+</script>
+
+<?php if(empty($this->message)):?>
+
+<div id="main">
+    
+    <div id="left">
+
+        <form method="post" action="">
+            
+            <textarea name="reasen" id="reason" placeholder="enter reason"></textarea>
+            <label for="reason" id="label-reason">Send email by Reason:</label><a id="mySubmit"><span>OK</span></a>    
+            
+            <input type="hidden" name="subject" id="subject" value=""/>
+            <input type="hidden" name="text" id="text" value=""/>
+
+        </form>
+        
+    </div>
+    <div id="right">
+        
+        <table>
+            
+            <tr>
+                <td id="label-mail">To:</td>
+                <td id="value-mail"><?php echo $this->data->email;?></td>
+            </tr>
+            <tr>
+                <td id="label-subjet">Subject:</td>
+                <td id="value-subject">Minimum CPM Request for <?php echo $this->data->SiteName;?> - Changes Required</td>
+            </tr>
+            <tr>
+                <td id="label-body">Body:</td>
+                <td id="value-body">Hello,<br /><br />
+This email is to notify you that your following minimum CPM request requires changes:<br /> 
+Website: <?php echo $this->data->SiteName?>:<br />
+New CPM: <?php echo $this->data->cpm=='Max Fill' ? 'Max Fill' : '$'.$this->data->cpm ?><br />
+Prev. CPM: <?php echo $this->data->prev_cpm=='Max Fill' ? 'Max Fill' : '$'.$this->data->prev_cpm ?><br /><br />
+<strong>Changes Required: </strong><br /><b id="reason-target"></b><br /><span id="space"></span>
+Please make the above change(s) and resubmit your minimum CPM request for approval.<br /><br />
+If you have any questions, please feel free to respond to this email.<br /><br />
+Regards,<br />
+The MadAds Media Publisher Team</td>
+            </tr>            
+            
+        </table>
+        
+    </div>
+    
+</div>    
+
+<?php else:?><?php echo $this->message;?><?php endif; ?>

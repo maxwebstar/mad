@@ -1,0 +1,372 @@
+<h1 class="applTitle">Generate Ad Code</h1>
+<div id="message">
+</div>
+<div class="tagsNote">
+    <b>Please Note:</b>
+    These ad tags will <b>only</b> work for the domain which was approved.
+    Attempting to run these tags on any other domain will result in non-paying public service ads being displayed.
+    If you wish to run these ads on any other domain, please
+    <a href="/new-site/">submit the site for approval</a> or <a href="/contact-us/">contact us</a>.
+</div>
+<br/>
+Generate Code For:
+<select onchange="window.location.href='/adcode/'+this.options[this.selectedIndex].value">
+    <?php if($this->sites): ?>
+        <?php if(count($this->sites) > 1 && !isset($this->siteData['SiteID'])):?>
+            <option value="0">Pleace select site</option>
+        <?php endif;?>
+        <?php foreach($this->sites as $items): ?>
+            <option value="<?php echo $items['SiteID'] ?>"
+                <?php echo $this->siteData['SiteID']==$items['SiteID'] ? 'selected="selected"' : ''; ?>>
+                <?php echo $items['SiteName'] ?>
+            </option>
+        <?php endforeach; ?>
+    <?php endif; ?>
+</select>
+<br><br>
+<?php if(isset($this->siteData['SiteID'])): ?>
+    <div id="showTable" class="contUsL" style="width: 750px;">
+        <div id="tabs">
+            <ul>
+                <li><a href="#tabs-1">Javascript</a></li>
+                <li><a href="#tabs-2">Iframe</a></li>
+                <li><a href="#tabs-3">Pop Unders</a></li>
+                <li><a href="#tabs-4">Slider Units</a></li>
+            </ul>
+            <div id="tabs-1">
+            <?php if($this->tagsData): ?>
+            <?php $sizesNoRequest = []; ?>
+                <div class="tagsData">
+                    <div class="tagsRecomended">Recommended Ad Sizes:</div>
+                    <?php foreach($this->tagsData as $tag): ?>
+                        <?php if($tag['size_id']!=6): ?>
+                            <?php $sizesNoRequest[] = $tag['size_id']; ?>
+                            <strong>
+                                <?php echo $tag['name'];?>
+                                <?php switch($tag['size_id']){
+                                    case 1:
+                                        echo " (<b>Highest CPM Ad Size</b>)";
+                                        break;
+                                    case 2:
+                                        echo " (<b>2nd Highest CPM Ad Size</b>)";
+                                        break;
+                                    case 3:
+                                        echo " (<b>3rd Highest CPM Ad Size</b>)";
+                                        break;
+                                } ?>
+                                ;
+                            </strong>
+                            <br>
+                            <?php if($tag['size_id']==12): ?>
+                                <textarea>&lt;!-- MadAdsMedia.com Asynchronous Ad Tag For <?php echo $this->siteData['SiteName'] ?> --&gt;
+    &lt;!-- Size: <?php echo $this->tagsPropData[$tag['id']][$tag['size_id']]['kadWidth'].'x'.$this->tagsPropData[$tag['id']][$tag['size_id']]['kadHeight'];?> --&gt;
+    &lt;script data-cfasync=&quot;false&quot; src=&quot;//ads-by.madadsmedia.com/tags/<?php echo $this->siteData['PubID'] ?>/<?php echo $this->siteData['SiteID'] ?>/async/<?php echo $tag['file_name'];?>.js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;
+    &lt;!-- MadAdsMedia.com Asynchronous Ad Tag For <?php echo $this->siteData['SiteName'] ?> --&gt;</textarea>
+                            <?php else: ?>
+                                <textarea>&lt;!-- MadAdsMedia.com Asynchronous Ad Tag For <?php echo $this->siteData['SiteName'] ?> --&gt;
+    &lt;!-- Size: <?php echo $tag['width'].'x'.$tag['height'];?> --&gt;
+    &lt;script data-cfasync=&quot;false&quot; src=&quot;//ads-by.madadsmedia.com/tags/<?php echo $this->siteData['PubID'] ?>/<?php echo $this->siteData['SiteID'] ?>/async/<?php echo $tag['file_name'];?>.js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;
+    &lt;!-- MadAdsMedia.com Asynchronous Ad Tag For <?php echo $this->siteData['SiteName'] ?> --&gt;</textarea>
+                            <?php endif; ?>
+                            <br>
+                        <?php endif; ?>
+                    <?php endforeach; ?>
+                </div>
+                <?php if($this->tagsDataForRequest): ?>
+                    <br>
+                    <?php foreach($this->tagsDataForRequest as $size): ?>
+                        <?php if($size['size_id']!=6): ?>
+                            <?php if(!in_array($size['size_id'], $sizesNoRequest)): ?>
+                                <strong><?php echo $size['name'] ?></strong><br>
+                                <?php if(isset($this->sizesRequested[$size['size_id']][$size['network_id']])): ?>
+                                    <a class="sendMasBtn" style="float:left; width: 170px;" title="" onclick="return false;" href="#">Request Submitted</a><br><br><br>
+                                <?php else: ?>
+                                    <a class="sendMasBtn NewAdsize" style="float:left; width: 170px;" title="" data-info="<?php echo $size['name']?>" data-banner="<?php echo $size['size_id']?>" data-networks="<?php echo $this->network ?>:<?php echo $size['network_id'] ?>" onclick="return false;" href="#"><i id="spinner_size-<?php echo $size['size_id'] ?>" class="fa fa-spinner fa-pulse hidden"></i> Request This Ad Size</a><br><br><br>
+                                <?php endif; ?>
+                            <?php endif; ?>
+                        <?php endif; ?>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            <?php endif; ?>
+            </div>
+            <div id="tabs-2">
+                <?php if($this->siteData['iframe_tags']==1): ?>
+                    <?php if($this->tagsData): ?>
+                        <div class="tagsData">
+                            <div class="tagsRecomended">Recommended Ad Sizes:</div>
+                            <?php foreach($this->tagsData as $tag): ?>
+                                <strong>
+                                    <?php echo $tag['name'];?>
+                                    <?php switch($tag['size_id']){
+                                        case 1:
+                                            echo " (<b>Highest CPM Ad Size</b>)";
+                                            break;
+                                        case 2:
+                                            echo " (<b>2nd Highest CPM Ad Size</b>)";
+                                            break;
+                                        case 3:
+                                            echo " (<b>3rd Highest CPM Ad Size</b>)";
+                                            break;
+                                    } ?>
+                                    ;
+                                </strong>
+                                <br>
+                                <textarea>&lt;!-- MadAdsMedia.com Asynchronous Ad Tag For <?php echo $this->siteData['SiteName'] ?> --&gt;
+&lt;!-- Size: <?php echo $tag['width'].'x'.$tag['height'];?> --&gt;
+&lt;iframe src=&quot;//ads-by.madadsmedia.com/tags/<?php echo $this->siteData['PubID'] ?>/<?php echo $this->siteData['SiteID'] ?>/iframe/<?php echo $tag['file_name'];?>.html&quot; width=&quot;<?php echo $tag['width'] ?>&quot; height=&quot;<?php echo $tag['height'] ?>&quot; scrolling=&quot;no&quot; frameborder=&quot;0&quot; marginwidth=&quot;0&quot; marginheight=&quot;0&quot; &gt;&lt;/iframe&gt;
+&lt;!-- MadAdsMedia.com Asynchronous Ad Tag For <?php echo $this->siteData['SiteName'] ?> --&gt;</textarea>
+                                <br>
+                            <?php endforeach; ?>
+                        </div>
+                        <div class="tagsNote" style="width:70%; margin:5px 0; margin-left: 0px;">
+                            <b>If your ads are contained in iframes:</b>
+                            Since our ads load asynchronously (meaning your website won't 'wait'
+                            for them to load), we don't suggest using iframes.  If you must use iframes,
+                            the &lt;head>&lt;/head> code will need to be placed in the &lt;head> of each iframe file.
+                        </div>
+                    <?php endif; ?>
+                <?php else: ?>
+                    <?php if($this->wanted_iframe_for_site===true): ?>
+                        <a class="IframeRequest" title="" onclick="return false;" href="#">Request Submitted</a>
+                    <?php else: ?>
+                        <a class="IframeRequest" title="" onclick="return false;" href="#"><i id="spinner" class="fa fa-spinner fa-pulse hidden"></i> Request Iframe Tags</a>
+                    <?php endif; ?>
+                <?php endif; ?>
+            </div>
+            <div id="tabs-3">
+                <?php if($this->tagsData): ?>
+                    <div class="tagsData">
+                        <?php foreach($this->tagsData as $tag): ?>
+                            <?php if($tag['size_id']==6): ?>
+                                <?php $sizesNoRequest[] = $tag['size_id']; ?>
+                                <textarea>&lt;!-- MadAdsMedia.com Asynchronous Ad Tag For <?php echo $this->siteData['SiteName'] ?> --&gt;
+&lt;!-- Size: <?php echo $tag['width'].'x'.$tag['height'];?> --&gt;
+&lt;script data-cfasync=&quot;false&quot; src=&quot;//ads-by.madadsmedia.com/tags/<?php echo $this->siteData['PubID'] ?>/<?php echo $this->siteData['SiteID'] ?>/async/<?php echo $tag['file_name'];?>.js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;
+&lt;!-- MadAdsMedia.com Asynchronous Ad Tag For <?php echo $this->siteData['SiteName'] ?> --&gt;</textarea>
+                                <br>
+                                <?php if($tag['size_id']==6): ?>
+                                    Pop Unders Per Visitor: <select name="pop_visitor" id="pop_visitor">
+                                        <?php for($i=0; $i<=5; $i++): ?>
+                                            <option value="<?php echo $i ?>" <?php echo isset($this->tagsPropData[$tag['id']][$tag['size_id']]['popVisitor']) && $this->tagsPropData[$tag['id']][$tag['size_id']]['popVisitor']==$i ? "selected" : '' ?>><?php echo $i==0 ? "No Limit" : $i ?></option>
+                                        <?php endfor;?>
+                                    </select>
+                                    <span id="visitor_spinner" style="display: none"><i class="fa fa-spinner fa-pulse fa-2x fa-fw"></i></span>
+                                    <br>
+                                <?php endif; ?>
+                            <?php endif; ?>
+                        <?php endforeach; ?>
+                    </div>
+                    <?php if($this->tagsDataForRequest): ?>
+                        <br>
+                        <?php foreach($this->tagsDataForRequest as $size): ?>
+                            <?php if(!in_array($size['size_id'], $sizesNoRequest) && $size['size_id']==6): ?>
+                                <strong><?php echo $size['name'] ?></strong><br>
+                                <?php if(isset($this->sizesRequested[$size['size_id']][$size['network_id']])): ?>
+                                    <a class="sendMasBtn" style="float:left; width: 170px;" title="" onclick="return false;" href="#">Request Submitted</a><br><br><br>
+                                <?php else: ?>
+                                    <a class="sendMasBtn NewAdsize" style="float:left; width: 170px;" title="" data-info="<?php echo $size['name']?>" data-banner="<?php echo $size['size_id']?>" data-networks="<?php echo $this->network ?>:<?php echo $size['network_id'] ?>" onclick="return false;" href="#"><i id="spinner_size-<?php echo $size['size_id'] ?>" class="fa fa-spinner fa-pulse hidden"></i> Request This Ad Size</a><br><br><br>
+                                <?php endif; ?>
+                            <?php endif; ?>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                <?php endif; ?>
+            </div>
+            <div id="tabs-4">
+                <div class="tagsData" id="data-slider" style="display: <?php echo !empty($this->sliderRequest) ? 'block' : 'none' ?>;">
+                    <?php foreach($this->tagsData as $tag): ?>
+                        <?php if($tag['size_id']==1 || $tag['size_id']==2): ?>
+                        <strong>
+                            <?php echo $tag['name'];?>
+                            <?php switch($tag['size_id']){
+                                case 1:
+                                    echo " (<b>Highest CPM Ad Size</b>)";
+                                    break;
+                                case 2:
+                                    echo " (<b>2nd Highest CPM Ad Size</b>)";
+                                    break;
+                                case 3:
+                                    echo " (<b>3rd Highest CPM Ad Size</b>)";
+                                    break;
+                            } ?>
+                            ;
+                        </strong>
+                        <br>
+                            <textarea>&lt;!-- MadAdsMedia.com Asynchronous Ad Tag For <?php echo $this->siteData['SiteName'] ?> --&gt;
+&lt;!-- Size: <?php echo $tag['width'].'x'.$tag['height'];?> --&gt;
+&lt;script data-cfasync=&quot;false&quot; src=&quot;//ads-by.madadsmedia.com/tags/<?php echo $this->siteData['PubID'] ?>/<?php echo $this->siteData['SiteID'] ?>/async/slider/<?php echo $tag['file_name'];?>.js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;
+&lt;!-- MadAdsMedia.com Asynchronous Ad Tag For <?php echo $this->siteData['SiteName'] ?> --&gt;</textarea>
+                        <br>
+                        <?php endif; ?>
+                    <?php endforeach; ?>
+                </div>
+                <a class="SliderRequest" style="display: <?php echo empty($this->sliderRequest) ? 'block' : 'none' ?>;" title="" onclick="return false;" href="#"><i id="slider-spinner" class="fa fa-spinner fa-pulse hidden"></i> Enable Slider Units</a>
+            </div>
+    </div>
+<?php endif; ?>
+<script>
+    $(document).ready(function(){
+        $("textarea").click(function(){
+            $(this).focus();
+            $(this).select();
+        });
+
+        $("#tabs").tabs();
+
+        $(".IframeRequest").click(function()
+        {
+            $.ajax(
+                {
+                    type: 'POST',
+                    url: '/users/request-iframe',
+                    dataType: 'json',
+                    data: {
+                        site_id: <?php echo $this->siteData['SiteID'];?>,
+                    },
+                    beforeSend: function(){
+                        $('#spinner').removeClass('hidden');
+                    },
+                    success: function(data)
+                    {
+                        $('#spinner').addClass('hidden');
+                        if(data.status != undefined)
+                        {
+                            if(data.status == 1)
+                            {
+                                $(".IframeRequest").html('Request Submitted');
+                                $("#message").prepend('<div style="margin-top: 5px;background-color:green; border:1px solid green; display:block; width:750px; color:#FFF; font-weight:bold; font-size:16px; text-align:center; float: left;">Your request for Iframe Tags has been submitted.<br>You should receive a confirmation with 48 hours of approval.</div><br><br>');
+                            }
+                        }
+                    },
+                    error: function(){
+                        $('#spinner').addClass('hidden');
+                        alert('ERROR!!!');
+                    }
+                });
+            return false;
+        });
+
+        $(".NewAdsize").click(function()
+        {
+            var objSub = $(this);
+            $.ajax(
+                {
+                    type: 'POST',
+                    url: '/users/request-banner',
+                    dataType: 'json',
+                    data: {
+                        site_id: <?php echo $this->siteData['SiteID'];?>,
+                        size_id: objSub.attr('data-banner'),
+                        networks: objSub.attr('data-networks')
+                    },
+                    beforeSend: function(){
+                        $('#spinner_size-'+objSub.attr('data-banner')).removeClass('hidden');
+                    },
+                    success: function(data)
+                    {
+                        $('#spinner_size-'+objSub.attr('data-banner')).addClass('hidden');
+                        if(data.status != undefined)
+                        {
+                            if(data.status == 1)
+                            {
+                                objSub.html('Request Submitted');
+                                $("#message").prepend('<div style="margin-top: 5px;background-color:green; border:1px solid green; display:block; width:750px; color:#FFF; font-weight:bold; font-size:16px; text-align:center; float: left;">Your request for size '+objSub.attr('data-info')+' has been submitted.<br>You should receive a confirmation with 48 hours of approval.</div><br><br>');
+                            }
+                        }
+                    },
+                    error: function(){
+                        $('#spinner_size-'+objSub.attr('data-banner')).addClass('hidden');
+                        alert('ERROR!!!');
+                    }
+                });
+            return false;
+        });
+
+        $("#pop_visitor").change(function () {
+            $.ajax({
+                type: 'POST',
+                url: '/users/change-visitor/',
+                dataType: 'json',
+                data:{
+                    site_id: <?php echo $this->siteData['SiteID'];?>,
+                    visitor: $('#pop_visitor').val()
+                },
+                beforeSend: function(){
+                    $('#visitor_spinner').css('display', 'inline');
+                },
+                success: function(data){
+                    $('#visitor_spinner').css('display', 'none');
+                },
+                error: function(){
+                    $('#visitor_spinner').css('display', 'none');
+                    alert('ERROR!!!');
+                }
+            })
+        });
+
+        $(".SliderRequest").click(function()
+        {
+            $.ajax(
+                {
+                    type: 'POST',
+                    url: '/users/request-slider',
+                    dataType: 'json',
+                    data: {
+                        site_id: <?php echo $this->siteData['SiteID'];?>,
+                    },
+                    beforeSend: function(){
+                        $('#slider-spinner').removeClass('hidden');
+                    },
+                    success: function(data)
+                    {
+                        $('#slider-spinner').addClass('hidden');
+                        if(data.status != undefined)
+                        {
+                            if(data.status == 1)
+                            {
+                                $('.SliderRequest').css('display', 'none');
+                                $('#data-slider').css('display', 'block');
+                            }else{
+                                alert('ERROR!!!');
+                            }
+                        }
+                    },
+                    error: function(){
+                        $('#slider-spinner').addClass('hidden');
+                        alert('ERROR!!!');
+                    }
+                });
+            return false;
+        });
+    })
+</script>
+<script type="text/javascript" src="/font/cufon-yui.js"></script>
+<script type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script type="text/javascript">
+    Cufon.replace('#topMenu a', {hover: true});
+    Cufon.replace('#topMenu a');
+</script>
+<script type="text/javascript" src="/font/Headline_Two_400.font.js"></script>
+<script type="text/javascript">
+    Cufon.replace('.footerBann h5');
+    Cufon.replace('.footerBann p');
+    Cufon.replace('.footerBann a', {hover: true});
+    Cufon.replace('#content h1');
+
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Lt_300.font.js"></script>
+<script type="text/javascript">
+    Cufon.replace('#footCopyr');
+    Cufon.replace('.fMenu a', {textDecoration: 'underline'});
+    Cufon.replace('.topSlog');
+    Cufon.replace('.applInfo label');
+    Cufon.replace('.subAplBtn',{textShadow: '-1px -1px #5F5F5F'});
+    Cufon.replace('.applSideR li a');
+    Cufon.replace('.applRbox p');
+    Cufon.replace('.applRbox p a');
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Rg_700.font.js"></script>
+<script type="text/javascript">
+    Cufon.replace('.fMenu h4');
+    Cufon.replace('.applInn h3');
+
+</script>

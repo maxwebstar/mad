@@ -1,0 +1,85 @@
+
+<h1>Add Revenue Level</h1>
+<br /><br />
+<div class="contUsL" style="width: 700px;">  
+    <form action="" method="post" class="sign-up">
+
+
+        <p><label>Name: </label> <input type="text" name="name" value="<?php echo $this->formValues['name'] ?>" />
+        <?php if(isset($this->formErrors['name'])): ?>
+            <ul class="error">
+            <?php foreach($this->formErrors['name'] as $errors): ?>
+                <li><?php echo $errors ?></li>
+            <?php endforeach; ?>
+            </ul>
+        <?php endif; ?>                
+        </p>
+        
+        <p><label>Min revelue: </label><input type="text" name="min" value="<?php echo $this->formValues['min'] ?>" />
+        <?php if(isset($this->formErrors['min'])): ?>
+            <ul class="error">
+            <?php foreach($this->formErrors['min'] as $errors): ?>
+                <li><?php echo $errors ?></li>
+            <?php endforeach; ?>
+            </ul>
+        <?php endif; ?>                
+        </p>
+        
+        <p><label>Max revelue: </label><input type="text" name="max" value="<?php echo $this->formValues['max'] ?>" />
+        <?php if(isset($this->formErrors['max'])): ?>
+            <ul class="error">
+            <?php foreach($this->formErrors['max'] as $errors): ?>
+                <li><?php echo $errors ?></li>
+            <?php endforeach; ?>
+            </ul>
+        <?php endif; ?>                
+        </p>
+
+        <p><label>Position: </label><input type="text" name="position" value="<?php echo $this->formValues['position'] ?>" />
+        <?php if(isset($this->formErrors['position'])): ?>
+            <ul class="error">
+            <?php foreach($this->formErrors['position'] as $errors): ?>
+                <li><?php echo $errors ?></li>
+            <?php endforeach; ?>
+            </ul>
+        <?php endif; ?>                
+        </p>   
+
+        <p><a href="#" title="" onclick="document.getElementById('subForm').click(); return false;" class="sendMasBtn">Save</a></p>
+        <input type="submit" id="subForm" style="display: none;" />
+
+    </form>
+</div>   
+    
+    
+<script type="text/javascript" src="/font/cufon-yui.js"></script>
+<script type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#topMenu a', {hover: true});	
+		Cufon.replace('#topMenu a');
+    Cufon.replace('.error', {color: 'red'});	    
+
+</script>
+<script type="text/javascript" src="/font/Headline_Two_400.font.js"></script>
+<script type="text/javascript">
+	Cufon.replace('.footerBann h5');		
+	Cufon.replace('.footerBann p');	
+	Cufon.replace('.footerBann a', {hover: true});	
+	Cufon.replace('.contactUs h1');		
+    Cufon.replace('h1');				
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Lt_300.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#footCopyr');	
+		Cufon.replace('.fMenu a');		
+		Cufon.replace('.contactUs p');	
+		Cufon.replace('.contUsL label');		
+		Cufon.replace('#location');		
+		Cufon.replace('.contBtn p');			
+		Cufon.replace('.sendMasBtn',{textShadow: '-1px -1px #5F5F5F'});		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Rg_700.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('.fMenu h4');
+		Cufon.replace('.headquaters');		
+</script>     

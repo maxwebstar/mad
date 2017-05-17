@@ -1,0 +1,174 @@
+<script type="text/javascript" src="/fancybox/jquery.fancybox-1.3.4.js"></script>
+<link href="/fancybox/jquery.fancybox-1.3.4.css" media="screen" rel="stylesheet" type="text/css" />
+<?php $this->headScript()->offsetSetFile(18,$this->baseUrl().'/js/jquery.fileDownload.js', 'text/javascript');?>
+<style type="text/css">
+    
+     #mask{
+        position: fixed;
+        height: 100%;
+        width: 100%;
+        display: none;
+        opacity: 0.3;
+        filter: alpha(opacity=30);
+        background-color: #000000;
+        z-index: 9000;
+        left:0;
+        top:0;
+    }
+    
+    #loading{ 
+        position: fixed;
+        display: none;
+        height: 50px;
+        width: 200px;
+        z-index: 10000;
+        border: 1px solid #B7B7B7;
+        border-radius: 4px;
+        background-color: #F4F4F4;
+        left: 43%;
+        top: 44%;
+    }
+    
+    #loading span{
+        font-size: 14px;
+        display: block;
+        margin: 15px 0px 0px 62px; 
+    }
+    
+    #dialog-form
+    {
+    	font-size: 16px;
+    	font-weight: bold;
+    	z-index: 999999999;
+    }
+    
+    #dialog-form textarea
+    {
+	    resize: none;
+	    width: 305px;
+    }
+    
+    #optimization_value
+    {
+    	position: relative;
+    	width: 300px;
+    	z-index: 999999999;
+    }
+    
+    #csv_all
+    {
+    	position: relative;
+    	width: 24px;
+    	height: 24px;
+    	cursor: pointer;
+    	float: right;
+    	top: 60px;
+    	background-image: url(/images/csv-24.gif);
+    	z-index: 100;
+    }
+    
+</style>
+<script type="text/javascript" charset="utf-8">		
+$(document).ready(function() {
+    var oTable = $('#users').dataTable( {
+	    "bProcessing": true,
+	    "bServerSide": true,
+	    "sAjaxSource": '/administrator/system/ajax-activity',
+	    "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+	    "iDisplayLength": 100,
+	    'fnServerData' : function(sSource, aoData, fnCallback ){
+	        $.ajax({
+	            'dataType': 'json',
+	            'type': 'GET',
+	            'url': sSource,
+	            'data': aoData,
+	            'success': [fnCallback,function(data)
+	            {
+	            	window.last_server_response = data.aaData;
+	            }]
+	        });
+	    },
+	    "aoColumns": [
+	        { 
+	          "sTitle": "ID#",
+	          "fnRender": function(obj){ return obj.aData[0]; } 
+	        },
+	        { 
+	          "sTitle": "IP Address",
+	          "fnRender": function(obj){ return obj.aData[1]; } 
+	        },
+	        { 
+	          "sTitle": "Activity Timestamp",
+	          "fnRender": function(obj){ return obj.aData[2]; } 
+	        },
+	        { 
+	          "sTitle": "Activity Type",
+	          "fnRender": function(obj){ return obj.aData[3]; } 
+	        },
+	        { 
+	          "sTitle": "User",
+	          "fnRender": function(obj){ return obj.aData[4]; } 
+	        }
+	    ],                                                
+	    "aaSorting": [[ 2, "desc" ]]                         
+    } );                
+} );  
+</script>
+
+
+<h1>User Login Activity</h1>
+<div class="contUsL" style="width: 750px;">
+<table width="740px" cellpadding="0" cellspacing="0" border="0" class="display" id="users">
+	<thead>
+		<tr>
+            <th width="10%">ID#</th>
+            <th width="30%">IP Address</th>
+            <th width="30%">Activity Timestamp</th>
+            <th width="10%">Activity Type</th>
+            <th width="20%">User</th>
+		</tr>
+	</thead>
+	<tbody></tbody>
+	<tfoot>
+		<tr>
+            <th>PID</th>
+            <th>SID</th>
+            <th>Website</th>
+            <th>Contact</th>
+            <th>Impres yesterday</th>
+		</tr>
+	</tfoot>
+</table>
+</div> 
+<div id="mask"></div>
+<div id="loading"><span>processing...</span></div>
+
+<script type="text/javascript" src="/font/cufon-yui.js"></script>
+<script type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#topMenu a', {hover: true});	
+		Cufon.replace('#topMenu a');
+</script>
+<script type="text/javascript" src="/font/Headline_Two_400.font.js"></script>
+<script type="text/javascript">
+	Cufon.replace('.contInf h3', {hover: true});	
+	Cufon.replace('.contInf h3');
+	Cufon.replace('.contInf h3.white', {color: '#FFF'});	
+	Cufon.replace('.footerBann h5');		
+	Cufon.replace('.footerBann p');	
+	Cufon.replace('.footerBann a', {hover: true});		
+    Cufon.replace('h1');		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Lt_300.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#footCopyr');	
+		Cufon.replace('.contInf p', {hover: true});		
+		Cufon.replace('.contInf p', {color: '#333333'});	
+		Cufon.replace('.contInf p.white', {color: '#FFF'});	
+		Cufon.replace('.fMenu a', {textDecoration: 'underline'});		
+		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Rg_700.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('.fMenu h4');
+</script>

@@ -1,0 +1,241 @@
+<style type="text/css">
+    
+    #form_cpm
+    {
+        display: block;
+        float: left;
+        margin-top: 10px; 
+        margin-left: 10px;
+        width: 477px;
+    }    
+    #form_cpm .filed
+    {
+        font-size: 15px;
+        display: block;
+        float: left;
+        clear: both;
+        margin-bottom: 7px;
+    }    
+    #form_cpm .filed span
+    {
+        float: left;
+        display: block;
+        font-size: 16px;
+        width: 200px;
+    }    
+    
+    #form_cpm .filed-textarea
+    {
+        font-size: 15px;
+        display: block;
+        float: left;
+        clear: both;
+        margin-bottom: 3px;
+        margin-top: 10px;
+    }    
+    #form_cpm .filed-textarea span
+    {
+        float: left;
+        display: block;
+        font-size: 16px;
+        width: 300px;
+        clear: both;
+        margin-bottom: 3px;
+    }    
+    #form_cpm .filed-textarea textarea
+    {
+        width: 470px;
+        height: 130px;
+    }    
+    
+    #form_cpm .filed-checkbox
+    {
+        font-size: 15px;
+        display: block;
+        float: left;
+        clear: both;
+        margin-bottom: 7px;
+        width: 470px;
+    }    
+    #form_cpm .filed-checkbox input
+    {
+        display: block;
+        float: left;
+        height: 15px;
+        width: 15px;
+        margin-top: 2px;
+        margin-right: 10px;
+    }
+    #form_cpm .filed-checkbox span
+    {
+        display: block;
+        float: left;
+        font-size: 16px;
+        width: 350px;
+    }
+    #form_cpm .filed-checkbox a
+    {
+        display: block;
+        float: right;
+        color: red;
+        font-size: 16px;
+    }
+    
+    #form_cpm .radio-action{
+        display: block;
+        float: left;
+        height: 28px;
+        width: 430px;
+        padding-left: 45px;
+        margin-top: 30px;
+        border: 1px solid #8E8E8E;
+    }
+    #form_cpm .radio-action input
+    {
+        display: block;
+        float: left;
+        height: 15px;
+        width: 15px;
+        margin-right: 5px;
+        margin-top: 5px;
+    }
+    #form_cpm .radio-action span
+    {
+        display: block;
+        float: left;
+        font-size: 16px;
+        margin-right: 10px;
+        margin-top: 3px;
+    }
+    
+    #form_cpm .contBtn 
+    {
+       display: block;
+       float: right;
+       padding: 0px;
+       width: 134px;
+       clear: none;
+    }
+    
+    #form_cpm .contBtn a { cursor: pointer; }
+    #form_cpm .contBtn .sendMasBtn { margin: -1px 0 0; }
+    
+</style>
+
+
+<div class="contUsL" style="width: 750px;">
+<h1>Floor Tag in Detail</h1>
+
+<form method="POST" action="" enctype="multipart/form-data" id="form_cpm">
+    
+    <div class="filed">
+         <span>Site:</span><?php echo $this->data->getSiteName();?>
+    </div>
+    <div class="filed">
+        <span>User:</span><?php echo $this->data->getUserEmail();?>
+    </div>
+    <div class="filed">
+         <span>Minimum CPM:</span><?php echo $this->data->cpm ;?>
+    </div>
+    <div class="filed">
+         <span>Estimated eCPM:</span><?php echo $this->data->estim_cpm;?> 
+    </div>
+    <div class="filed">
+         <span>Estimated Fill Rate:</span><?php echo $this->data->estim_rate;?>
+    </div>
+        
+    
+    <?php foreach($this->data->getArrayFile() as $key => $iter):?>
+    
+        <div class="filed-textarea">
+            <span><?php echo $iter->size;?> Leaderboard Passback Tag:</span>
+            <textarea disabled="disabled"><?php echo $iter->data;?></textarea>
+        </div>
+        <div class="filed-checkbox">
+            <input type="checkbox" value="" disabled="disabled" <?php echo $iter->passback ? 'checked' : '';?>/>
+            <span>No passback - keep this ad size on maximum fill.</span><?php if($iter->passback != 1):?><a href="<?php echo $iter->getFile();?>" target="_blank">download</a><?php endif;?>
+        </div>
+    
+    <?php endforeach;?>
+    
+    
+    <div style="display: block; float: left; width: 100%; height: 20px; clear: both;"></div>
+    
+     <div class="filed">
+         <span>Created:</span><?php echo $this->data->created;?>
+     </div>
+     <div class="filed">
+         <span>Status:</span><?php echo $this->data->getStatus();?>
+     </div>
+    
+     <?php if($this->data->status != 3):?>
+    
+        <div class="radio-action">
+             <input type="radio" value="3" name="choice" <?php if($this->data->status == 1 || $this->data->status == 3) echo 'checked'; ?> />
+             <span>Approve</span>
+             <input type="radio" value="2" name="choice" <?php if($this->data->status == 2) echo 'checked'; ?> />
+             <span>Reject</span>
+             <input type="radio" value="delete" name="choice"/>
+             <span>Delete</span>
+
+             <div class="contBtn"> 
+                  <a title="" onclick="document.getElementById('subForm').click(); return false;" class="sendMasBtn">Submit</a>
+             </div>
+         </div>
+    
+     <?php endif;?>
+    
+     <input type="submit" id="subForm" style="display: none;" />    
+    
+</form>
+</div>
+
+<script type="text/javascript" src="/font/cufon-yui.js"></script>
+<script type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#topMenu a', {hover: true});	
+		Cufon.replace('#topMenu a');
+</script>
+<script type="text/javascript" src="/font/Headline_Two_400.font.js"></script>
+<script type="text/javascript">
+	Cufon.replace('.footerBann h5');		
+	Cufon.replace('.footerBann p');	
+	Cufon.replace('.footerBann a', {hover: true});	
+	Cufon.replace('#content h1');		
+				
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Lt_300.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#footCopyr');	
+		Cufon.replace('.fMenu a', {textDecoration: 'underline'});		
+		Cufon.replace('.topSlog');	
+		Cufon.replace('.applInfo label');	
+		Cufon.replace('.subAplBtn',{textShadow: '-1px -1px #5F5F5F'});
+		Cufon.replace('.applSideR li a');		
+		Cufon.replace('.applRbox p');		
+		Cufon.replace('.applRbox p a');				
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Rg_700.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('.fMenu h4');
+		Cufon.replace('.applInn h3');		
+		
+</script>
+<script type="text/javascript">
+$(document).ready(function() {
+Cufon.set("fontFamily", "Proxima_Nova_Lt_300.font.js");
+	$(".subAplBtn").hover(
+		function(){
+		$(this).addClass('subAplBtnHov');
+		Cufon.refresh();		
+		Cufon.replace('.subAplBtnHov', {textShadow: '-1px -1px #A21A1A'});	
+		}, 
+	  function () {
+		$(this).removeClass('subAplBtnHov');
+		Cufon.refresh();			
+		Cufon.replace('.subAplBtnHov', {textShadow: '-1px -1px #5F5F5F'});	
+	  }
+	);
+});
+</script>
+

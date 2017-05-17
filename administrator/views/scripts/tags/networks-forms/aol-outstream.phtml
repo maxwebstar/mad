@@ -1,0 +1,73 @@
+<div class="container">
+    <?php if(count($this->dataNetworksSizes)): ?>
+        <?php foreach($this->dataNetworksSizes as $size): ?>
+            <?php if($size['network_id']==20): ?>
+                <div class="checkbox">
+                    <label>
+                        <input class="aol-outstream-sizes" data-size="<?php echo $size['id'] ?>" type="checkbox"
+                               name="sizes_20[<?php echo $size['id'] ?>]"
+                            <?php echo isset($this->formValues['sizes_20'][$size['id']]) ? "checked" : "" ?>
+                        >
+                        <?php echo $size['name'] ?>
+                    </label>
+                </div>
+                <div id="aol-outstream-form-<?php echo $size['id'] ?>"
+                     class="<?php echo isset($this->formValues['sizes_20'][$size['id']]) ? "" : "hidden" ?>">
+                    
+                    <div class="form-group <?php if(isset($this->formErrors['aol_o_PlacementName'])) echo "has-error" ?>">
+                        <label for="aol_o_PlacementName_<?php echo $size['id'] ?>" class="col-sm-2 control-label">PlacementName:</label>
+                        <div class="col-sm-4">
+                            <input type="text" class="form-control" id="aol_o_PlacementName_<?php echo $size['id'] ?>"
+                                   name="<?php echo isset($this->formValues['sizes_20'][$size['id']]) ? "aol_o_PlacementName[{$size['id']}]" : "" ?>" placeholder="PlacementName"
+                                   value="<?php echo !isset($this->formValues['aol_o_PlacementName'][$size['id']]) ? '' : $this->formValues['aol_o_PlacementName'][$size['id']] ?>"
+                            >
+                        </div>
+                    </div>
+
+                    <div class="form-group <?php if(isset($this->formErrors['aol_o_AccountID'])) echo "has-error" ?>">
+                        <label for="aol_o_AccountID_<?php echo $size['id'] ?>" class="col-sm-2 control-label">AccountID:</label>
+                        <div class="col-sm-4">
+                            <input type="text" class="form-control" id="aol_o_AccountID_<?php echo $size['id'] ?>"
+                                   name="<?php echo isset($this->formValues['sizes_20'][$size['id']]) ? "aol_o_AccountID[{$size['id']}]" : "" ?>" placeholder="AccountID"
+                                   value="<?php echo !isset($this->formValues['aol_o_AccountID'][$size['id']]) ? '18646' : $this->formValues['aol_o_AccountID'][$size['id']] ?>"
+                            >
+                        </div>
+                    </div>
+                    
+                    <div class="form-group <?php if(isset($this->formErrors['aol_o_PlayerID'])) echo "has-error" ?>">
+                        <label for="aol_o_PlayerID_<?php echo $size['id'] ?>" class="col-sm-2 control-label">PlayerID:</label>
+                        <div class="col-sm-4">
+                            <input type="text" class="form-control" id="aol_o_PlayerID_<?php echo $size['id'] ?>"
+                                   name="<?php echo isset($this->formValues['sizes_20'][$size['id']]) ? "aol_o_PlayerID[{$size['id']}]" : "" ?>" placeholder="PlayerID"
+                                   value="<?php echo !isset($this->formValues['aol_o_PlayerID'][$size['id']]) ? '' : $this->formValues['aol_o_PlayerID'][$size['id']] ?>"
+                            >
+                        </div>
+                    </div>
+                    
+                    <div class="form-group <?php if(isset($this->formErrors['aol_o_DivID'])) echo "has-error" ?>">
+                        <label for="aol_o_DivID_<?php echo $size['id'] ?>" class="col-sm-2 control-label">DivID:</label>
+                        <div class="col-sm-4">
+                            <input type="text" class="form-control" id="aol_o_DivID_<?php echo $size['id'] ?>"
+                                   name="<?php echo isset($this->formValues['sizes_20'][$size['id']]) ? "aol_o_DivID[{$size['id']}]" : "" ?>" placeholder="DivID"
+                                   value="<?php echo !isset($this->formValues['aol_o_DivID'][$size['id']]) ? '' : $this->formValues['aol_o_DivID'][$size['id']] ?>"
+                            >
+                        </div>
+                    </div>
+                    
+                    <div class="form-group <?php if(isset($this->formErrors['aol_o_ScriptID'])) echo "has-error" ?>">
+                        <label for="aol_o_ScriptID_<?php echo $size['id'] ?>" class="col-sm-2 control-label">ScriptID:</label>
+                        <div class="col-sm-4">
+                            <input type="text" class="form-control" id="aol_o_ScriptID_<?php echo $size['id'] ?>"
+                                   name="<?php echo isset($this->formValues['sizes_20'][$size['id']]) ? "aol_o_ScriptID[{$size['id']}]" : "" ?>" placeholder="ScriptID"
+                                   value="<?php echo !isset($this->formValues['aol_o_ScriptID'][$size['id']]) ? '56bcd17ce4b018167fea5539' : $this->formValues['aol_o_ScriptID'][$size['id']] ?>"
+                            >
+                        </div>
+                    </div>                    
+
+                </div>
+
+            <?php endif; ?>
+        <?php endforeach; ?>
+    <?php endif; ?>
+</div>
+

@@ -1,0 +1,263 @@
+<script type="text/javascript" src="/js/jquery.qtip.min.js"></script>
+<link href="/styles/jquery.qtip.min.css" media="screen" rel="stylesheet" type="text/css" />
+<script type="text/javascript">
+    $(document).ready(function(){                        
+        $(".selectDate").click(function(){
+            $("#search-start_date").val($(this).attr('start'));
+            $("#search-end_date").val($(this).attr('end'));
+            $("#showBox").html($.datepicker.formatDate('M d, yy', new Date($(this).attr('start')))+' - '+$.datepicker.formatDate('M d, yy', new Date($(this).attr('end'))));            
+        })
+        
+        $("#search-start_date").change(function(){
+            $("#showBox").html($.datepicker.formatDate('M d, yy', new Date($("#search-start_date").val()))+' - '+$.datepicker.formatDate('M d, yy', new Date($("#search-end_date").val())));                        
+        })        
+
+        $("#search-end_date").change(function(){
+            $("#showBox").html($.datepicker.formatDate('M d, yy', new Date($("#search-start_date").val()))+' - '+$.datepicker.formatDate('M d, yy', new Date($("#search-end_date").val())));                        
+        })        
+
+        $("#update").click(function(){
+            $("#formDate").submit();       
+        })
+
+        $("#cancel").click(function(){
+            $("#showBox").html($(this).attr('txt'));         
+        })
+
+    	$('.gtip').qtip({
+    		content: 'ECPM and Revenue take 48 hours to display for new users.  After 3 days of finalized data, we will begin to provide accurate estimated data in real-time.',
+    		position: {
+    			my: 'top left',
+    			target: 'mouse',
+    			viewport: $(window), // Keep it on-screen at all times if possible
+    			adjust: {
+    				x: 10,  y: 10
+    			}
+    		},
+    		hide: {
+    			fixed: true // Helps to prevent the tooltip from hiding ocassionally when tracking!
+    		},
+    		style: 'ui-tooltip-shadow'
+    	});
+        
+
+    }) ;   
+</script>
+
+<form name="size" method="get" id="formDate" action="">	
+            <!--report TOP-->                                            
+            <div class="reportTop">
+            	<h5>Earnings</h5>                
+                <div class="dateBox">
+                	<p class="dateBoxInn"><a href="#" title="" class="dateLink" id="showBox"><?php echo htmlentities(date("M j, Y", strtotime($this->report_params["start_date"]))); ?> – <?php echo htmlentities(date("M j, Y", strtotime($this->report_params["end_date"]))); ?></a></p>
+                    <div class="subDate">
+                    	<div class="dateRanch">
+                        	<h5>Date Range </h5>
+                            <input type="text" value="<?php echo htmlentities(date("M j, Y", strtotime($this->report_params["start_date"]))); ?>" name="start_date" id="search-start_date"  onfocus="this.value=''" onblur="if (this.value==''){this.value=''}" class="datepicker" />
+                            <input type="text" value="<?php echo htmlentities(date("M j, Y", strtotime($this->report_params["end_date"]))); ?>" name="end_date" id="search-end_date"  onfocus="this.value=''" onblur="if (this.value==''){this.value=''}" class="datepicker"/>                            
+                            <p>
+                            	<a href="#" title="" class="dCancelBtn" id="cancel" txt="<?php echo htmlentities(date("M j, Y", strtotime($this->report_params["start_date"]))); ?> – <?php echo htmlentities(date("M j, Y", strtotime($this->report_params["end_date"]))); ?>">Cancel</a>
+                            	<a href="#" title="" class="dUpdlBtn" id="update">Update</a>                            
+                            </p>
+                        </div>
+                        
+                        <div class="quickDate">
+                        	<h5>Quick dates</h5>
+                            <br class="clear" />
+                            <ul>
+                            	<li><a href="#" class="selectDate" start="<?php echo date("M j, Y"); ?>" end="<?php echo date("M j, Y"); ?>" title="">Today</a></li>
+                            	<li><a href="#" class="selectDate" start="<?php echo date("M j, Y", mktime(0,0,0,date("m"),date("d")-1,date("Y"))); ?>" end="<?php echo date("M j, Y", mktime(0,0,0,date("m"),date("d")-1,date("Y"))); ?>" title="">Yesterday</a></li>
+                            	<li><a href="#" class="selectDate" start="<?php echo date("M j, Y", mktime(0,0,0,date("m"),date("d")-7,date("Y"))); ?>" end="<?php echo date("M j, Y"); ?>" title="">Last 7 days</a></li>
+                            </ul>
+                            
+                            <ul class="rightUl">
+                            	<li><a href="#" class="selectDate" start="<?php echo date("M j, Y", mktime(0,0,0,date("m"),date("d")-30,date("Y"))); ?>" end="<?php echo date("M j, Y"); ?>" title="">Last 30 days</a></li>
+                            	<li><a href="#" class="selectDate" start="<?php echo date("M j, Y", mktime(0,0,0,date("m"),1,date("Y"))); ?>" end="<?php echo date("M j, Y", mktime(0,0,0,date("m"),date("t"),date("Y"))); ?>" title="">This month:<span> <?php echo date("F") ?></span></a></li>
+                            	<li><a href="#" class="selectDate" start="<?php echo date("M j, Y", mktime(0,0,0,date("m")-1,1,date("Y"))); ?>" end="<?php echo date("M j, Y", mktime(0,0,0,date("m")-1,date("t", mktime(0,0,0,date("m")-1,1,date("Y"))),date("Y"))); ?>" title="">Last month: <span><?php echo date("F", mktime(0,0,0,date("m")-1,1,date("Y"))); ?></span></a></li>
+                            </ul>                            
+                        </div>
+                    </div>
+                </div>
+                <p class="sizeSel"><b>Size</b>
+                	<select onchange="this.form.submit();" name="ad_size">
+                    	<option value="">All Media Types</option>
+        <?php foreach($this->ad_sizes as $ad_size) { ?>
+            <option value="<?php echo htmlentities($ad_size->id); ?>"<?php if ($this->report_params["ad_size"] ==$ad_size->id) { echo ' selected'; } ?>><?php echo htmlentities($ad_size->name); ?></option>
+        <?php } ?>
+                    </select>
+                </p>
+                <p class="sizeSel"><b>Site</b>
+                	<select onchange="this.form.submit();" name="site">
+                    	<option value="">All Sites</option>
+    <?php foreach($this->sites as $site) { ?>
+        <option value="<?php echo htmlentities($site["SiteID"]); ?>"<?php if ($this->report_params["site"] ==$site["SiteID"]) { echo ' selected'; } ?>><?php echo htmlentities($site["SiteName"]); ?></option>  
+    <?php } ?>
+                    </select>
+                </p> 
+            </div>
+            <!--//report TOP--> 
+            
+</form>
+<br><br><br>
+<div class="reportBox">	
+    <table cellpadding="0" cellspacing="0" id="reportTbl">		
+    <tr>			
+        <th>Date</th>			
+        <th>Rubicon Impressions</th>
+        <th>MadAds' Impressions</th>			
+        <th>Rubicon eCPM</th>			
+        <th>MadAds' eCPM</th>			
+        <th>Cost</th>			
+        <th>Revenue</th>	
+        <th class="lastTh">Profit</th>
+    </tr>																    
+    
+<?php 
+$totalRubimpressions = 0;
+$totalRubecpm = 0;
+$totalCost = 0;
+
+$totalMadimpressions = 0;
+$totalMadecpm = 0;
+$totalRevenue = 0;
+
+$impressionsRub = 0;
+$cost = 0;
+$ecpmRub = 0;
+
+$impressionsMad = 0;
+$revenue = 0;
+$ecpmMad = 0;
+
+$profit = 0;
+$totalProfit = 0;
+?>
+    
+<?php if($this->report): ?>    
+    <?php foreach ($this->report as $item):?>
+        <?php   
+            $impressionsRub = $item['rub_impressiosn'];
+            $cost = $item['cost'];
+            $ecpmRub = '-';
+            
+            if($impressionsRub>0 && $cost>0)
+                $ecpmRub = $cost*1000/$impressionsRub;
+
+            $totalRubimpressions += $impressionsRub;
+            $totalCost += $cost;
+
+            
+            $impressionsMad = $item['madads_impressions'];
+            $revenue = $item['revenue'];
+            $ecpmMad = '-';
+            
+            if($impressionsMad>0 && $revenue>0)
+                $ecpmMad = $revenue*1000/$impressionsMad;
+
+            $totalMadimpressions += $impressionsMad;
+            $totalRevenue += $revenue;
+            
+            $profit = $revenue-$cost;
+            $totalProfit +=$profit;
+        ?>
+        
+        <tr>
+            <td><?php echo '<a href="/administrator/exchange/view/date/'.$item['query_date'].'">'.$item['query_date'].'<a>' ?></td>
+            <td><?php echo !$impressionsRub ? '-' : number_format($impressionsRub) ?></td>
+            <td><?php echo !$impressionsMad ? '-' : number_format($impressionsMad) ?></td>
+            <td><?php echo $ecpmRub=='-' ?  '-' : "$".number_format($ecpmRub,2) ?></td>
+            <td><?php echo $ecpmMad=='-' ?  '-' : "$".number_format($ecpmMad,2) ?></td>
+            <td><?php echo !$cost ? '-' : "$".number_format($cost,2) ?></td>
+            <td><?php echo !$revenue ? '-' : "$".number_format($revenue,2) ?></td>
+            <td><?php echo !$profit ? '-' : $profit<0 ? '<span style="color:red">$'.number_format($profit,2).'</span>' : '<span style="color:green">$'.number_format($profit,2).'</span>' ?></td>
+        </tr>
+    
+    <?php endforeach; ?>    
+<?php endif; ?>   
+<?php 
+    if($totalRubimpressions > 0) {
+            $totalRubecpm = $totalCost / ($totalRubimpressions/1000);
+    }else{
+            $totalRubecpm = "0.00";
+    } 
+    
+    if($totalMadimpressions > 0) {
+            $totalMadecpm = $totalRevenue / ($totalMadimpressions/1000);
+    }else{
+            $totalMadecpm = "0.00";
+    } 
+    
+?>    
+    <tr>
+            <td class="total">Totals </td>
+            <td class="total"><?php echo number_format($totalRubimpressions) ?></td>
+            <td class="total"><?php echo number_format($totalMadimpressions) ?></td>
+            <td class="total">$<?php echo number_format($totalRubecpm,2) ?></td>
+            <td class="total">$<?php echo number_format($totalMadecpm,2) ?></td>
+            <td class="total">$<?php echo number_format($totalCost, 2) ?></td>                                                            
+            <td class="total">$<?php echo number_format($totalRevenue, 2) ?></td>                                                            
+            <td class="total lastTd">$<?php echo number_format($totalProfit, 2) ?></td>                                                            
+    </tr>
+    </table>
+</div><!--estimate-->    
+
+<script	type="text/javascript" src="/font/cufon-yui.js"></script>
+<script	type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#topMenu a', {hover: true});	
+		Cufon.replace('#topMenu a');
+</script><script	type="text/javascript" src="/font/Headline_Two_400.font.js"></script><script type="text/javascript">
+	Cufon.replace('.footerBann h5');		
+	Cufon.replace('.footerBann p');	
+	Cufon.replace('.footerBann a', {hover: true});	
+</script><script	type="text/javascript" src="/font/Proxima_Nova_Lt_300.font.js"></script><script type="text/javascript">
+		Cufon.replace('#footCopyr');	
+		Cufon.replace('.fMenu a', {textDecoration: 'underline'});		
+		Cufon.replace('.publisher h4');	
+		Cufon.replace('.publisher h4 span');	
+		Cufon.replace('.publMail a');	
+		Cufon.replace('.logOut span');					
+</script><script	type="text/javascript" src="/font/Proxima_Nova_Rg_700.font.js"></script><script type="text/javascript">
+		Cufon.replace('.fMenu h4');
+		Cufon.replace('.reportTop h5');		
+		Cufon.replace('.estimate h5');			
+</script><script type="text/javascript">
+$(document).ready(function() {
+Cufon.set("fontFamily", "Proxima_Nova_Lt_300.font.js");
+	$("#reportL li").hover(
+		function(){
+		$(this).children('a').children('span').addClass('black');
+		Cufon.refresh();		
+		Cufon.replace('.black', {color: '#000000'});	
+		}, 
+	  function () {
+		$(this).children('a').children('span').removeClass('black');
+		Cufon.refresh();			
+		Cufon.replace('#reportL li span', {color: '#DE3232'});	
+	  }
+	);
+	$("#showBox").click(
+		function(){
+		$('.subDate').toggle(220);
+		$('.dateBoxInn').toggleClass('curDate');
+		}
+	);
+	
+	$(".dCancelBtn").click(
+		function(){
+		$('.subDate').fadeOut(600);
+		$('.dateBoxInn').removeClass('curDate');
+		}
+	);	
+	
+
+
+	
+});
+</script>
+<script	type="text/javascript" src="/js/calendar.js.js"></script><script type="text/javascript">
+	$(function(){
+		$('#singleCont').css('backgroundImage', 'url(/images/contBg_1.png)');
+			$(".datepicker").datepicker({dateFormat: 'M d, yy'});
+});
+</script>

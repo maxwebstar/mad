@@ -1,0 +1,51 @@
+<style type="text/css">
+    
+    
+    #main{ display: block; width: 1024px; }
+
+    #main #mySubmit{ display: block; float: left; height: 28px; width: 129px; font-size: 16px; background-color: #8E8E8E; color: #FFFFFF; cursor: pointer; margin-top: 7px; }
+    #main #mySubmit span{ float: left; margin: 5px 0px 0px 50px; }
+    
+    #main table { border: 1px solid #DBDFE6; }
+    #main table #label-mail {}
+    #main table #value-mail { width: 650px; border: 1px solid #DBDFE6; padding: 5px; }
+    #main table #label-subject {}
+    #main table #value-subject { width: 650px; border: 1px solid #DBDFE6; padding: 5px; }
+    #main table #label-body { vertical-align: top; padding-top: 5px; }
+    #main table #value-body { width: 650px; border: 1px solid #DBDFE6; padding: 5px; }
+    
+    
+</style>
+<script type="text/javascript" src="/js/jquery-1.6.2.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+  $('#mySubmit').click(function(){            
+      $('form').submit();
+  });      
+});        
+</script>
+<?php if(empty($this->message)):?>
+
+<div id="main">
+<form method="post" action="" id="myForm">	
+<table>
+    
+    <tr>
+        <td id="label-mail">To:</td>
+        <td id="value-mail"><?php echo $this->data->email;?></td>
+    </tr>
+    <tr>
+        <td id="label-subjet">Subject:</td>
+        <td id="value-subject"><input style="width: 400px;" type="text" name="subject" value="<?php echo $this->subject ?>" /></td>
+    </tr>
+    <tr>
+        <td id="label-body">Body:</td>
+        <td id="value-body"><textarea rows="10" cols="50" name="reason" id="reason"><?php echo $this->reason ?></textarea></td>
+    </tr>            
+    
+</table>
+<a id="mySubmit"><span>Send</span></a>    
+</form>            
+</div>    
+
+<?php else:?><?php echo $this->message;?><?php endif; ?>

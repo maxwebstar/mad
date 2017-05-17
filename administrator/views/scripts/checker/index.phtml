@@ -1,0 +1,393 @@
+<link href="/fancybox/jquery.fancybox-1.3.4.css" media="screen" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="/fancybox/jquery.fancybox-1.3.4.js"></script>
+<style type="text/css">
+    
+    .sendMasBtn{ cursor: pointer; }
+    
+</style>
+<script type="text/javascript" charset="utf-8">
+    var filter = null;
+        $(document).ready(function() {    
+            var filterLive = $('#live_show:checked').val() ? 1 : 0;     
+ 
+            filter = $('#filter').val();
+            <?php if($this->dataAuth->role == 'super'):?>
+                var accounts = $('#accounts').val();
+            <?php else:?>
+                var accounts = <?php echo $this->manager['id'] ? $this->manager['id'] : -1; ?>;
+            <?php endif;?>    
+            
+                var oTable = $('#users').dataTable( {
+                        "bProcessing": true,
+                        "bServerSide": true,
+                        "sAjaxSource": '/administrator/checker/ajax-get',
+                        "fnServerParams": function ( aoData ) {  aoData.push( { "name": "filter", "value": filter }, { "name": "accounts", "value": accounts }, { "name": "filterLive", "value": filterLive } ); },
+                        "aLengthMenu": [[10, 20, 30, 40, 50, 60, 70, 80, 90, 100, -1], [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, "All"]],
+                        "iDisplayLength": 20,
+                        "aoColumns": [ 
+                            { 
+                              "sTitle": "",
+                              "bSortable": false,
+                              "fnRender": function(obj){ 
+                            	   var res = null;
+                            	   if(obj.aData[0]==1){
+                            	   		res = '<input type="checkbox" style="width: 10px;" name="content_checker['+obj.aData[1]+']" value="1">';                            	   		
+                            	   }else{
+                            		   res = '<input type="checkbox" style="width: 10px;" checked="checked" name="content_checker['+obj.aData[1]+']" value="1">';
+                            	   }                           	
+                            	   res += '<input type="hidden" name="siteID['+obj.aData[1]+']" value="'+obj.aData[1]+'">';
+                                   return res;
+                               }
+                            },                                                        
+                            { 
+                              "sTitle": "SiteID",
+                              "fnRender": function(obj){ return obj.aData[1]; } 
+                            },                            
+                            { 
+                              "sTitle": "SiteName",
+                               "fnRender": function(obj){ return '<a href="/administrator/sites/view/id/'+obj.aData[1]+'" target="_blank">'+obj.aData[2]+'</a>'; }                             
+                            },
+                            { 
+                              "sTitle": "SiteURL",
+                              "fnRender": function(obj){ 
+                                  
+                                  var res = null;
+                                  var arr = obj.aData[3].split(/[\n]/);
+                                  
+                                  res = '<select style="width: auto;">';
+                                  
+                                  $.each(arr, function(key, iter){
+                            
+                                      res += '<option>'+iter+'</option>';
+                    
+                                  });
+                                  
+                                  res += '</select>';
+                                           
+                                  return res; } 
+                            },
+                            { 
+                              "sTitle": "Notify",
+                              "bSortable": false,
+                              "fnRender": function(obj){return '<a style="cursor: pointer;" onClick="fancySend('+obj.aData[1]+'); return false;">Notify</a>'; } 
+                            },    
+                            { 
+                              "sTitle": "Live",
+                              "fnRender": function(obj){ 
+                                  if(parseInt(obj.aData[5])){ return '<img src="/images/status-green-check.gif">'; }
+                                  else                      { return '<img src="/images/stats-red-x.gif">';        } 
+                                  
+                                  }                                                        
+                            },                            
+                            { 
+                              "sTitle": "",
+                              "bSortable": false,
+                              "fnRender": function(obj){ return '<img src="/images/details_open.png">'; } 
+                            },
+                            { 
+                              "sTitle": "",
+                              "bSortable": false,
+                              "bVisible": true,
+                              "fnRender": function(obj){return '<a href="/administrator/index/auth/id/'+obj.aData[7]+'" target="_blank">login</a>'; } 
+                            } 
+                        ],                       
+                        "aaSorting": [[ 2, "asc" ]],
+                        "fnDrawCallback": function( oSettings ) {      
+                            var url = '';
+                            var urlNude = '';
+                            var urlPorn = '';
+                            var urlSex = '';
+                            var urlNSFW = '';
+                            var urlFuck = '';
+                            var urlTopless = '';
+                            var urlDead = '';
+                            var urlKilled = '';
+                            var urlShot = '';
+                            var urlContent = '';
+                            var count = 0;
+                            $.each(oTable.fnGetData(), function(key, iter){
+                                var urlsData = iter[8].split(/[\n]/);
+                                $.each(urlsData, function(key2, iter2){
+                                    iter2 = iter2.replace('http://', '');
+                                    iter2 = iter2.replace('https://', '');
+                                    iter2 = iter2.replace('www.', '');
+                                    if(count==0)
+                                        url+='q=site:'+iter2;
+                                    else    
+                                        url+='+OR+site:'+iter2;
+                                    count++;
+                                });
+                            });  
+                            urlNude = 'https://www.google.com/search?'+url+'+%22nude%22&hl=en&tbo=d&tbm=isch+%22nude%22&hl=en&tbo=d&tbm=isch';
+                            urlPorn = 'https://www.google.com/search?'+url+'+%22porn%22&hl=en&tbo=d&tbm=isch+%22porn%22&hl=en&tbo=d&tbm=isch';
+                            urlSex = 'https://www.google.com/search?'+url+'+%22sex%22&hl=en&tbo=d&tbm=isch+%22sex%22&hl=en&tbo=d&tbm=isch';
+                            urlNSFW = 'https://www.google.com/search?'+url+'+%22nsfw%22&hl=en&tbo=d&tbm=isch+%22nsfw%22&hl=en&tbo=d&tbm=isch';
+                            urlFuck = 'https://www.google.com/search?'+url+'+%22fuck%22&hl=en&tbo=d&tbm=isch+%22fuck%22&hl=en&tbo=d&tbm=isch';
+                            
+                            urlTopless = 'https://www.google.com/search?'+url+'+%22topless%22&hl=en&tbo=d&tbm=isch+%22topless%22&hl=en&tbo=d&tbm=isch';
+                            urlDead = 'https://www.google.com/search?'+url+'+%22dead%22&hl=en&tbo=d&tbm=isch+%22dead%22&hl=en&tbo=d&tbm=isch';
+                            urlKilled = 'https://www.google.com/search?'+url+'+%22killed%22&hl=en&tbo=d&tbm=isch+%22killed%22&hl=en&tbo=d&tbm=isch';
+                            urlShot = 'https://www.google.com/search?'+url+'+%22shot%22&hl=en&tbo=d&tbm=isch+%22shot%22&hl=en&tbo=d&tbm=isch';
+                            urlContent = url;
+                            //alert(url);
+                            $('#urlNude').attr('href',urlNude);
+                            $('#urlPorn').attr('href',urlPorn);
+                            $('#urlSex').attr('href',urlSex);
+                            $('#urlNSFW').attr('href',urlNSFW);
+                            $('#urlFuck').attr('href',urlFuck);
+                            $('#urlTopless').attr('href',urlTopless);
+                            $('#urlDead').attr('href',urlDead);
+                            $('#urlKilled').attr('href',urlKilled);
+                            $('#urlShot').attr('href',urlShot);
+                            $('#urlContent').attr('data',urlContent);
+                        }
+                } );
+
+                $('#filter').change(function(){ 
+                    filter = $('#filter').val(); 
+                    oTable.fnClearTable();  
+                });
+                
+                $('#accounts').change(function(){ accounts = $('#accounts').val(); oTable.fnClearTable();});
+                $('#live_show').change(function(){ filterLive = ($('#live_show:checked').val() ? 1 : 0); oTable.fnClearTable(); });
+                
+                $("#fancybox-close").click(function(){
+                    oTable.fnClearTable();
+                })                
+                
+                $('#users tbody td img').live('click', function () {
+                    var nTr = $(this).parents('tr')[0];                
+                    if ( oTable.fnIsOpen(nTr) )
+                    {
+                        /* This row is already open - close it */
+                        this.src = "/images/details_open.png";
+                        oTable.fnClose( nTr );
+                    }
+                    else
+                    {
+                        /* Open this row */
+                        this.src = "/images/details_close.png";
+                        var objTr = oTable.fnOpen( nTr, fnFormatDetails(oTable, nTr), 'details' );
+                    }
+                } );                
+                
+                $('.selectUrls').live('change', function () {
+                    var id = $(this).attr('real');
+                    var value = $(this).val();
+                    $("#urlNude_"+id).attr('href', 'https://www.google.com/search?'+value+'+%22nude%22&hl=en&tbo=d&tbm=isch+%22nude%22&hl=en&tbo=d&tbm=isch');
+                    $("#urlPorn_"+id).attr('href', 'https://www.google.com/search?'+value+'+%22porn%22&hl=en&tbo=d&tbm=isch+%22porn%22&hl=en&tbo=d&tbm=isch');
+                    $("#urlSex_"+id).attr('href', 'https://www.google.com/search?'+value+'+%22sex%22&hl=en&tbo=d&tbm=isch+%22sex%22&hl=en&tbo=d&tbm=isch');
+                    $("#urlNSFW_"+id).attr('href', 'https://www.google.com/search?'+value+'+%22nsfw%22&hl=en&tbo=d&tbm=isch+%22nsfw%22&hl=en&tbo=d&tbm=isch');
+                    $("#urlFuck_"+id).attr('href', 'https://www.google.com/search?'+value+'+%22fuck%22&hl=en&tbo=d&tbm=isch+%22fuck%22&hl=en&tbo=d&tbm=isch');
+                    
+                    $("#urlTopless_"+id).attr('href', 'https://www.google.com/search?'+value+'+%22topless%22&hl=en&tbo=d&tbm=isch+%22topless%22&hl=en&tbo=d&tbm=isch');
+                    $("#urlDead_"+id).attr('href', 'https://www.google.com/search?'+value+'+%22dead%22&hl=en&tbo=d&tbm=isch+%22dead%22&hl=en&tbo=d&tbm=isch');
+                    $("#urlKilled_"+id).attr('href', 'https://www.google.com/search?'+value+'+%22killed%22&hl=en&tbo=d&tbm=isch+%22killed%22&hl=en&tbo=d&tbm=isch');
+                    $("#urlShot_"+id).attr('href', 'https://www.google.com/search?'+value+'+%22shot%22&hl=en&tbo=d&tbm=isch+%22shot%22&hl=en&tbo=d&tbm=isch');
+                    $("#urlContent_"+id).attr('data', value);
+                });
+
+        } );     
+        
+function fancySend(id)
+{   
+   $.fancybox({
+		'width'	: '75%',
+		'height': '75%',
+                'href'  : '/administrator/checker/send/id/'+id,
+                'autoScale'     : false,
+                'transitionIn'  : 'none',
+		'transitionOut'	: 'none',
+		'type'		: 'iframe'
+   });    
+}        
+
+function fnFormatDetails ( oTable, nTr )
+{
+    var aData = oTable.fnGetData( nTr );
+    var urls = aData[8];
+    var siteID = aData[1];
+    var urlsData = urls.split(/[\n]/);
+
+    if(urlsData.length>10){
+        var txt = '';
+        var count = 0;
+        var countPage = 1;
+        var url = '';  
+        var urlFirst = '';  
+        txt='<select class="selectUrls" real="'+siteID+'" style="width:30px;">';
+        $.each(urlsData, function(key, iter){
+            iter = iter.replace('http://', '');
+            iter = iter.replace('https://', '');
+            iter = iter.replace('www.', '');
+            if(count==0)
+                url+='q=site:'+iter;
+            else    
+                url+='+OR+site:'+iter;
+            count++;
+            
+            if(count==10){
+                count=0;
+                txt+='<option value="'+url+'">'+countPage+'</option>';
+                if(countPage==1)
+                    urlFirst=url;
+                url = '';
+                countPage++;
+            }
+        });        
+        txt+='</select>';
+        
+        txt+='<a class="sendMasBtn" id="urlNude_'+siteID+'" style="float: left" title="" href="https://www.google.com/search?'+urlFirst+'+%22nude%22&hl=en&tbo=d&tbm=isch+%22nude%22&hl=en&tbo=d&tbm=isch" target="_blank">Nude</a> \n\
+                <a class="sendMasBtn" id="urlPorn_'+siteID+'" style="float: left" title="" href="https://www.google.com/search?'+urlFirst+'+%22porn%22&hl=en&tbo=d&tbm=isch+%22porn%22&hl=en&tbo=d&tbm=isch" target="_blank">Porn</a> \n\
+                <a class="sendMasBtn" id="urlSex_'+siteID+'" style="float: left" title="" href="https://www.google.com/search?'+urlFirst+'+%22sex%22&hl=en&tbo=d&tbm=isch+%22sex%22&hl=en&tbo=d&tbm=isch" target="_blank">Sex</a> \n\
+                <a class="sendMasBtn" id="urlNSFW_'+siteID+'" style="float: left" title="" href="https://www.google.com/search?'+urlFirst+'+%22nsfw%22&hl=en&tbo=d&tbm=isch+%22nsfw%22&hl=en&tbo=d&tbm=isch" target="_blank">NSFW</a> \n\
+                <a class="sendMasBtn" id="urlFuck_'+siteID+'" style="float: left" title="" href="https://www.google.com/search?'+urlFirst+'+%22fuck%22&hl=en&tbo=d&tbm=isch+%22fuck%22&hl=en&tbo=d&tbm=isch" target="_blank">Fuck</a> \n\
+                <a class="sendMasBtn" id="urlTopless_'+siteID+'" style="float: left" title="" href="https://www.google.com/search?'+urlFirst+'+%22topless%22&hl=en&tbo=d&tbm=isch+%22topless%22&hl=en&tbo=d&tbm=isch" target="_blank">Topless</a> \n\
+                <a class="sendMasBtn" id="urlDead_'+siteID+'" style="float: left" title="" href="https://www.google.com/search?'+urlFirst+'+%22dead%22&hl=en&tbo=d&tbm=isch+%22dead%22&hl=en&tbo=d&tbm=isch" target="_blank">Dead</a> \n\
+                <a class="sendMasBtn" id="urlKilled_'+siteID+'" style="float: left" title="" href="https://www.google.com/search?'+urlFirst+'+%22killed%22&hl=en&tbo=d&tbm=isch+%22killed%22&hl=en&tbo=d&tbm=isch" target="_blank">Killed</a> \n\
+                <a class="sendMasBtn" id="urlShot_'+siteID+'" style="float: left" title="" href="https://www.google.com/search?'+urlFirst+'+%22shot%22&hl=en&tbo=d&tbm=isch+%22shot%22&hl=en&tbo=d&tbm=isch" target="_blank">Shot</a> \n\
+                <a class="sendMasBtn" id="urlContent_'+siteID+'" style="float: left" title="" data="'+urlFirst+'" onClick="openLink(this)">No Copyrighted</a>';
+        
+        return txt;
+    }else{
+        var count = 0;
+        var url = '';
+        $.each(urlsData, function(key, iter){
+            iter = iter.replace('http://', '');
+            iter = iter.replace('https://', '');
+            iter = iter.replace('www.', '');
+            if(count==0)
+                url+='q=site:'+iter;
+            else    
+                url+='+OR+site:'+iter;
+            count++;
+        });
+        
+        return '<a class="sendMasBtn" style="float: left" title="" href="https://www.google.com/search?'+url+'+%22nude%22&hl=en&tbo=d&tbm=isch+%22nude%22&hl=en&tbo=d&tbm=isch" target="_blank">Nude</a> \n\
+                <a class="sendMasBtn" style="float: left" title="" href="https://www.google.com/search?'+url+'+%22porn%22&hl=en&tbo=d&tbm=isch+%22porn%22&hl=en&tbo=d&tbm=isch" target="_blank">Porn</a> \n\
+                <a class="sendMasBtn" style="float: left" title="" href="https://www.google.com/search?'+url+'+%22sex%22&hl=en&tbo=d&tbm=isch+%22sex%22&hl=en&tbo=d&tbm=isch" target="_blank">Sex</a> \n\
+                <a class="sendMasBtn" style="float: left" title="" href="https://www.google.com/search?'+url+'+%22nsfw%22&hl=en&tbo=d&tbm=isch+%22nsfw%22&hl=en&tbo=d&tbm=isch" target="_blank">NSFW</a> \n\
+                <a class="sendMasBtn" style="float: left" title="" href="https://www.google.com/search?'+url+'+%22fuck%22&hl=en&tbo=d&tbm=isch+%22fuck%22&hl=en&tbo=d&tbm=isch" target="_blank">Fuck</a> \n\
+                <a class="sendMasBtn" style="float: left" title="" href="https://www.google.com/search?'+url+'+%22topless%22&hl=en&tbo=d&tbm=isch+%22topless%22&hl=en&tbo=d&tbm=isch" target="_blank">Topless</a> \n\
+                <a class="sendMasBtn" style="float: left" title="" href="https://www.google.com/search?'+url+'+%22dead%22&hl=en&tbo=d&tbm=isch+%22dead%22&hl=en&tbo=d&tbm=isch" target="_blank">Dead</a> \n\
+                <a class="sendMasBtn" style="float: left" title="" href="https://www.google.com/search?'+url+'+%22killed%22&hl=en&tbo=d&tbm=isch+%22killed%22&hl=en&tbo=d&tbm=isch" target="_blank">Killed</a> \n\
+                <a class="sendMasBtn" style="float: left" title="" href="https://www.google.com/search?'+url+'+%22shot%22&hl=en&tbo=d&tbm=isch+%22shot%22&hl=en&tbo=d&tbm=isch" target="_blank">Shot</a> \n\
+                <a class="sendMasBtn" style="float: left" title="" data="'+url+'" onClick="openLink(this)">No Copyrighted</a>';
+    }
+}
+
+function openLink(obj)
+{
+    var data = $(obj).attr('data').replace('q=site:','');        
+    var arr = data.split('+OR+site:');
+ 
+    $.each(arr, function(key, iter){        
+                
+        window.open('http://'+iter,'_blank');
+        
+    });    
+}
+
+</script>
+
+    <h1>Content Checker</h1>
+<div class="contUsL" style="width: 750px;">
+<p>
+        <input type="checkbox" name="live_show" id="live_show" value="1"  style="background: none; height: 15px; width: 20px; "/>
+        <span style="">Show Live Sites Only</span><br/><br/>
+    <select id="filter">
+	<option value="all">All</option>
+	<option value="hide" selected>Need To Review</option>
+	<option value="hidden">Hidden</option>
+        <option value="pending">Pending Correction</option>
+   </select>
+    
+    <select id="accounts">
+    <?php if($this->dataAuth->role == 'super'):?>
+        <option value="-1">All</option>
+        <?php foreach($this->contactManager as $iter):?>
+             <option value="<?php echo $iter['id']?>"><?php echo $iter['mail'];?></option>
+        <?php endforeach;?>
+    <?php else: ?>
+        <option value="<?php echo $this->manager['id'] ? $this->manager['id'] : -1; ?>">Show My Accounts</option>                 
+        <option value="-1">Show All Accounts</option>
+    <?php endif;?>    
+    </select>        
+</p>
+<br>
+    <a class="sendMasBtn" id="urlNude" style="float: left" title="" href="#" target="_blank">Nude</a> 
+    <a class="sendMasBtn" id="urlPorn" style="float: left" title="" href="#" target="_blank">Porn</a> 
+    <a class="sendMasBtn" id="urlSex" style="float: left" title="" href="#" target="_blank">Sex</a> 
+    <a class="sendMasBtn" id="urlNSFW" style="float: left" title="" href="#" target="_blank">NSFW</a> 
+    <a class="sendMasBtn" id="urlFuck" style="float: left" title="" href="#" target="_blank">Fuck</a>
+    <a class="sendMasBtn" id="urlTopless" style="float: left" title="" href="#" target="_blank">Topless</a>
+    <a class="sendMasBtn" id="urlDead" style="float: left" title="" href="#" target="_blank">Dead</a>
+    <a class="sendMasBtn" id="urlKilled" style="float: left" title="" href="#" target="_blank">Killed</a>
+    <a class="sendMasBtn" id="urlShot" style="float: left" title="" href="#" target="_blank">Shot</a>
+    <a class="sendMasBtn" id="urlContent" style="float: left" title="" data="" onClick="openLink(this)" target="_blank">No Copyrighted</a>
+<form action="/administrator/checker/updatechecker/" method="post">
+<table width="740px" cellpadding="0" cellspacing="0" border="0" class="display" id="users">
+	<thead>
+		<tr>
+                    <th width="2%"></th>
+                    <th width="5%">SiteID</th>
+                    <th width="25%">SiteName</th>
+                    <th width="10%">SiteURL</th>
+                    <th width="5%">Notify</th>
+                    <th width="5%">Live</th>
+                    <th width="5%"></th>
+                    <th width="5%"></th>
+		</tr>
+	</thead>
+        
+	<tbody></tbody>
+        
+	<tfoot>
+		<tr>
+                    <th></th>
+                    <th>SiteID</th>
+                    <th>SiteName</th>
+                    <th>SiteURL</th>
+                    <th>Notify</th>
+                    <th>Live</th>
+                    <th></th>
+                    <th></th>
+		</tr>
+	</tfoot>
+</table>
+<br><br>
+<p>
+<a class="sendMasBtn" style="float: left" onclick="document.getElementById('subForm').click(); return false;" title="" href="#">Mark As Clean</a>
+</p>
+<input id="subForm" type="submit" style="display: none;">    
+</form>
+</div>    
+<script type="text/javascript" src="/font/cufon-yui.js"></script>
+<script type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#topMenu a', {hover: true});	
+		Cufon.replace('#topMenu a');
+</script>
+<script type="text/javascript" src="/font/Headline_Two_400.font.js"></script>
+<script type="text/javascript">
+	Cufon.replace('.contInf h3', {hover: true});	
+	Cufon.replace('.contInf h3');
+	Cufon.replace('.contInf h3.white', {color: '#FFF'});	
+	Cufon.replace('.footerBann h5');		
+	Cufon.replace('.footerBann p');	
+	Cufon.replace('.footerBann a', {hover: true});		
+    Cufon.replace('h1');		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Lt_300.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#footCopyr');	
+		Cufon.replace('.contInf p', {hover: true});		
+		Cufon.replace('.contInf p', {color: '#333333'});	
+		Cufon.replace('.contInf p.white', {color: '#FFF'});	
+		Cufon.replace('.fMenu a', {textDecoration: 'underline'});		
+		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Rg_700.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('.fMenu h4');
+</script>

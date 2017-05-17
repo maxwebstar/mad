@@ -1,0 +1,41 @@
+<style>
+.ckeditor textarea
+{
+	position: relative;
+	margin-left: 157px;
+}
+</style>
+<script> 
+	$(document).ready(function()
+	{
+        var config =
+        {
+            height: 220,
+            width: 600,
+            resize_enabled: false,
+            language: 'en',
+            entities  : false,
+            basicEntities : false,
+            entities_greek : false,
+            entities_latin : false,
+            htmlEncodeOutput : false,
+            enterMode: 'br',
+            toolbar : 'MyToolbar',
+        	toolbar_MyToolbar :
+        		[
+        			{ name: 'document', items : ['Source'] },
+        			{ name: 'clipboard', items : [ 'Cut','Copy','Paste','-','Undo','Redo' ] },
+        			{ name: 'basicstyles', items : [ 'Bold','Italic','Strike','-','RemoveFormat' ] },
+        			{ name: 'links', items : [ 'Link','Unlink','Anchor' ] },
+        		],
+        };
+
+    	$('.ckeditor').ckeditor(config);  
+	});
+</script>
+<div class="contUsL" style="width: 750px;">
+<form method="post">
+	<textarea class="ckeditor" cols="40" rows="20" id="editor1" name="editor1">
+	</textarea>
+</form>
+</div>

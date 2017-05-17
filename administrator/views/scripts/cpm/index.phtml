@@ -1,0 +1,605 @@
+<script type="text/javascript" src="/js/unserialize.js"></script>
+<style type="text/css">
+    
+    .file{ width: 265px; }
+    .file a { cursor: pointer; }
+    
+</style>
+<link href="/fancybox/jquery.fancybox-1.3.4.css" media="screen" rel="stylesheet" type="text/css" />
+
+<script type="text/javascript" src="/fancybox/jquery.fancybox-1.3.4.js"></script>
+<script type="text/javascript" charset="utf-8">
+
+$(document).ready(function() {   
+
+        var filterStatus1 = $('#filterStatus-1').val();
+        var filterStatus3 = $('#filterStatus-3').val();
+
+        var filterType = $('#filterType').val();
+        
+        <?php if($this->dataAuth->role == 'super'):?>
+            var filterAccount = $('#accounts').val();
+        <?php else:?>
+            var filterAccount = <?php echo $this->manager['id'] ? $this->manager['id'] : -1; ?>;
+        <?php endif;?>    
+
+        var oTable1 = $('#floor_tags-1').dataTable( {
+                "bProcessing": true,
+                "bServerSide": true,
+                "sAjaxSource": '/administrator/cpm/ajax-get',
+                "fnServerParams": function ( aoData ) {  aoData.push( { "name": "filter", "value": filterStatus1 }, { "name": "filterType", "value": filterType }, { "name": "accounts", "value": filterAccount }, { "name": "only_burst", "value": 0 } ); },
+                "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+                "iDisplayLength": 100
+                ,
+                "aoColumns": [
+                    { 
+                      "sTitle": "Website",
+                      "fnRender": function(obj){ return '<a href="/administrator/sites/view/id/'+obj.aData[7]+'">'+obj.aData[0]+'</a>'; } 
+                    },
+                    { 
+                      "sTitle": "Contact",
+                      "fnRender": function(obj){ return obj.aData[1]; } 
+                    },
+                    { 
+                      "sTitle": "Previous Floor",
+                      "fnRender": function(obj){ return obj.aData[2]; } 
+                    },
+                    { 
+                      "sTitle": "New Floor",
+                      "fnRender": function(obj){ return obj.aData[3]; } 
+                    },
+                    { 
+                      "sTitle": "Size",
+                      "sClass": "file",
+                      "bSortable": false,
+                      "fnRender": function(obj){ var result = '';
+                          
+                                                 if(obj.aData[4]){
+                          
+                                                     var arr = obj.aData[4].split(','); 
+
+                                                     $.each(arr, function(key, iter){
+
+                                                         var str = iter.split(':');
+                                                         var id = str[0];
+                                                         var file = str[1];
+
+                                                         result += '<span>'+file+'</span> ';
+
+                                                     });
+
+                                                     if(result != ''){ result = '<a onClick="fancy('+obj.aData[9]+', 0)">'+result+'</a>' }
+                                                 
+                                                 }
+                                                   
+                                                 return result; } 
+                    },
+                    { 
+                      "sTitle": "Created",
+                      "fnRender": function(obj){ return $.format.date(new Date(obj.aData[5]), "yyyy MMM, dd"); } 
+                    },
+                    { 
+                      "sTitle": "Tags",
+                      "fnRender": function(obj){
+                          if(obj.aData[6] == 4)
+                          	return '<a href="/administrator/tags/edit/site/'+obj.aData[7]+'">G</a>';
+                          else if(obj.aData[6] == 5)
+                          	return '<a href="/administrator/tags/edit/site/'+obj.aData[7]+'">R</a>';
+                          else if(obj.aData[6] == 6)
+                          	return '<a href="/administrator/tags/edit/site/'+obj.aData[7]+'">B</a>';
+                          else if(obj.aData[6] == 7)
+                          	return '<a href="/administrator/tags/edit/site/'+obj.aData[7]+'">M</a>';
+                          else if(obj.aData[6] == 8)
+                          	return '<a href="/administrator/tags/edit/site/'+obj.aData[7]+'">P</a>';
+                          else if(obj.aData[6] == 9)
+                              return '<a href="/administrator/tags/edit/site/'+obj.aData[7]+'">A</a>';
+                          else if(obj.aData[6] == 10){
+                              return '<a href="/administrator/tags/edit/site/'+obj.aData[7]+'">PP</a>';
+                          }
+                          else
+                          	return '';	                             
+                      } 
+                    },                            
+                    { 
+                      "sTitle": "",
+                      "bSortable": false,
+                      "fnRender": function(obj){ var result = '';
+                          
+                                                 if(obj.aData[12] == 1) result = (obj.aData[13] == 1 && obj.aData[14] == 5) ? '<a href="/administrator/cpm/approve-burst/id/'+obj.aData[9]+'" onclick="return confirm(\'Confirm ?\');">approve</a>' : '<a href="/administrator/cpm/approve/id/'+obj.aData[9]+'" onclick="return confirm(\'Confirm ?\');">approve</a>';
+                                                 if(obj.aData[12] == 2) result = 'rejected'; 
+                                                 if(obj.aData[12] == 3) result = 'approved';
+                                                 if(obj.aData[12] == 4) result = 'wait cron';
+                                                 
+                                                 return result; } 
+                    },
+                    { 
+                      "sTitle": "",
+                      "bSortable": false,
+                      "fnRender": function(obj){ return '<a style="cursor: pointer;" onClick="fancyReject('+obj.aData[9]+', 1);">reject</a>'; }
+                    },                    
+                    { 
+                      "sTitle": "",
+                      "bSortable": false,
+                      "fnRender": function(obj){ return '<a target="_blank" href="/administrator/index/auth/id/'+obj.aData[10]+'">login</a>'; } 
+                    },
+                    { 
+                      "sTitle": "",
+                      "bSortable": false,
+                      "fnRender": function(obj){ return '<a href="/administrator/cpm/view/id/'+obj.aData[11]+'">view</a>'; } 
+                    }
+                ],                                                
+                "aaSorting": [[ 5, "desc" ]]
+
+        });
+        
+              var oTable3 = $('#floor_tags-3').dataTable( {
+                "bProcessing": true,
+                "bServerSide": true,
+                "sAjaxSource": '/administrator/cpm/ajax-get',
+                "fnServerParams": function ( aoData ) {  aoData.push( { "name": "filter", "value": filterStatus3  }, { "name": "filterType", "value": filterType }, { "name": "accounts", "value": filterAccount }, { "name": "only_burst", "value": 1 } ); },
+                "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+                "iDisplayLength": 100
+                ,
+                "aoColumns": [
+                    { 
+                      "sTitle": "Website",
+                      "fnRender": function(obj){ return '<a href="/administrator/sites/view/id/'+obj.aData[7]+'">'+obj.aData[0]+'</a>'; } 
+                    },
+                    { 
+                      "sTitle": "Contact",
+                      "fnRender": function(obj){ return obj.aData[1]; } 
+                    },
+                    { 
+                      "sTitle": "Previous Floor",
+                      "fnRender": function(obj){ return obj.aData[2]; } 
+                    },
+                    { 
+                      "sTitle": "New Floor",
+                      "fnRender": function(obj){ return obj.aData[3]; } 
+                    },
+                             { 
+                      "sTitle": "Size",
+                      "sClass": "file",
+                      "bSortable": false,
+                      "fnRender": function(obj){ var result = '';
+                          
+                                                 if(obj.aData[4]){
+
+                                                     var arr = obj.aData[4].split(','); 
+
+                                                     $.each(arr, function(key, iter){
+
+                                                         var str = iter.split(':');
+                                                         var id = str[0];
+                                                         var file = str[1];
+
+                                                         result += '<span>'+file+'</span> ';
+
+                                                     });
+
+                                                     if(result != ''){ result = '<a onClick="fancy('+obj.aData[9]+', 1)">'+result+'</a>' }
+                                                 
+                                                 }
+                                                   
+                                                 return result; } 
+                    },
+                    {
+                      "sTitle": "Created",
+                      "fnRender": function(obj){ return $.format.date(new Date(obj.aData[5]), "yyyy MMM, dd"); } 
+                    },
+                    { 
+                      "sTitle": "Tags",
+                      "fnRender": function(obj){
+                          if(obj.aData[6] == 4)
+                              return '<a href="/administrator/tags/edit/site/'+obj.aData[7]+'">G</a>';
+                          else if(obj.aData[6] == 5)
+                              return '<a href="/administrator/tags/edit/site/'+obj.aData[7]+'">R</a>';
+                          else if(obj.aData[6] == 6)
+                              return '<a href="/administrator/tags/edit/site/'+obj.aData[7]+'">B</a>';
+                          else if(obj.aData[6] == 7)
+                              return '<a href="/administrator/tags/edit/site/'+obj.aData[7]+'">M</a>';
+                          else if(obj.aData[6] == 8)
+                              return '<a href="/administrator/tags/edit/site/'+obj.aData[7]+'">P</a>';
+                          else if(obj.aData[6] == 9)
+                              return '<a href="/administrator/tags/edit/site/'+obj.aData[7]+'">A</a>';
+                          else if(obj.aData[6] == 10){
+                              return '<a href="/administrator/tags/edit/site/'+obj.aData[7]+'">PP</a>';
+                          }
+                          else
+                          	return '';	                             
+                      } 
+                    },                            
+                    { 
+                      "sTitle": "",
+                      "bSortable": false,
+                      "fnRender": function(obj){ var result = '';
+                          
+                                                 if(obj.aData[12] == 1) result = (obj.aData[13] == 1 && obj.aData[14] == 5) ? '<a href="/administrator/cpm/approve-burst/id/'+obj.aData[9]+'" onclick="return confirm(\'Confirm ?\');">approve</a>' : '<a href="/administrator/cpm/approve/id/'+obj.aData[9]+'" onclick="return confirm(\'Confirm ?\');">approve</a>';
+                                                 if(obj.aData[12] == 2) result = 'rejected'; 
+                                                 if(obj.aData[12] == 3) result = 'approved';
+                                                 if(obj.aData[12] == 4) result = 'wait cron';
+                                                 
+                                                 return result; } 
+                    },
+                    { 
+                      "sTitle": "",
+                      "bSortable": false,
+                      "fnRender": function(obj){ return '<a style="cursor: pointer;" onClick="fancyReject('+obj.aData[9]+', 0);">reject</a>'; }
+                    },                    
+                    { 
+                      "sTitle": "",
+                      "bSortable": false,
+                      "fnRender": function(obj){ return '<a target="_blank" href="/administrator/index/auth/id/'+obj.aData[10]+'">login</a>'; } 
+                    },
+                    { 
+                      "sTitle": "",
+                      "bSortable": false,
+                      "fnRender": function(obj){ return '<a href="/administrator/cpm/view/id/'+obj.aData[11]+'">view</a>'; } 
+                    }
+                ],                                                
+                "aaSorting": [[ 5, "asc" ]]
+
+        });  
+        
+        var oTable2 = $('#floor_tags-2').dataTable( {
+                "bProcessing": true,
+                "bServerSide": true,
+                "sAjaxSource": '/administrator/cpm/ajax-get',
+                "fnServerParams": function ( aoData ) {  aoData.push( { "name": "filter", "value": "approved" }, { "name": "filterType", "value": filterType }, { "name": "accounts", "value": filterAccount }, { "name": "only_burst", "value": 0 } ); },
+                "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+                "iDisplayLength": 100
+                ,
+                "aoColumns": [
+                    { 
+                      "sTitle": "Website",
+                      "fnRender": function(obj){ return '<a href="/administrator/sites/view/id/'+obj.aData[7]+'">'+obj.aData[0]+'</a>'; } 
+                    },
+                    { 
+                      "sTitle": "Contact",
+                      "fnRender": function(obj){ return obj.aData[1]; } 
+                    },
+                    { 
+                      "sTitle": "Previous Floor",
+                      "fnRender": function(obj){ return obj.aData[2]; } 
+                    },
+                    { 
+                      "sTitle": "New Floor",
+                      "fnRender": function(obj){ return obj.aData[3]; } 
+                    },
+                             { 
+                      "sTitle": "Size",
+                      "sClass": "file",
+                      "bSortable": false,
+                      "fnRender": function(obj){ var result = '';
+                          
+                                                 if(obj.aData[4]){
+
+                                                     var arr = obj.aData[4].split(','); 
+
+                                                     $.each(arr, function(key, iter){
+
+                                                         var str = iter.split(':');
+                                                         var id = str[0];
+                                                         var file = str[1];
+
+                                                         result += '<span>'+file+'</span> ';
+
+                                                     });
+
+                                                     if(result != ''){ result = '<a onClick="fancy('+obj.aData[9]+', 1)">'+result+'</a>' }
+                                                 
+                                                 }
+                                                   
+                                                 return result; } 
+                    },
+                    {
+                      "sTitle": "Created",
+                      "fnRender": function(obj){ return $.format.date(new Date(obj.aData[5]), "yyyy MMM, dd"); } 
+                    },
+                    { 
+                      "sTitle": "Tags",
+                      "fnRender": function(obj){
+                          if(obj.aData[6] == 4)
+                              return '<a href="/administrator/tags/edit/site/'+obj.aData[7]+'">G</a>';
+                          else if(obj.aData[6] == 5)
+                              return '<a href="/administrator/tags/edit/site/'+obj.aData[7]+'">R</a>';
+                          else if(obj.aData[6] == 6)
+                              return '<a href="/administrator/tags/edit/site/'+obj.aData[7]+'">B</a>';
+                          else if(obj.aData[6] == 7)
+                              return '<a href="/administrator/tags/edit/site/'+obj.aData[7]+'">M</a>';
+                          else if(obj.aData[6] == 8)
+                              return '<a href="/administrator/tags/edit/site/'+obj.aData[7]+'">P</a>';
+                          else if(obj.aData[6] == 9)
+                              return '<a href="/administrator/tags/edit/site/'+obj.aData[7]+'">A</a>';
+                          else if(obj.aData[6] == 10){
+                              return '<a href="/administrator/tags/edit/site/'+obj.aData[7]+'">PP</a>';
+                          }
+                          else
+                          	return '';	                             
+                      } 
+                    },                            
+                    { 
+                      "sTitle": "",
+                      "bSortable": false,
+                      "fnRender": function(obj){ var result = '';
+                          
+                                                 if(obj.aData[12] == 1) result = (obj.aData[13] == 1 && obj.aData[14] == 5) ? '<a href="/administrator/cpm/approve-burst/id/'+obj.aData[9]+'" onclick="return confirm(\'Confirm ?\');">approve</a>' : '<a href="/administrator/cpm/approve/id/'+obj.aData[9]+'" onclick="return confirm(\'Confirm ?\');">approve</a>';
+                                                 if(obj.aData[12] == 2) result = 'rejected'; 
+                                                 if(obj.aData[12] == 3) result = 'approved';
+                                                 if(obj.aData[12] == 4) result = 'wait cron';
+                                                 
+                                                 return result; } 
+                    },
+                    { 
+                      "sTitle": "",
+                      "bSortable": false,
+                      "fnRender": function(obj){ return '<a style="cursor: pointer;" onClick="fancyReject('+obj.aData[9]+', 0);">reject</a>'; }
+                    },                    
+                    { 
+                      "sTitle": "",
+                      "bSortable": false,
+                      "fnRender": function(obj){ return '<a target="_blank" href="/administrator/index/auth/id/'+obj.aData[10]+'">login</a>'; } 
+                    },
+                    { 
+                      "sTitle": "",
+                      "bSortable": false,
+                      "fnRender": function(obj){ return '<a href="/administrator/cpm/view/id/'+obj.aData[11]+'">view</a>'; } 
+                    }
+                ],                                                
+                "aaSorting": [[ 5, "asc" ]]
+
+        }); 
+        
+        $('#filterStatus-1').change(function(){ filterStatus1 = $('#filterStatus-1').val(); oTable1.fnClearTable();  });
+        $('#filterStatus-3').change(function(){ filterStatus3 = $('#filterStatus-3').val(); oTable3.fnClearTable();  });        
+        
+        $('#filterType').change(function(){ 
+            
+            filterType = $('#filterType').val(); 
+            
+            oTable1.fnClearTable();
+            oTable3.fnClearTable();
+            oTable2.fnClearTable();
+        });
+        $('#accounts').change(function(){ 
+            
+            filterAccount = $('#accounts').val(); 
+            
+            oTable1.fnClearTable(); 
+            oTable3.fnClearTable();
+            oTable2.fnClearTable();
+        });
+        
+        
+        
+        $("#tabs").tabs();
+        
+        
+});
+
+function fancy(id, approved)
+{ 
+   $.fancybox({
+		'width'	: '75%',
+		'height': '75%',
+                'href'  : 'http://scripts.madadsmedia.com/cpm-info.php?id='+id+'&approved='+approved,
+                'autoScale'     : false,
+                'transitionIn'  : 'none',
+		'transitionOut'	: 'none',
+		'type'		: 'iframe'
+   });    
+}
+
+function fancyReject(id, newest)
+{   
+   $.fancybox({
+		'width'	: '75%',
+		'height': '75%',
+                'href'  : '/administrator/cpm/reject/id/'+id+'/new/'+newest,
+                'autoScale'     : false,
+                'transitionIn'  : 'none',
+		'transitionOut'	: 'none',
+		'type'		: 'iframe'
+   });    
+}
+
+</script>
+
+<div class="contUsL" style="width: 750px;">
+<h1>Floor Tags</h1>
+
+<a href="/administrator/cpm/value">Edit/Add Minimum CPM Value</a>
+<p>
+    <select id="accounts">
+    <?php if($this->dataAuth->role == 'super'):?>
+        <option value="-1">All</option>
+        <?php foreach($this->contactManager as $iter):?>
+             <option value="<?php echo $iter['id']?>"><?php echo $iter['mail'];?></option>
+        <?php endforeach;?>
+    <?php else: ?>
+        <option value="<?php echo $this->manager['id'] ? $this->manager['id'] : -1; ?>">Show My Accounts</option>                 
+        <option value="-1">Show All Accounts</option>
+    <?php endif;?>    
+    </select>  
+    
+    <select id="filterType" style="margin-left: 75px;">
+            <option value="">All</option>
+            <option value="4">DFP</option>
+            <option value="5">Rubicon</option>
+            <option value="6">Burst</option>
+            <option value="8">Pubmatic</option>
+            <option value="9">Amazon</option>
+            <option value="10">PulsePoint</option>
+    </select>
+</p>    
+<div id="tabs">
+            <ul>
+                <li><a href="#tabs-1">All (default new)</a></li>
+                <li><a href="#tabs-3">Pending Update</a></li>
+                <li><a href="#tabs-2">Approved</a></li>
+            </ul>
+
+<div id="tabs-1">
+
+    <p>
+        <select id="filterStatus-1">
+            <option value="all">All</option>
+            <option value="new" selected="selected">New</option>
+            <option value="reject">Reject</option>
+            <option value="approved">Approved</option>
+            <option value="waitcron">Wait Cron</option>
+        </select>
+       
+    </p>
+
+    <table width="870px" cellpadding="0" cellspacing="0" border="0" class="display" id="floor_tags-1">
+            <thead>
+                    <tr>
+                        <th width="20%">Website</th>
+                        <th width="20%">Contact</th>
+                        <th width="10%">Previous Floor</th>
+                        <th width="10%">New Floor</th>
+                        <th width="30%">Size</th>
+                        <th width="5%">Created</th>
+                        <th width="5%">Tags</th>
+                        <th width="5%"></th>
+                        <th width="5%"></th>
+                        <th width="5%"></th>
+                        <th width="5%"></th>                       
+                    </tr>
+            </thead>
+            <tbody></tbody>
+            <tfoot>
+                    <tr>
+                        <th>Website</th>
+                        <th>Contact</th>
+                        <th>Previous Floor</th>
+                        <th>New Floor</th>
+                        <th>Size</th>
+                        <th>Created</th>
+                        <th>Tags</th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>                      
+                    </tr>
+            </tfoot>
+    </table>
+
+</div>
+    
+<div id="tabs-3">
+
+    <p>
+        <select id="filterStatus-3">
+            <option value="approved">Approved</option>
+            <option value="waitcron" selected="selected">Wait Cron</option>
+        </select>
+    </p>
+
+    <table width="870px" cellpadding="0" cellspacing="0" border="0" class="display" id="floor_tags-3">
+            <thead>
+                    <tr>
+                        <th width="20%">Website</th>
+                        <th width="20%">Contact</th>
+                        <th width="10%">Previous Floor</th>
+                        <th width="10%">New Floor</th>
+                        <th width="30%">Size</th>
+                        <th width="5%">Created</th>
+                        <th width="5%">Tags</th>
+                        <th width="5%"></th>
+                        <th width="5%"></th>
+                        <th width="5%"></th>
+                        <th width="5%"></th>                       
+                    </tr>
+            </thead>
+            <tbody></tbody>
+            <tfoot>
+                    <tr>
+                        <th>Website</th>
+                        <th>Contact</th>
+                        <th>Previous Floor</th>
+                        <th>New Floor</th>
+                        <th>Size</th>
+                        <th>Created</th>
+                        <th>Tags</th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>                      
+                    </tr>
+            </tfoot>
+    </table>
+
+</div>    
+    
+<div id="tabs-2">
+  
+    <table width="870px" cellpadding="0" cellspacing="0" border="0" class="display" id="floor_tags-2">
+	<thead>
+		<tr>
+                    <th width="20%">Website</th>
+                    <th width="20%">Contact</th>
+                    <th width="10%">Previous Floor</th>
+                    <th width="10%">New Floor</th>
+                    <th width="30%">Size</th>
+                    <th width="5%">Created</th>
+                    <th width="5%">Tags</th>
+                    <th width="5%"></th>
+                    <th width="5%"></th>
+                    <th width="5%"></th>
+                    <th width="5%"></th>       
+		</tr>
+	</thead>
+	<tbody></tbody>
+	<tfoot>
+		<tr>
+                    <th>Website</th>
+                    <th>Contact</th>
+                    <th>Previous Floor</th>
+                    <th>New Floor</th>
+                    <th>Size</th>
+                    <th>Created</th>
+                    <th>Tags</th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>                   
+ 		</tr>
+	</tfoot>
+     </table>
+    
+</div>    
+    
+    
+</div>
+</div>
+<script type="text/javascript" src="/font/cufon-yui.js"></script>
+<script type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#topMenu a', {hover: true});	
+		Cufon.replace('#topMenu a');
+</script>
+<script type="text/javascript" src="/font/Headline_Two_400.font.js"></script>
+<script type="text/javascript">
+	Cufon.replace('.contInf h3', {hover: true});	
+	Cufon.replace('.contInf h3');
+	Cufon.replace('.contInf h3.white', {color: '#FFF'});	
+	Cufon.replace('.footerBann h5');		
+	Cufon.replace('.footerBann p');	
+	Cufon.replace('.footerBann a', {hover: true});		
+    Cufon.replace('h1');		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Lt_300.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#footCopyr');	
+		Cufon.replace('.contInf p', {hover: true});		
+		Cufon.replace('.contInf p', {color: '#333333'});	
+		Cufon.replace('.contInf p.white', {color: '#FFF'});	
+		Cufon.replace('.fMenu a', {textDecoration: 'underline'});		
+		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Rg_700.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('.fMenu h4');
+</script>

@@ -1,0 +1,377 @@
+<style type="text/css">
+
+    #mask{
+        position: fixed;
+        height: 100%;
+        width: 100%;
+        display: none;
+        opacity: 0.3;
+        filter: alpha(opacity=30);
+        background-color: #000000;
+        z-index: 9000;
+        left:0;
+        top:0;
+    }
+
+    #loading{
+        position: fixed;
+        display: none;
+        height: 50px;
+        width: 200px;
+        z-index: 10000;
+        border: 1px solid #B7B7B7;
+        border-radius: 4px;
+        background-color: #F4F4F4;
+        left: 43%;
+        top: 44%;
+    }
+
+    #loading span{
+        font-size: 14px;
+        display: block;
+        margin: 15px 0px 0px 62px;
+    }
+    .detalLink{ cursor: pointer; }
+    .subTable{  }
+    .subIter{  }
+    .subName{ width: 222px; }
+    .subSent{ width: 66px; }
+    .subResp{ width: 73px; }
+    .subOpen{ width: 66px; }
+    .subClos{ width: 67px; }
+    .subWon{ width: 65px; }
+
+</style>
+<script type="text/javascript" charset="utf-8">
+
+    function getMonth(date) {
+        var month = date.getMonth();
+        return month < 10 ? '0' + month : month; // ('' + month) for string result
+    }
+
+    var start_date = null;
+    var end_date = null;
+
+    $(document).ready(function() {
+
+        var countLive = 0;
+        start_date = $('#search-start_date').val();
+        end_date = $('#search-end_date').val();
+
+        var oTable = $('#statTable').dataTable( {
+            "bProcessing": true,
+            "bServerSide": true,
+            "sAjaxSource": '/administrator/recruiting/get-stats-ajax',
+            "fnServerParams": function ( aoData ) {  aoData.push( { "name": "start_date", "value": start_date }, { "name": "end_date", "value": end_date } ); },
+            "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+            "iDisplayLength": 100
+            ,
+            "aoColumns": [
+                {
+                    "sTitle": "Recruiter",
+                    "sClass": "detalLink",
+                    "fnRender": function(obj){ return obj.aData[0]; }
+                },
+                {
+                    "sTitle": "Emails Sent",
+                    "fnRender": function(obj)
+                    {
+                        var start = new Date($('#search-start_date').val());
+                        var end = new Date($('#search-end_date').val());
+                        return '<a href="/administrator/recruiting/pending/name/'+obj.aData[9]+'/from/'+start.getFullYear()+'-'+(start.getMonth() > 9? (start.getMonth() + 1): '0'+(start.getMonth() + 1) )+'-'+(start.getDate() > 9? start.getDate(): '0'+start.getDate() )+'/to/'+end.getFullYear()+'-'+(end.getMonth() > 9? (end.getMonth() + 1): '0'+(end.getMonth() + 1) )+'-'+(end.getDate() > 9? end.getDate(): '0'+end.getDate() )+'">'+obj.aData[1]+'</a>';
+                    }
+                },
+                {
+                    "sTitle": "Responses",
+                    "fnRender": function(obj){
+                        var start = new Date($('#search-start_date').val());
+                        var end = new Date($('#search-end_date').val());
+                        return obj.aData[2];
+                    }
+                },
+                {
+                    "sTitle": "Open Opportunities",
+                    "fnRender": function(obj)
+                    {
+                        var start = new Date($('#search-start_date').val());
+                        var end = new Date($('#search-end_date').val());
+                        return '<a href="/administrator/recruiting/responded/name/'+obj.aData[9]+'/from/'+start.getFullYear()+'-'+(start.getMonth() > 9? (start.getMonth() + 1): '0'+(start.getMonth() + 1) )+'-'+(start.getDate() > 9? start.getDate(): '0'+start.getDate() )+'/to/'+end.getFullYear()+'-'+(end.getMonth()+1)+'-'+(end.getDate() > 9? end.getDate(): '0'+end.getDate() )+'">'+obj.aData[3]+'</a>';
+                    }
+                },
+                {
+                    "sTitle": "Closed Opportunities",
+                    "fnRender": function(obj)
+                    {
+                        var start = new Date($('#search-start_date').val());
+                        var end = new Date($('#search-end_date').val());
+                        return '<a href="/administrator/recruiting/closed/name/'+obj.aData[9]+'/from/'+start.getFullYear()+'-'+(start.getMonth() > 9? (start.getMonth() + 1): '0'+(start.getMonth() + 1) )+'-'+(start.getDate() > 9? start.getDate(): '0'+start.getDate() )+'/to/'+end.getFullYear()+'-'+(end.getMonth() > 9? (end.getMonth() + 1): '0'+(end.getMonth() + 1) )+'-'+(end.getDate() > 9? end.getDate(): '0'+end.getDate() )+'">'+obj.aData[4]+'</a>';
+                    }
+                },
+                {
+                    "sTitle": "Opportunities Won",
+                    "fnRender": function(obj)
+                    {
+                        var start = new Date($('#search-start_date').val());
+                        var end = new Date($('#search-end_date').val());
+                        return '<a href="/administrator/recruiting/won/name/'+obj.aData[9]+'/from/'+start.getFullYear()+'-'+(start.getMonth() > 9? (start.getMonth() + 1): '0'+(start.getMonth() + 1) )+'-'+(start.getDate() > 9? start.getDate(): '0'+start.getDate() )+'/to/'+end.getFullYear()+'-'+(end.getMonth() > 9? (end.getMonth() + 1): '0'+(end.getMonth() + 1) )+'-'+(end.getDate() > 9? end.getDate(): '0'+end.getDate() )+'">'+obj.aData[5]+'</a>';
+                    }
+                },
+                {
+                    "sTitle": "Total Impressions",
+                    "fnRender": function(obj){
+                        var start = new Date($('#search-start_date').val());
+                        var end = new Date($('#search-end_date').val());
+
+                        return obj.aData[6] ? '<a href="/administrator/referral/view/id/'+obj.aData[8]+'/from/'+start.getFullYear()+'-'+(start.getMonth()+1)+'-'+start.getDate()+'/to/'+end.getFullYear()+'-'+(end.getMonth()+1)+'-'+end.getDate()+'">'+number_format(obj.aData[6],0,'.',',')+'</a>' : '&mdash;';
+                    }
+                },
+                {
+                    "sTitle": "Total Revenue",
+                    "fnRender": function(obj){
+                        var start = new Date($('#search-start_date').val());
+                        var end = new Date($('#search-end_date').val());
+
+                        return obj.aData[7] ? '<a href="/administrator/referral/view/id/'+obj.aData[8]+'/from/'+start.getFullYear()+'-'+(start.getMonth()+1)+'-'+start.getDate()+'/to/'+end.getFullYear()+'-'+(end.getMonth()+1)+'-'+end.getDate()+'">'+number_format(obj.aData[7],2,'.',',')+'</a>' : '&mdash;';
+                    }
+                }
+            ],
+            "aaSorting": [[ 0, "asc" ]]
+
+        } );
+
+        $(".selectDate").click(function(){
+            $("#search-start_date").val($(this).attr('start'));
+            $("#search-end_date").val($(this).attr('end'));
+            $("#showBox").html($.datepicker.formatDate('M d, yy', new Date($(this).attr('start')))+' - '+$.datepicker.formatDate('M d, yy', new Date($(this).attr('end'))));
+        })
+
+        $("#search-start_date").change(function(){
+            $("#showBox").html($.datepicker.formatDate('M d, yy', new Date($("#search-start_date").val()))+' - '+$.datepicker.formatDate('M d, yy', new Date($("#search-end_date").val())));
+        })
+
+        $("#search-end_date").change(function(){
+            $("#showBox").html($.datepicker.formatDate('M d, yy', new Date($("#search-start_date").val()))+' - '+$.datepicker.formatDate('M d, yy', new Date($("#search-end_date").val())));
+        })
+
+        $("#showBox").click(
+            function(){
+                $('.subDate').toggle(220);
+                $('.dateBoxInn').toggleClass('curDate');
+            }
+        );
+
+        $(".dCancelBtn").click(
+            function(){
+                $('.subDate').fadeOut(600);
+                $('.dateBoxInn').removeClass('curDate');
+            }
+        );
+
+        $("#update").click(function(){
+            $('.subDate').fadeOut(600);
+            $('.dateBoxInn').removeClass('curDate');
+            start_date = $('#search-start_date').val();
+            end_date = $('#search-end_date').val();
+            oTable.fnClearTable();
+        });
+
+        $('#statTable').delegate('tbody td.detalLink', 'click', function(){
+            var nTr = $(this).parents('tr')[0];
+            if(oTable.fnIsOpen(nTr))
+            {
+                /*this.src = "/images/details_open.png";*/
+                oTable.fnClose( nTr );
+            }
+            else
+            {
+                /*this.src = "/images/details_close.png";*/
+                fnFormatDetails(oTable, nTr);
+                /*var objTr = oTable.fnOpen( nTr, fnFormatDetails(oTable, nTr), 'details');*/
+            }
+        });
+
+    });
+
+    function fnFormatDetails(oTable, nTr)
+    {
+        display('block');
+
+        var aData = oTable.fnGetData(nTr);
+
+        $.ajax({   url : '/administrator/recruiting/ajax-get-stat-sub',
+            data : { id : aData[9], start_date : start_date, end_date : end_date },
+            type : "POST",
+            async: false,
+            dataType : "json",
+
+            success : function(response) {
+
+                var html = '<table class="subTable">';
+
+                $.each(response, function(key, iter){
+
+                    html += '<tr class="subIter">';
+                    html += '<td class="subName">'+iter.name+'</td>';
+                    html += '<td class="subSent">'+iter.emails_sent+'</td>';
+                    html += '<td class="subResp">'+iter.responses+'</td>';
+                    html += '<td class="subOpen">'+iter.leads+'</td>';
+                    html += '<td class="subClos">'+iter.closed+'</td>';
+                    html += '<td class="subWon">'+iter.leads_won+'</td>';
+
+                    html += '<td></td>';
+                    html += '<td></td>';
+                    html += '</tr>';
+
+                }); html += '</table>';
+
+                oTable.fnOpen( nTr, html, 'details'); display('none');
+
+            }, error : function(){ display('none'); alert('ajax request return error'); }});
+
+    }
+
+    function display(status)
+    {
+        $('#mask').css('display', status);
+        $('#loading').css('display', status);
+    }
+
+    function number_format( number, decimals, dec_point, thousands_sep ) {	// Format a number with grouped thousands
+        //
+        // +   original by: Jonas Raoni Soares Silva (http://www.jsfromhell.com)
+        // +   improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+        // +	 bugfix by: Michael White (http://crestidg.com)
+
+        var i, j, kw, kd, km;
+
+        // input sanitation & defaults
+        if( isNaN(decimals = Math.abs(decimals)) ){
+            decimals = 2;
+        }
+        if( dec_point == undefined ){
+            dec_point = ",";
+        }
+        if( thousands_sep == undefined ){
+            thousands_sep = ".";
+        }
+
+        i = parseInt(number = (+number || 0).toFixed(decimals)) + "";
+
+        if( (j = i.length) > 3 ){
+            j = j % 3;
+        } else{
+            j = 0;
+        }
+
+        km = (j ? i.substr(0, j) + thousands_sep : "");
+        kw = i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousands_sep);
+        //kd = (decimals ? dec_point + Math.abs(number - i).toFixed(decimals).slice(2) : "");
+        kd = (decimals ? dec_point + Math.abs(number - i).toFixed(decimals).replace(/-/, 0).slice(2) : "");
+
+
+        return km + kw + kd;
+    }
+</script>
+<div style="float:left; width:900px;">
+    <h1>Recruiting Stats</h1>
+    <!--<p><strong>Year:</strong>
+<?php
+    for($i=2011; $i<=date("Y"); $i++){
+        if($i==date("Y"))
+            echo "<a href='".$this->url(array('year'=>$i, 'month'=>date("n")))."'>$i</a>";
+        else
+            echo "<a href='".$this->url(array('year'=>$i, 'month'=>date("n")))."'>$i</a> | ";
+    }
+    ?>
+</p>
+<p><strong>Month:</strong>
+<?php
+    for($i=1; $i<=12; $i++){
+        if($i==date("n")){
+            echo "<a href='".$this->url(array('month'=>$i))."'>" .date("F", mktime(0, 0, 0, $i,   date("d"),   date("Y")))."</a>";
+            if(date("Y")==$this->year)
+                break;
+        }else{
+            echo "<a href='".$this->url(array('month'=>$i))."'>" .date("F", mktime(0, 0, 0, $i,   date("d"),   date("Y"))). "</a> | ";
+        }
+    }
+    ?>
+
+</p>-->
+    <div class="dateBox">
+        <p class="dateBoxInn"><a href="#" title="" class="dateLink" id="showBox"><?php echo htmlentities(date("M j, Y", strtotime($this->report_params["start_date"]))); ?> – <?php echo htmlentities(date("M j, Y", strtotime($this->report_params["end_date"]))); ?></a></p>
+        <div class="subDate">
+            <div class="dateRanch">
+                <h5>Date Range </h5>
+                <input type="text" value="<?php echo htmlentities(date("M j, Y", strtotime($this->report_params["start_date"]))); ?>" name="start_date" id="search-start_date"  onfocus="this.value=''" onblur="if (this.value==''){this.value=''}" class="datepicker" />
+                <input type="text" value="<?php echo htmlentities(date("M j, Y", strtotime($this->report_params["end_date"]))); ?>" name="end_date" id="search-end_date"  onfocus="this.value=''" onblur="if (this.value==''){this.value=''}" class="datepicker"/>
+                <p>
+                    <a href="#" title="" class="dCancelBtn" id="cancel" txt="<?php echo htmlentities(date("M j, Y", strtotime($this->report_params["start_date"]))); ?> – <?php echo htmlentities(date("M j, Y", strtotime($this->report_params["end_date"]))); ?>">Cancel</a>
+                    <a href="#" title="" class="dUpdlBtn" id="update">Update</a>
+                </p>
+            </div>
+
+            <div class="quickDate">
+                <h5>Quick dates</h5>
+                <br class="clear" />
+                <ul>
+                    <li><a href="#" class="selectDate" start="<?php echo date("M j, Y"); ?>" end="<?php echo date("M j, Y"); ?>" title="">Today</a></li>
+                    <li><a href="#" class="selectDate" start="<?php echo date("M j, Y", mktime(0,0,0,date("m"),date("d")-1,date("Y"))); ?>" end="<?php echo date("M j, Y", mktime(0,0,0,date("m"),date("d")-1,date("Y"))); ?>" title="">Yesterday</a></li>
+                    <li><a href="#" class="selectDate" start="<?php echo date("M j, Y", mktime(0,0,0,date("m"),date("d")-7,date("Y"))); ?>" end="<?php echo date("M j, Y"); ?>" title="">Last 7 days</a></li>
+                </ul>
+
+                <ul class="rightUl">
+                    <li><a href="#" class="selectDate" start="<?php echo date("M j, Y", mktime(0,0,0,date("m"),date("d")-30,date("Y"))); ?>" end="<?php echo date("M j, Y"); ?>" title="">Last 30 days</a></li>
+                    <li><a href="#" class="selectDate" start="<?php echo date("M j, Y", mktime(0,0,0,date("m"),1,date("Y"))); ?>" end="<?php echo date("M j, Y", mktime(0,0,0,date("m"),date("t"),date("Y"))); ?>" title="">This month:<span> <?php echo date("F") ?></span></a></li>
+                    <li><a href="#" class="selectDate" start="<?php echo date("M j, Y", mktime(0,0,0,date("m")-1,1,date("Y"))); ?>" end="<?php echo date("M j, Y", mktime(0,0,0,date("m")-1,date("t", mktime(0,0,0,date("m")-1,1,date("Y"))),date("Y"))); ?>" title="">Last month: <span><?php echo date("F", mktime(0,0,0,date("m")-1,1,date("Y"))); ?></span></a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <br><br>
+    <div>
+        <table class="display" id="statTable">
+            <thead>
+            <tr>
+                <th width="30%">Recruiter</th>
+                <th width="10%">Emails Sent</th>
+                <th width="10%">Responses</th>
+                <th width="10%">Open Leads</th>
+                <th width="10%">Closed Leads</th>
+                <th width="10%">Leads Won</th>
+                <th width="10%">Total Impressions</th>
+                <th width="10%">Total Revenue</th>
+            </tr>
+            </thead>
+            <tbody></tbody>
+            <tfoot>
+            <tr>
+                <th>Recruiter</th>
+                <th>Emails Sent</th>
+                <th>Responses</th>
+                <th>Open Leads</th>
+                <th>Closed Leads</th>
+                <th>Leads Won</th>
+                <th>Total Impressions</th>
+                <th>Total Revenue</th>
+            </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+
+<div id="mask"></div>
+<div id="loading"><span>processing...</span></div>
+
+<script type="text/javascript" src="/font/cufon-yui.js"></script>
+<script	type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script	type="text/javascript" src="/font/Headline_Two_400.font.js"></script>
+<script type="text/javascript">
+    Cufon.replace('h1');
+</script>
+<script	type="text/javascript" src="/js/calendar.js.js"></script><script type="text/javascript">
+    $(function(){
+        $('#singleCont').css('backgroundImage', 'url(/images/contBg_1.png)');
+        $(".datepicker").datepicker({dateFormat: 'M d, yy'});
+    });
+</script>

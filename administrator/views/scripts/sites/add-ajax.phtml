@@ -1,0 +1,778 @@
+<link href="/styles/jquery.multiselect.css" media="screen" rel="stylesheet" type="text/css" >
+<link href="/styles/jquery.multiselect.filter.css" media="screen" rel="stylesheet" type="text/css" >
+<script type="text/javascript" src="/js/jquery-ui-1.9.2.custom.min.js"></script>
+<script type="text/javascript" src="/js/jquery.multiselect.js"></script>
+<script type="text/javascript" src="/js/jquery.multiselect.filter.js"></script>
+<script type="text/javascript" src="/js/validate.1.9.0.js"></script>
+<style type="text/css">
+    
+    #linkAdditionalSiteAdd a
+    {
+        cursor: pointer; 
+        color: blue; 
+        padding-left: 127px;
+    }
+    #linkAdditionalSiteMinus a
+    {
+        cursor: pointer; 
+        color: red; 
+        padding-left: 127px;
+    }
+    
+    #form label.error{
+        color: red;
+        font-family: Arial,Helvetica,sans-serif;
+        font-size: 12px;
+        width: 370px;
+        clear: both;
+        padding-top: 15px;
+    }
+    
+    #form p{
+        clear: both;
+    }
+    
+    .addPrice{
+        cursor: pointer;    
+    }
+    
+    .minusPrice a{
+        cursor: pointer;
+        color: red;
+        display: none;
+        padding-left: 127px;
+    }
+    
+    #showResult{ display: none; }
+    
+    #showResult table{
+        width: 700px;
+        border-collapse: collapse;
+        border: 1px #B7B7B7 solid;
+    }
+    
+    #showResult table tr td{
+
+        border: 1px #B7B7B7 solid;
+        font-size: 14px;
+        font-family: Arial,Helvetica,sans-serif;
+        padding: 5px;
+        width: 50%;
+    }
+    
+    #showResult table tr th{
+        
+        border: 1px #B7B7B7 solid;
+        font-size: 16px;
+        font-family: Arial,Helvetica,sans-serif;
+        padding: 5px;
+        width: 50%;
+        text-align: center;
+    }
+    
+    #showResult table tr td.ok{ color: green; }
+    #showResult table tr td.error{ color: red; }
+    
+    #mask{
+        position: fixed;
+        height: 100%;
+        width: 100%;
+        display: none;
+        opacity: 0.3;
+        filter: alpha(opacity=30);
+        background-color: #000000;
+        z-index: 9000;
+        left:0;
+        top:0;
+    }
+    
+    #loading{ 
+        position: fixed;
+        display: none;
+        height: 50px;
+        width: 200px;
+        z-index: 10000;
+        border: 1px solid #B7B7B7;
+        border-radius: 4px;
+        background-color: #F4F4F4;
+        left: 43%;
+        top: 44%;
+    }
+    
+    #loading span{
+        font-size: 14px;
+        display: block;
+        margin: 15px 0px 0px 62px; 
+    }
+    
+</style>    
+<script>
+
+        var arrSize = <?php echo Zend_Json::encode($this->size);?>;
+        var confirmUserID = <?php echo $this->confirmUserID;?>;
+        var arrSiteName = new Array();
+           
+	$(document).ready(function(){
+ 
+		$( ".datepicker" ).live('click', function(){
+			$(this).datepicker({
+				showOn:'focus',
+				'dateFormat'  : "yy-mm-dd"
+				}).focus();				
+		});
+                
+                if($("#pay_estimates").attr('checked')){ $("#cpm").css('display', 'block'); }else{ $("#cpm").css('display', 'none'); }
+                
+		$("#pay_estimates").click(function(){ 
+                    
+                    if($("#pay_estimates").attr('checked')){ $("#cpm").css('display', 'block'); } 
+                    else                                   { $("#cpm").css('display', 'none');  }	
+                });				
+
+
+                if($("#io").attr('checked')){ $("#rub_io").css('display', 'block'); }else{ $("#rub_io").css('display', 'none'); }
+                
+		$("#io").click(function(){ 
+                    
+                    if($("#io").attr('checked')){ $("#rub_io").css('display', 'block'); } 
+                    else                                   { $("#rub_io").css('display', 'none');  }	
+                });				
+
+                if($("#floor_pricing").attr('checked')){ 
+                    
+                    $("#florPriceContent").css('display', 'block');
+                    $("#notes").css('display', 'block');		
+                
+                } else { 
+                    
+                    $("#florPriceContent").css('display', 'none');			
+                    $("#notes").css('display', 'none');		
+                
+               }		
+               
+               $("#floor_pricing").click(function(){	
+                   
+                   if($("#floor_pricing").attr('checked')){
+                       
+                       $("#florPriceContent").css('display', 'block');
+                       $("#notes").css('display', 'block');
+                       
+                       var children = $('#florPriceContent').children();
+                       var iter = children.length;
+                       
+                       if(iter > 1) $('.minusPrice a').css('display', 'block'); 
+                   
+                   } else {
+                       
+                       $("#florPriceContent").css('display', 'none');
+                       $("#notes").css('display', 'none');
+                       $('.minusPrice a').css('display', 'none');                   
+                   }
+               
+                });	
+                  
+                $("#form").validate({
+                    
+                       onkeyup : false,
+                       submitHandler: function (form) { return false; },
+                    
+                       rules : {  
+                                  SiteName : {required: true, uniqueSiteName: true},
+                                  SiteURL : {required: true},
+                                  cpm : { requiredCPM: true }
+                                         
+                                },
+                                
+                       messages : { 
+                                    SiteName : { required: "ENTER SITE NAME", uniqueSiteName: "THIS DOMAIN ALREADY BELONG TO PUBLISHER" },
+                                    SiteURL : { required: "ENTER SITE URL" },
+                                    cpm : { requiredCPM: "ENTER CPM or unchecked PAY ESTIMATES" }                                        
+                                    
+                                   },
+                                        
+                       errorPlacement: function(error, element) { 
+                 
+                                if (element.attr("name") == "SiteName") error.insertAfter($("input[name=SiteName]"));
+                                if (element.attr("name") == "SiteURL") error.insertAfter($("textarea[name=SiteURL]"));
+                                if (element.attr("name") == "cpm") error.insertAfter($("input[name=cpm]"));
+                       }
+                 });  
+                 
+                
+                 $.validator.addMethod('uniqueSiteName', function(value, element, param){ return checkSiteName(value); });  
+                 $.validator.addMethod('validUrl', function(value, element, param){ return validURL(value); });
+                 $.validator.addMethod("requiredCPM", function(value, element) {  if(jQuery('#pay_estimates:checked').val()){
+                                                                                       if(jQuery('input[name=cpm]').val()) 
+                                                                                            return true; 
+                                                                                       else return false;
+                                                                                   } else   return true; 
+                                                                                });
+     
+
+                 $( "#testUser" ).autocomplete({
+
+                            close: function(event, ui){ $('#testUser').css('background', 'url("/images/inpBg.png") no-repeat scroll left top transparent'); },
+                            open: function(event, ui){ $('input[name=user]').val(''); },
+                            source: function( request, response ) {
+
+                                  $.getJSON( "/administrator/sites/get-ajax-user/", { term: extractLast( request.term ) }, response );
+                            },
+                            search: function(){
+                                
+                                $('#testUser').css('background', 'url("/images/ui-anim_basic_16x16.gif") no-repeat scroll right center white');  
+                                var term = extractLast( this.value );
+                                if ( term.length < 2 ) { return false; }
+                                                                
+                            },
+                            focus: function(){ return false; },
+                            select: function( event, ui ){     
+
+                                this.value = '(PubID: '+ui.item.id+') '+ui.item.label;
+                                $('#userSearch').val(ui.item.id);
+                                return false;
+                            }
+                 }); 
+                                                                                
+                  
+        });
+        
+        
+        function split( val ) {
+            return val.split( /,\s*/ );
+        }
+        
+        function extractLast( term ) {
+            return split( term ).pop();
+        }      
+        
+        
+        function addFloorPricing()
+        {
+            var children = $('#florPriceContent').children();
+            var iter = children.length + 1;
+            
+            $('#florPriceContent').append('<div id="floorPriceItem-'+iter+'" style="padding: 5px 0px 0px 127px;"><input type="text" style="width: 100px;" class="datepicker" name="floor_price_date-'+iter+'" id="floor_price_date-'+iter+'" value="" /><input type="text" style="width: 100px;" name="floor_price-'+iter+'" id="floor_price-'+iter+'" value="0." /><input type="text" style="width: 100px;" name="floor_percent-'+iter+'" id="floor_percent-'+iter+'" value="0.5" /></div> ');
+            
+            if(iter > 1) $('.minusPrice a').css('display', 'block');
+        }
+        
+        
+        function minusFloorPricing()
+        {
+            var children = $('#florPriceContent').children();
+            var iter = children.length;
+
+            if(iter > 1)  $('#florPriceContent #floorPriceItem-'+iter).replaceWith(''); 
+            if(iter == 2) $('.minusPrice a').css('display', 'none');   
+        }
+        
+        
+        function addSite()
+        { 
+            var children = $('#additinalSiteFiled').children();
+            var iter = children.length + 1;
+            var passback = '';
+            
+            $.each(arrSize, function(key, jter){
+                
+                passback += '<div><label>'+jter['file_name']+': </label><textarea rows="5" cols="100" id="creative_passbacks_'+jter['file_name']+'-'+iter+'" name="creative_passbacks_'+jter['file_name']+'-'+iter+'"></textarea></div>';
+                
+            });            
+            
+            $('#additinalSiteFiled').append('<div id="additional-'+iter+'"><input type="hidden" name="type" id="type" value="1"><p><label>Site Name: </label><input type="text" name="SiteName-'+iter+'" id="SiteName-'+iter+'" value=""/></p><p><label>SiteURL: </label><textarea rows="5" cols="50" name="SiteURL-'+iter+'" id="SiteURL-'+iter+'"></textarea></p><p><label style="width: 180px">Create DFP Passbacks: </label><input type="checkbox" id="create_dfp_passbacks-'+iter+'" onclick="addCreatives('+iter+', this)" name="create_dfp_passbacks-'+iter+'" value="1" style="width: 20px;" /></p><div id="temp_passback-'+iter+'" style="display: none"><label style="width: 180px">Use temp passbacks: </label><input type="checkbox" id="use_temp_passbacks-'+iter+'" name="use_temp_passbacks-'+iter+'" onclick="tempPassback('+iter+', this);" value="1" style="width: 20px;" /></div><div id="creatives_'+iter+'" style="display: none">'+passback+'</div></div>');
+            
+            if(iter == 1) $('#additinalSiteFiled').after('<p id="linkAdditionalSiteMinus"><a onClick="minusSite()">- Remove Additional Site</a></p>');
+        }
+        
+        function minusSite()
+        {
+            var children = $('#additinalSiteFiled').children();
+            var iter = children.length;
+
+            if(iter == 1){ $('#linkAdditionalSiteMinus').replaceWith('');
+                           $('#additinalSiteFiled #additional-'+iter).replaceWith('');
+            }         else $('#additinalSiteFiled #additional-'+iter).replaceWith('');
+
+        }
+        
+        function additionalValidate()
+        {
+            var result = true;
+            var children = $('#additinalSiteFiled').children();
+            var iter = children.length;
+                                   
+            for(var i = 1; i <= iter; i++){
+      
+                 var type = $('#type-'+i).val();
+                 var SiteName = $('#SiteName-'+i).val();
+                 var SiteURL = $('#SiteURL-'+i).val();
+      
+                 if(type == false || type == ''){ $('#type-'+i).after('<label class="error" id="type_error-'+i+'">SELECT TYPE</label>');                                         result = false; }
+
+                 if(SiteName == false || SiteName == ''){ $('#SiteName-'+i).after('<label class="error" id="SiteName_error-'+i+'">ENTER SITE NAME</label>');                      result = false; }
+            else if(checkSiteName(SiteName) == false){ $('#SiteName-'+i).after('<label class="error" id="SiteName_error-'+i+'">THIS DOMAIN ALREADY BELONG TO PUBLISHER</label>'); result = false; }
+            
+                 if(SiteURL == false || SiteURL == ''){ $('#SiteURL-'+i).after('<label class="error" id="SiteURL_error-'+i+'">ENTER SITE URL</label>');                      result = false; }
+            /*else if(validURL(SiteURL)){ $('#SiteURL-'+i).after('<label class="error" id="SiteURL_error-'+i+'">THIS VALUE MUST URL ( example http:// or https:// )</label>'); result = false; }*/      
+            }
+
+            return result;
+        }
+        
+        function userValidate()
+        {
+            var result = true;
+            var testUser = $('#testUser').val();
+            
+            if($('input[name=user]').val() && testUser.length > 4){ $('#testUser_error').replaceWith(''); }
+                                                              else{ $('#testUser').after('<label class="error" id="testUser_error">SELECT USER</label>'); result = false; };
+            return result;
+        }
+        
+        function checkSiteName(name)
+        {
+            var result = false;
+            
+            name = name.replace('https://', '');   
+            name = name.replace('http://', '');
+            name = name.replace('www.', '');
+            
+            arrSiteName.push(name);
+            
+            $.ajax({ url : '/administrator/ajax/validator-site-name',
+                     data : { siteName : name },
+                     type : "POST",
+                     async: false,
+                     dataType : "json",
+
+             success : function(response) { if(response.result == false) result = true  
+
+             }, error : function(){ alert('ajax request for site name validator return error'); }});
+         
+             return result;
+        }
+        
+        function validURL(str){
+        
+              var pattern = new RegExp('/(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/'); 
+              
+              if(!pattern.test(str)) { return false; } 
+              else                   { return true;  }
+        }
+        
+        
+        function validDublicateName()
+        {   
+            var result = true;
+            
+            $.each(arrSiteName, function(key1, iter){
+                
+                $.each(arrSiteName, function(key2, jter){
+                   
+                   if(key1 != key2){ 
+                       if(iter == jter){
+       
+                           if(key1) $('#SiteName-'+key1).after('<label class="error" id="SiteNameDub_error-'+key1+'">THIS SITE NAME IS DUBLICATE</label>');   
+                               else $('#SiteName').after('<label class="error" id="SiteNameDub_error">THIS SITE NAME IS DUBLICATE</label>');   
+                           
+                           if(key2) $('#SiteName-'+key2).after('<label class="error" id="SiteNameDub_error-'+key2+'">THIS SITE NAME IS DUBLICATE</label>');
+                                            
+                           arrSiteName = new Array();
+                           
+                           result = false;
+                       } 
+                   }
+                   
+                });                
+            });
+
+            return result;
+        }
+        
+
+        function getMain()
+        {
+            var creativePassback = new Object();
+            
+            var user = $('#userSearch').val();
+            var siteType = $('#type').val();
+            var SiteName = $('#SiteName').val();
+            var SiteURL = $('#SiteURL').val();
+            var desired_types = $("#desired_types").val();
+
+            $.each(arrSize, function(key, jter){
+                
+                creativePassback[jter['file_name']] = $('#creative_passbacks_'+jter['file_name']+'-0').val(); 
+                
+            });
+            
+            var create_dfp_passbacks = $('input[name=create_dfp_passbacks]:checked').val();
+             if(create_dfp_passbacks != 1) create_dfp_passbacks = 0; 
+            
+            var floor_pricing = $('input[name=floor_pricing]:checked').val();
+             if(floor_pricing != 1) floor_pricing = 0;
+                               
+            var notes = ''; 
+            var objFloorPricing = new Object(); 
+            
+            if(floor_pricing){
+                
+               var children = $('#florPriceContent').children();
+               var iter = children.length;
+               
+               for(var i = 1; i <= iter; i++){
+           
+                   objFloorPricing['['+i+'][date]'] = $('#floor_price_date-'+i).val();
+                   objFloorPricing['['+i+'][price]'] = $('#floor_price-'+i).val();
+                   objFloorPricing['['+i+'][percent]'] = $('#floor_percent-'+i).val();
+               }   
+               
+               notes = $('textarea[name=notes]').val();     
+            }
+            
+            var pay_estimates = $('input[name=pay_estimates]:checked').val();
+             if(pay_estimates != 1) pay_estimates = 0;
+             
+            var cpm = $('input[name=cpm]').val();
+
+            var io = $('input[name=io]:checked').val();
+             if(io != 1) io = 0;
+             
+            var rub_io = $('input[name=rub_io]').val();
+            
+            var auto_report_file = $('input[name=auto_report_file]:checked').val();
+             if(auto_report_file != 1) auto_report_file = 0;
+             
+            var email_notlive_3day = $('input[name=email_notlive_3day]:checked').val();
+             if(email_notlive_3day != 1) email_notlive_3day = 1; else email_notlive_3day = 0;
+             
+            var limited_demand_tag = $('input[name=limited_demand_tag]:checked').val();
+             if(limited_demand_tag != 1) limited_demand_tag = 0; 
+             
+             /*var auto_create_tag = $('input[name=auto_create_tag]:checked').val();
+             if(!auto_create_tag) auto_create_tag = 0;*/ 
+            
+            var objResult = save(user, siteType, SiteName, SiteURL, create_dfp_passbacks, creativePassback, floor_pricing, objFloorPricing, io, rub_io, pay_estimates, cpm, auto_report_file, email_notlive_3day, limited_demand_tag, /*auto_create_tag,*/ notes, desired_types);
+                
+            var childrenAdditional =  $('#additinalSiteFiled').children();
+            var iterAdditional = childrenAdditional.length;
+                                    
+            if(iterAdditional){ $('#form').hide('slow');
+                                $('#showResult').show('slow'); 
+
+                                if(objResult.SiteID) $('#showResult table tbody').append('<tr><td>'+objResult.SiteName+'</td><td class="ok">ok</td></tr>');
+                                else                 $('#showResult table tbody').append('<tr><td>'+objResult.SiteName+'</td><td class="error">error</td></tr>'); 
+                                                                     
+                                setTimeout(function(){getAdditional(user, floor_pricing, objFloorPricing, io, rub_io, pay_estimates, cpm, auto_report_file, email_notlive_3day, limited_demand_tag, /*auto_create_tag,*/ notes, iterAdditional, 1);}, 50);
+                            
+            } else document.location.href="/administrator/tags/";
+        
+            
+        }
+        
+        
+        function getAdditional(user, floor_pricing, objFloorPricing, io, rub_io, pay_estimates, cpm, auto_report_file, email_notlive_3day, limited_demand_tag, /*auto_create_tag,*/ notes, iter, i)
+        {
+            if(i <= iter){
+                
+                var creativePassback = new Object();
+                
+                var siteType = $('#type-'+i).val();
+                var SiteName = $('#SiteName-'+i).val();
+                var SiteURL = $('#SiteURL-'+i).val();
+                
+                $.each(arrSize, function(key, jter){
+                    
+                    creativePassback[jter['file_name']] = $('#creative_passbacks_'+jter['file_name']+'-'+i).val(); 
+                    
+                });
+            
+                var create_dfp_passbacks = $('input[name=create_dfp_passbacks-'+i+']:checked').val();
+                 if(create_dfp_passbacks != 1) create_dfp_passbacks = 0; 
+                
+                var objResult = save(user, siteType, SiteName, SiteURL, create_dfp_passbacks, creativePassback, floor_pricing, objFloorPricing, io, rub_io, pay_estimates, cpm, auto_report_file, email_notlive_3day, limited_demand_tag, /*auto_create_tag,*/ notes)
+                  
+                if(objResult.SiteID) $('#showResult table tbody').append('<tr><td>'+objResult.SiteName+'</td><td class="ok">ok</td></tr>');
+                else                 $('#showResult table tbody').append('<tr><td>'+objResult.SiteName+'</td><td class="error">error</td></tr>'); 
+                
+                setTimeout(function(){getAdditional(user, floor_pricing, objFloorPricing, io, rub_io, pay_estimates, cpm, auto_report_file, email_notlive_3day, limited_demand_tag, /*auto_create_tag,*/ notes, iter, i+1);}, 50);
+                
+            } else { display('none');
+                     $('#submit-button').css('display', 'block');
+                     $('#showResult table tfoot th').html('complete');
+                     $('#showResult .contUsL').append('<p><a title="" onclick="redirect();" class="sendMasBtn">OK</a></p>'); }
+            
+        }
+        
+        
+        function save(user, siteType, SiteName, SiteURL, create_dfp_passbacks, creativePassback, floor_pricing, objFloorPricing, io, rub_io, pay_estimates, cpm, auto_report_file, email_notlive_3day, limited_demand_tag, /*auto_create_tag,*/ notes, desired_types)
+        {
+            var objResult = new Object();
+
+            SiteName = SiteName.replace('https://', '');   
+            SiteName = SiteName.replace('http://', '');
+            SiteName = SiteName.replace('www.', '');
+  
+            var SiteCategory = $('#SiteCategory').val();   
+
+            $.ajax({ url : '/administrator/ajax/add-site',
+                     data : { user : user, siteType : siteType, SiteName : SiteName, SiteURL : SiteURL, create_dfp_passbacks : create_dfp_passbacks, creativePassback : creativePassback, floor_pricing : floor_pricing, objFloorPricing : objFloorPricing, io : io, rub_io : rub_io, pay_estimates : pay_estimates, cpm : cpm, auto_report_file : auto_report_file, email_notlive_3day : email_notlive_3day, limited_demand_tag : limited_demand_tag, /*auto_create_tag : auto_create_tag,*/ notes : notes, SiteCategory : SiteCategory, desired_types: desired_types },
+                     type : "POST",
+                     async: false, /* java script wait ajax */
+                     dataType : "json",
+
+             success : function(response) { objResult = response.result;
+
+             }, error : function(){ objResult.SiteID = 0; 
+                                    objResult.SiteName = SiteName; 
+                                    
+                                    alert('ajax request for save site in DB return error'); }});    
+            return objResult;
+        }
+      
+        
+        function mySubmit()
+        {
+            arrSiteName = new Array();      
+            
+            $('#submit-button').css('display', 'none');
+            display('block');
+
+            var validMain = $("#form").valid();  
+            var validAdditional = additionalValidate();
+            var validDublicate = validDublicateName();
+            var validUser = userValidate(); 
+
+            if(validMain && validAdditional && validDublicate && validUser){ getMain(); }
+            else{ $('#submit-button').css('display', 'block'); display('none'); }
+        }
+        
+        function redirect()
+        {
+            document.location.href='/administrator/tags';
+        }
+        
+        
+        function addCreatives(id, obj)
+        {
+                if($(obj).is(':checked')){
+                        $("#creatives_"+id).css('display', 'block');
+                        $('#temp_passback-'+id).css('display', 'block');
+                }else{
+                        $("#creatives_"+id).css('display', 'none');
+                        $('#temp_passback-'+id).css('display', 'none');
+                }
+        }
+        
+        function tempPassback(id, obj)
+        {
+            if($(obj).is(':checked')){
+                    
+                    $.each(arrSize, function(key, iter){
+                         $('#creative_passbacks_'+iter['file_name']+'-'+id).val('<a target="_blank" href="http://vosmd.com/click/?s=51&amp;c=80071"><img border="0" src="http://ads-by.madadsmedia.com/images/hosted/ezgc-'+getTempFile(iter['file_name'])+'.gif"></a>'); 
+                    });                    
+            }else{
+                
+                    $.each(arrSize, function(key, iter){
+                        $('#creative_passbacks_'+iter['file_name']+'-'+id).val('');
+                    });
+            }
+        }
+        
+        function getTempFile(size)
+        {
+            var result = '';
+            
+            switch(size){
+                case '728x90' : result = '728'; break;
+                case '300x250': result = '300'; break;
+                case '160x600': result = '160'; break;
+                case '120x600': result = '120'; break;
+                case '468x60' : result = '468'; break;
+                default       : break;    
+            }
+            
+            return result;
+        }
+        
+        function display(status)
+        {
+            $('#mask').css('display', status);
+            $('#loading').css('display', status);         
+        }
+        
+</script>
+
+<form action="" method="post" class="sign-up" id="form" onSubmit="return false;">
+<div class="contUsL" style="width: 700px;">
+       
+       <p>
+           <div class="ui-widget">
+           <label>User: </label>
+           <input type="text" name="testUser" id="testUser" value="<?php echo !empty($this->formValues['testUser']) ? $this->formValues['testUser'] : '';?>" placeholder="id or email or name" />
+           <input type="hidden" name="user" id="userSearch" value="<?php echo !empty($this->formValues['user']) ? $this->formValues['user'] : '';?>"/>
+           </div>
+       </p>
+       <input type="hidden" name="type" id="type" value="1">
+        <input type="hidden" name="desired_types" id="desired_types" value="<?php echo $this->formValues['desired_types'] ?>">
+        <p>
+            <label>Category:</label>
+            <select name="SiteCategory" id="SiteCategory">
+		        <option value="0">All</option>
+		        <?php foreach($this->category as $iter):?>
+		        <option value="<?php echo $iter['id']?>"><?php echo $iter['name'];?></option>
+		        <?php endforeach;?>
+            </select> *Please verify this category is accurate.
+        </p>
+        <p>
+            <label>Site Name: </label>
+            <input type="text" name="SiteName" id="SiteName" value="<?php echo $this->formValues['name'] ?>" />
+        </p> 
+        <p>
+            <label>SiteURL: </label>
+           <!--   <input type="text" name="SiteURL" id="SiteURL" value="" />-->
+           <textarea rows="5" cols="50" name="SiteURL" id="SiteURL"><?php echo $this->formValues['SiteURL'] ?></textarea>
+        </p>
+        <p>
+            <label style="width: 180px">Create DFP Passbacks: </label> 
+            <input type="checkbox" id="create_dfp_passbacks" name="create_dfp_passbacks" onclick="addCreatives(0, this)" value="1" style="width: 20px;" />
+        </p> 
+        <div id="temp_passback-0" style="display: none">
+            <label style="width: 180px">Use temp passbacks: </label> 
+            <input type="checkbox" id="use_temp_passbacks-0" name="use_temp_passbacks-0" onclick="tempPassback(0, this);" value="1" style="width: 20px;" />
+        </div> 
+        <div id="creatives_0" style="display: none">
+            <?php foreach($this->size as $key => $iter):?>
+                <div>
+                    <label><?php echo $iter['file_name']?>: </label>
+                   <textarea rows="5" cols="100" id="creative_passbacks_<?php echo $iter['file_name']?>-0" name="creative_passbacks_<?php echo $iter['file_name']?>-0"></textarea>
+                </div>
+            <?php endforeach;?>      
+        </div>
+        
+    <p id="linkAdditionalSiteAdd"><a onClick="addSite()">+ Add Additional Site</a></p>
+    
+    <div id="additinalSiteFiled"></div>    
+    	<p>
+            <label style="width: 180px">Rubicon IO: </label>
+            <input type="checkbox" <?php echo !empty($this->formValues['rub_io']) ? 'checked="checked"' : '' ?> id="io" name="io" value="1" style="width: 20px;" />  
+        </p>    
+        <p style="display:none" id="rub_io">
+            <label style="width: 180px">IO #: </label> 
+            <input type="text" name="rub_io" value="<?php echo $this->formValues['rub_io'] ?>"/>
+        </p>
+    	<p>
+            <label style="width: 180px">Pay on estimates: </label>
+            <input type="checkbox" id="pay_estimates" name="pay_estimates" value="1" style="width: 20px;" />  
+        </p>    
+        <p style="display:none" id="cpm">
+            <label style="width: 180px">CPM: </label> 
+            <input type="text" name="cpm" value=""/>
+        <p>
+            <label style="width: 180px">Floor Pricing?: </label> 
+            <input type="checkbox" id="floor_pricing" name="floor_pricing" value="1" style="width: 20px;" />
+       </p>  
+ 
+       
+       <div id="florPriceContent" style="display: none">
+       
+              <div id="floorPriceItem-1">  
+                    <label>Floor price: <a class="addPrice" onClick="addFloorPricing()">+</a></label> 
+                    <input type="text" style="width: 100px;" class="datepicker" name="floor_price_date-1" id="floor_price_date-1" value="" /> 
+                    <input type="text" style="width: 100px;" name="floor_price-1" id="floor_price-1" value="0." /> 
+                    <input type="text" style="width: 100px;" name="floor_percent-1" id="floor_percent-1" value="0.5" />
+              </div> 
+       </div>
+       <p class="minusPrice"><a onClick="minusFloorPricing()">- Minus Floor Pricing</a></p>
+       
+    <p>
+        <label style="width: 180px">Admeld: </label> 
+        <input type="checkbox" id="auto_report_file" name="auto_report_file" value="1" style="width: 20px;" />
+    </p>
+    <p>
+        <label style="width: 180px">Disable Notifications: </label>
+        <input type="checkbox" id="email_notlive_3day" name="email_notlive_3day" value="1"style="width: 20px;" />
+    </p> 
+    <p>
+        <label style="width: 180px">Limited Demand Tags: </label>
+        <input type="checkbox" id="limited_demand_tag" name="limited_demand_tag" value="1"style="width: 20px;" />
+    </p> 
+    <!--<p>
+        <label style="width: 180px">Auto Create Burst Tag: </label>
+        <input type="checkbox" id="auto_create_tag" name="auto_create_tag" value="6"style="width: 20px;" />
+    </p>--> 
+    
+    <p id="notes" style="display: none">
+        <label>Notes: </label> 
+        <textarea name="notes" style="width:500px; height:100px; "></textarea>
+    </p>    
+
+    
+<p id="submit-button"><a onclick="mySubmit()" class="sendMasBtn link">Save</a></p>
+
+</div>
+</form>
+
+<div id="showResult">
+    <div class="contUsL" style="width: 700px;">
+ 
+        <table>
+            
+            <thead>
+                <tr>
+                    <th colspan="2">Report</th>
+                </tr>
+                <tr>
+                    <th>Site</th>
+                    <th>Result</th>
+                </tr>
+            </thead>
+            
+            <tbody></tbody>
+            
+            <tfoot>
+                <tr>
+                    <th colspan="2">loading... please wait</th>
+                </tr>
+            </tfoot>
+            
+        </table>
+                
+    </div>
+</div>
+
+<div id="mask"></div>
+<div id="loading"><span>processing...</span></div>
+
+<script type="text/javascript" src="/font/cufon-yui.js"></script>
+<script type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#topMenu a', {hover: true});	
+		Cufon.replace('#topMenu a');
+    Cufon.replace('.error', {color: 'red'});	    
+
+</script>
+<script type="text/javascript" src="/font/Headline_Two_400.font.js"></script>
+<script type="text/javascript">
+	Cufon.replace('.footerBann h5');		
+	Cufon.replace('.footerBann p');	
+	Cufon.replace('.footerBann a', {hover: true});	
+	Cufon.replace('.contactUs h1');		
+    Cufon.replace('h1');				
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Lt_300.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#footCopyr');	
+		Cufon.replace('.fMenu a');		
+		Cufon.replace('.contactUs p');	
+		Cufon.replace('.contUsL label');		
+		Cufon.replace('#location');		
+		Cufon.replace('.contBtn p');			
+		Cufon.replace('.sendMasBtn',{textShadow: '-1px -1px #5F5F5F'});		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Rg_700.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('.fMenu h4');
+		Cufon.replace('.headquaters');		
+</script>
+

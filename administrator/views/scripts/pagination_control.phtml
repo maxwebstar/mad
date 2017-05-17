@@ -1,0 +1,25 @@
+<?php if ($this->pageCount): ?>
+<ul style="list-style: none;">
+<li style="display: inline; padding: 3px;">
+<!-- Ссылка на предыдущую страницу -->
+<?php if (isset($this->previous)): ?>
+  <a href="<?php echo $this->url(array('page' => $this->previous)); ?>" class="prev_page">
+    &lt;
+  </a>
+<?php endif; ?>
+</li>
+<?php foreach ($this->pagesInRange as $page): ?>
+    <li style="display: inline; padding: 3px;"><a href="<?php echo $this->url(array('page' => $page)); ?>">
+        <?php echo $page; ?>
+    </a></li>
+<?php endforeach; ?>
+<li style="display: inline; padding: 3px;"> 
+<!-- Ссылка на следующую страницу -->
+<?php if (isset($this->next)): ?>
+  <a href="<?php echo $this->url(array('page' => $this->next)); ?>" class="next_page">
+    &gt;
+  </a>
+<?php endif; ?>
+</li>
+</ul>
+<?php endif; ?>

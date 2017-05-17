@@ -1,0 +1,184 @@
+<link rel="stylesheet" type="text/css" href="/fancybox/jquery.fancybox-1.3.4.css" media="screen" />
+<script type="text/javascript" src="/fancybox/jquery.fancybox-1.3.4.js"></script>
+<script type="text/javascript" charset="utf-8">
+        $(document).ready(function() { 
+
+                <?php if($this->dataAuth->role == 'super'):?>
+                    var accounts = $('#accounts').val();
+                <?php else:?>
+                    var accounts = <?php echo $this->manager['id'] ? $this->manager['id'] : -1; ?>;
+                <?php endif;?>    
+            
+                var referral = $('#referral').val();
+                
+                var oTable = $('#users').dataTable( {
+                        "bProcessing": true,
+                        "bServerSide": true,
+                        "sAjaxSource": '/administrator/index/get-ajax-new',
+                        "fnServerParams": function ( aoData ) {  aoData.push( { "name": "accounts", "value": accounts }, { "name": "referral", "value": referral } ); },
+                        "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+                        "iDisplayLength": 100,
+                        "aoColumns": [ 
+                            { 
+                              "sTitle": "Name",
+                              "fnRender": function(obj){ return obj.aData[0]; } 
+                            },
+                            { 
+                              "sTitle": "Company",
+                              "fnRender": function(obj){ return obj.aData[1]; } 
+                            },
+                            { 
+                              "sTitle": "Email",
+                              "fnRender": function(obj){ return obj.aData[2]; } 
+                            },
+                            { 
+                              "sTitle": "Website",
+                              "fnRender": function(obj){ return obj.aData[3]; } 
+                            },
+                            { 
+                              "sTitle": "Alexa Rank",
+                              "fnRender": function(obj){ return obj.aData[4]; } 
+                            },
+                            { 
+                              "sTitle": "Top Alexa Country",
+                              "fnRender": function(obj){ return obj.aData[5]+'('+obj.aData[10]+')'; } 
+                            },                                    
+                            { 
+                              "sTitle": "Created",
+                              "fnRender": function(obj){ return $.format.date(new Date(obj.aData[6]), "yyyy MMM, dd"); } 
+                            },
+                            { 
+                                "sTitle": "Contact",
+                                "bVisible": true,
+                                "bSortable": false,
+                                "fnRender": function(obj)
+                                {
+                                  var PubID = obj.aData[7];
+                              	  return '<button style="cursor: pointer" onClick="mailContact('+PubID+')">Contact</button>';
+                                }             
+                            },                            
+                            { 
+                              "sTitle": "Date Eligible",
+                              "fnRender": function(obj){ 
+                              	if(obj.aData[8])
+							  		return $.format.date(new Date(obj.aData[8]), "yyyy MMM, dd"); 
+							  	else
+							  		return "-";
+                              	} 
+                            },                            
+                            { 
+                              "bSortable": false,
+                              "fnRender": function(obj){ return '<a href="/administrator/index/view/id/'+obj.aData[9]+'">View</a>'; } 
+                            }
+                            
+                            ], 
+                      
+                        "aaSorting": [[ 4, "desc" ]]
+                } );
+
+                $('#accounts').change(function(){ accounts = $('#accounts').val(); oTable.fnClearTable(); });
+                $('#referral').change(function(){ referral = $('#referral').val(); oTable.fnClearTable(); });
+        } ); 
+        
+function mailContact(PubID)
+{
+    $.fancybox({
+        'width'	: '75%',
+        'height'	: '80%',
+        'href'          : '/administrator/index/contact/PubID/'+PubID,
+        'autoScale'    	: false,
+        'transitionIn'	: 'none',
+        'transitionOut'	: 'none',
+        'type'		: 'iframe'
+    }); 
+}                                                       
+</script>
+
+    <h1>New Users</h1>
+<div class="contUsL" style="width: 750px;">
+<p>
+    <select id="accounts">
+    <?php if($this->dataAuth->role == 'super'):?>
+        <option value="-1">All</option>
+        <?php foreach($this->contactManager as $iter):?>
+             <option value="<?php echo $iter['id']?>"><?php echo $iter['mail'];?></option>
+        <?php endforeach;?>
+    <?php else: ?>
+        <option value="<?php echo $this->manager['id'] ? $this->manager['id'] : -1; ?>">Show My Accounts</option>                 
+        <option value="-1">Show All Accounts</option>
+    <?php endif;?>    
+    </select>   
+    
+<select id="referral" style="margin-left: 76px;">
+    <option value="">All IDs</option>
+    <?php foreach($this->referral as $iter):?>
+        <?php if($this->id == $iter['id']):?>      
+           <option value="<?php echo $iter['id']?>" selected><?php echo $iter['id'] .' '. $iter['name']?></option>               
+        <?php else:?>             
+           <option value="<?php echo $iter['id']?>"><?php echo $iter['id'] .' '. $iter['name']?></option>                    
+        <?php endif;?>
+    <?php endforeach;?>
+</select>         
+</p>    
+<table width="850px" cellpadding="0" cellspacing="0" border="0" class="display" id="users">
+	<thead>
+		<tr>
+			<th width="20%">Name</th>
+			<th width="20%">Company</th>
+			<th width="20%">Email</th>
+            <th width="20%">Website</th>
+            <th width="10%">Alexa Rank</th>
+            <th width="10%">Top Alexa Country</th>
+            <th width="15%">Created</th>
+            <th width="10%">Contact</th>
+            <th width="15%">Date Eligible</th>
+            <th width="5%"></th>
+		</tr>
+	</thead>
+	<tbody>
+	</tbody>
+	<tfoot>
+		<tr>
+			<th>Name</th>
+			<th>Company</th>
+			<th>Email</th>
+            <th>Website</th>
+            <th>Alexa Rank</th>
+            <th>Top Alexa Country</th>
+            <th>Created</th>
+            <th>Contact</th>            
+            <th>Date Eligible</th>
+            <th></th>
+		</tr>
+	</tfoot>
+</table>
+</div>    
+<script type="text/javascript" src="/font/cufon-yui.js"></script>
+<script type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#topMenu a', {hover: true});	
+		Cufon.replace('#topMenu a');
+</script>
+<script type="text/javascript" src="/font/Headline_Two_400.font.js"></script>
+<script type="text/javascript">
+	Cufon.replace('.contInf h3', {hover: true});	
+	Cufon.replace('.contInf h3');
+	Cufon.replace('.contInf h3.white', {color: '#FFF'});	
+	Cufon.replace('.footerBann h5');		
+	Cufon.replace('.footerBann p');	
+	Cufon.replace('.footerBann a', {hover: true});		
+    Cufon.replace('h1');		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Lt_300.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#footCopyr');	
+		Cufon.replace('.contInf p', {hover: true});		
+		Cufon.replace('.contInf p', {color: '#333333'});	
+		Cufon.replace('.contInf p.white', {color: '#FFF'});	
+		Cufon.replace('.fMenu a', {textDecoration: 'underline'});		
+		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Rg_700.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('.fMenu h4');
+</script>

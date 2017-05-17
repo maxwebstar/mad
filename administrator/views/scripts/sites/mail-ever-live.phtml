@@ -1,0 +1,204 @@
+
+<style type="text/css">
+    
+    
+    #main{ display: block; width: 725px; float: left; padding: 10px; }
+
+    #main #label-subject{ float: left; width: 100px; }
+    #main #subject { float: left; width: 600px; }
+    
+    #main #label-text{ float: left; width: 100px; margin-top: 7px; }
+    #main #text { float: left; width: 600px; height: 300px; margin-top: 7px; }
+
+    #main #mySubmit{ display: block; float: left; height: 28px; width: 129px; font-size: 16px; background-color: #8E8E8E; color: #FFFFFF; cursor: pointer; margin-top: 7px; margin-left: 570px; }
+    #main #mySubmit span{ float: left; margin: 5px 0px 0px 50px; } 
+    
+    #radioStatus{ display: block; width: 600px; margin-left: 100px; margin-bottom: 5px; border: 1px solid #DBDFE6; padding-bottom: 2px; padding-top: 2px; }
+    #radioStatus span{ margin-right: 10px; } 
+    
+    #messageActiveUser{ display: block; font-weight: 600; font-size: 16px;  margin-bottom: 20px; margin-left: 100px; }
+    #cke_text{ margin-left: 100px; margin-top: 5px; }
+    
+    #right{ display: block; float: left; width: 530px; margin-left: 100px; overflow: scroll; height: 549px; overflow-x: hidden; border: 1px solid #D3D3D3; padding-top: 4px; padding-left: 4px; }
+    
+    #right .itemMail{ display: block; float: left; width: 510px; }
+    .itemMail .itemHead{ float: left; background: #D3D3D3; padding: 1px 5px 2px; width: 500px; }
+    .itemMail .itemDate{ display: block; float: right; width: 150px; text-align: right; }
+    .itemMail .itemAuthor{ display: block; float: left; width: 320px; }
+    .itemMail .itemSubject{ display: block; float: left; width: 500px; padding: 0px 4px 0px 4px; border: 1px solid #D3D3D3; margin: 0px 0px 2px 0px; }
+    .itemMail .itemText{ display: block; float: left; width: 500px; padding: 0px 4px 0px 4px; border: 1px solid #D3D3D3; margin: 2px 0px 7px 0px; }    
+    
+    
+</style>
+
+<script type="text/javascript" src="/js/jquery-1.6.2.min.js"></script>
+<script type="text/javascript" src="/js/ckeditor/ckeditor.js"></script>
+<script type="text/javascript" src="/js/ckeditor/adapters/jquery.js"></script>
+
+<script type="text/javascript">
+
+  $(document).ready(function(){
+
+      <?php if($this->mailActive):?> /*mail_ever_live = 2*/
+          setText(4);      
+          $('input[name="status"]').filter('[value="4"]').attr('checked', true);   
+      <?php elseif($this->lived):?>         
+          setText(2);      
+          $('input[name="status"]').filter('[value="2"]').attr('checked', true);         
+      <?php else:?>      
+          setText(1);      
+          $('input[name="status"]').filter('[value="1"]').attr('checked', true);      
+      <?php endif;?>       
+      
+      $('#mySubmit').click(function(){
+          
+          $('#main form').submit();
+      });
+      
+      $('input[name="status"]').change(function(){
+          
+          var status = $('input[name="status"]:checked').val();
+          
+          setText(parseInt(status));          
+      });
+            
+  });
+  
+  function setText(status)
+  {
+      switch(status)
+      {
+          case 1 : destroyCreditor();
+          		   <?php if($this->never == "10"): ?>
+	                   var message = "Hello again,<br /><br />\r\n\r\nI'm not sure if you've seen my last email, but I just would like to remind you that your ad tags for <?php echo $this->data['SiteName']?> are ready to go live.  Our system automatically disables ad tags that are inactive for 2 weeks, so hopefully you can find time to place the tags on your website soon.  If you need more time, please feel free to reach back and I'll put in a note to keep them active.<br /><br />\r\n\r\nI look forward to working with you.<br /><br />\r\n\r\nThanks,<br />";
+	                   $('#main #subject').val('<?php echo $this->data['SiteName']?> & MadAdsMedia - Still Interested?');
+	                   $('#main textarea').val(message); 
+	                   break;
+                   <?php else: ?>
+	                   var message = "Hello <?php echo $this->data['SiteName']?> Team,<br /><br />\r\n\r\nI've noticed your account and ad tags are approved and ready to go.  We have several high paying campaigns currently running that are a great fit for your website.  Please let me know if you plan on going live so that I can keep the account open and the tags active.<br /><br />\r\n\r\nPlease let me know if you have any questions.<br /><br />\r\n\r\nThanks,<br />";
+	                   $('#main #subject').val('<?php echo $this->data['SiteName']?> & MadAdsMedia - Getting Started');
+	                   $('#main textarea').val(message); 
+	                   break;
+                   <?php endif; ?>
+
+          case 2 : destroyCreditor();
+                   var message = "Hello <?php echo $this->data['SiteName']?> Team,<br /><br />\r\n\r\nI hope all is well.  Upon reviewing your account, I've noticed the tags for <?php echo $this->data['SiteName']?> haven't yet gone live.  Is there anything I can do to help get things started?  I'm eager to get things going and to begin optimizing the campaigns.<br /><br />\r\n\r\nIf, for some reason, you don't plan on running the tags, please let me know so I can have them deactivated.<br /><br />\r\n\r\nI look forward to hearing from you. <br /><br />\r\n\r\nThanks,<br />"; 
+                   $('#main #subject').val('<?php echo $this->data['SiteName']?> & MadAdsMedia - Getting Started');
+                   $('#main textarea').val(message); 
+                   break;
+
+          case 3 : destroyCreditor();
+                   $('#main #subject').val('');
+                   $('#main textarea').val('');
+                   break;
+                   
+          case 4 : $('#mySubmit').css('margin-left', '667px');
+                   $('#main #subject').val('<?php echo $this->data['SiteName']?> & MadAdsMedia - Getting Started');
+                   $('#main textarea').val('');
+
+                   $('#text').ckeditor(function() {}, { 
+                            toolbar : [   [ 'Source','-','Save','NewPage','DocProps','Preview','Print','-','Templates' ],
+                                          [ 'Cut','Copy','Paste','PasteText','PasteFromWord','-','Undo','Redo' ],
+                                          [ 'Find','Replace','-','SelectAll','-','SpellChecker', 'Scayt' ],
+                                          [ 'Form', 'Checkbox', 'Radio', 'TextField', 'Textarea', 'Select', 'Button', 'ImageButton', 'HiddenField' ],
+                                          [ 'Bold','Italic','Underline','Strike','Subscript','Superscript','-','RemoveFormat','-','Blockquote','CreateDiv','-','BidiLtr','BidiRtl','-','Link','Unlink','Anchor' ],
+                                          [ 'NumberedList','BulletedList','-','Outdent','Indent','-','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock', 'Styles','Format','Font','FontSize','-','TextColor','BGColor' ],
+                                          [ 'Image','Flash','Table','HorizontalRule','Smiley','SpecialChar','PageBreak','Iframe' ]],
+                            width : '685px',
+                            height : '300px',
+                            language : 'en',
+                            enterMode : CKEDITOR.ENTER_BR,
+                            filebrowserBrowseUrl : '/js/ckfinder/ckfinder.html',
+                            filebrowserImageBrowseUrl : '/js/ckfinder/ckfinder.html?type=Images',
+                            filebrowserFlashBrowseUrl : '/js/ckfinder/ckfinder.html?type=Flash',
+                            filebrowserUploadUrl : '/js/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Files',
+                            filebrowserImageUploadUrl : '/js/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Images',
+                            filebrowserFlashUploadUrl : '/js/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Flash'
+                   });
+                   
+                   break;         
+
+          default : destroyCreditor();
+                    var message = "Hello <?php echo $this->data['SiteName']?> Team,<br /><br />\r\n\r\nI've noticed your account and ad tags are approved and ready to go.  We have several high paying campaigns currently running that are a great fit for your website.  Please let me know if you plan on going live so that I can keep the account open and the tags active.<br /><br />\r\n\r\nPlease let me know if you have any questions.<br /><br />\r\n\r\nThanks,<br />";
+                    $('#main #subject').val('<?php echo $this->data['SiteName']?> & MadAdsMedia - Getting Started');
+                    $('#main textarea').val(message);
+                   
+                    break;    
+               
+      }
+      
+      if(status == 3) $('#form-field').hide();
+                 else $('#form-field').show();
+  }
+  
+  function destroyCreditor()
+  {          
+      $('#mySubmit').css('margin-left', '570px');
+      
+      if (CKEDITOR.instances.text) CKEDITOR.instances.text.destroy();
+  }
+
+</script>
+
+<div id="main">    
+    <div id="left" style="width: 700px;">
+	    <div id="one-window" style="width: 700px;">
+		
+        <form method="post" action="">            
+            
+            <?php if($this->mailActive):?> <!--mail_ever_live = 2-->
+                <div id="messageActiveUser">This user has already received the preformatted emails, all future notifications need to be manual.</div>
+                <div id="radioStatus">                 
+                    <input name="status" value="3" type="radio"/><span>Mark as notified</span>
+                    <input name="status" value="4" type="radio"/><span>Custom Email</span>
+                </div>
+            <?php else:?>
+                <div id="radioStatus">
+                    <input name="status" value="1" type="radio"/><span>Non-active user</span>
+                    <?php if($this->never != "10"): ?><input name="status" value="2" type="radio"/><span>Active user</span><?php endif;?>
+                    <input name="status" value="3" type="radio"/><span>Mark as notified</span>
+                    <input name="status" value="4" type="radio"/><span>Custom Email</span>
+                </div>
+            <?php endif;?>            
+            
+            <div id="form-field">            
+                <label id="label-subject">Subject:</label>
+                <input type="text" name="subject" id="subject" value=""/>
+                <div style="clear: both"></div>            
+
+                <label id="label-text">Message:</label>
+                <textarea name="text" id="text"></textarea>            
+            </div>
+                     
+            <div style="clear: both"></div>
+            <a id="mySubmit"><span>Submit</span></a>
+
+        </form>
+		    <span style="position: relative; top: 10px;">
+		    <?php if(!empty($this->message)):?>
+			<?php echo $this->message;?>
+			<?php endif; ?>
+			</span>
+		    
+		</div>
+        
+    </div>    
+</div>
+    <div id="right">
+        
+        <?php foreach($this->mail_data as $iter):?>
+        
+        <div class="itemMail">   
+            <div class="itemHead">
+                <div class="itemAuthor">sent by: <?php echo /*$iter['admin_name'].' / '.*/$iter['author']; ?></div>
+                <div class="itemDate"><?php echo date('M j, Y', strtotime($iter['created'])); ?></div>
+            </div>
+            <?php if(strlen($iter['subject'])):?>            
+            	<div class="itemSubject"><?php echo $iter['subject']; ?></div>
+            <?php endif;?>
+            <div class="itemText"><?php echo $iter['text']; ?></div>            
+        </div>
+        
+        <?php endforeach;?>
+        
+    </div>

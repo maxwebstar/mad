@@ -1,0 +1,174 @@
+<link type="text/css" rel="stylesheet" media="screen" href="/styles/table.css"></link>
+<style type="text/css">
+    
+    .dataTables_processing{ top: 10%; }
+    #blockReport{ width: 740px; }
+    /*#reportTbl{ width: auto !important; float: left; margin-top: 21px; }
+    #reportTbl .tbl_site{ padding-left: 15px; padding-right: 15px; }
+    #reportTbl .tbl_date{ padding-left: 15px; padding-right: 15px; }
+    #reportTbl .tbl_url{ width: auto; text-align: left; padding-left: 15px; }
+    #blockReport{ width: 740px; verflow-x:scroll; overflow-y:hidden;  }
+    
+    #blockReport #topscroll {
+        position: absolute;
+        width: 740px;
+        height: 20px;
+        overflow-x: scroll;
+    }
+    #blockReport #topscroll .fake {
+        height: 1px;
+    }*/
+    
+</style>
+<?php if($this->auth->role=='admin' || $this->auth->role=='super'): ?>
+<script src="/js/jquery.dataTables.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+
+    $(document).ready(function() {       
+        
+            var container = $('#blockReport');
+            var topscroll = $('#topscroll');
+        
+            var SiteID = $('#sites').val();
+            
+            var oTable2 = $('#reportTbl').dataTable( {
+                        "bFilter": false,
+                        "bProcessing": true,
+                        "bServerSide": true,
+                        "sAjaxSource": '/ajax/denied',
+                        "fnServerParams": function ( aoData ) {  aoData.push( { "name": "SiteID", "value": SiteID }, { "name": "PubID", "value": <?php echo $this->PubID;?> } ); },
+                        "iDisplayLength": 100,
+                        "bLengthChange": false,
+                        "bPaginate": true,
+                         "aoColumns": [
+                            { 
+                              "sTitle": "Domain",
+                              "fnRender": function(obj){ return obj.aData[0]; }
+                            }, 
+                            { 
+                              "sTitle": "Impressions",
+                              "fnRender": function(obj){ return obj.aData[1]; }
+                            }, 
+                            { 
+                              "sTitle": "Last Attempt",
+                              "fnRender": function(obj){ return obj.aData[2]; }
+                            }
+                        ],                                                
+                        "aaSorting": [[ 2, "desc" ]],
+                        "fnHeaderCallback": function(nHead, aData, iStart, iEnd, aiDisplay){
+      
+                                setTimeout(function(){ 
+                                
+                                    $('.fake').width($('#reportTbl').width());
+
+                                    topscroll.scroll(function(e){
+                                        container.scrollLeft($(this).scrollLeft());
+                                    });
+                                    container.scroll(function(e){
+                                        topscroll.scrollLeft($(this).scrollLeft());
+                                    });   
+                            
+                                }, 777);                       
+                        }
+            });
+            
+            $('#sites').change(function(){ SiteID = $('#sites').val(); oTable2.fnClearTable();  });
+                        
+     });
+    
+</script>
+                <h1 class="applTitle">Denied URLs Report</h1>
+
+<div style="border:1px solid #CCCCCC; background-color:#EEEEEE; padding:3px; width:70%; margin:5px 0; margin-left: 195px;"><b style="color:#CB0008">Denied URLs:</b> These are domains that have not been approved to serve our ad tags.  If you wish to run our ads on any other domain, please <a href="/new-site/">submit the site for approval</a> or <a href="/contact-us/">contact us</a>.</div>
+
+<div class="reportBox" style="float:left">	   
+                <p class="sizeSel"><b>Site</b>
+                    <select name="site" id="sites">
+                    	<option value="">All Sites</option>
+    <?php foreach($this->sites as $site) { ?>
+        <option value="<?php echo htmlentities($site["SiteID"]); ?>"<?php if ($this->report_params["site"] ==$site["SiteID"]) { echo ' selected'; } ?>><?php echo htmlentities($site["SiteName"]); ?></option>  
+    <?php } ?>
+                    </select>
+                </p> 
+    <br/><br/>
+    <div id="blockReport">
+        <div id="topscroll">
+            <div class="fake"></div>
+        </div>
+        <table cellpadding="0" cellspacing="0" class="display" id="reportTbl">
+        <thead>
+        <tr>			
+            <th>Domain</th>			
+            <th>Impressions</th>
+            <th>Last Attempt</th>		
+        </tr>																    
+        </thead>
+        <tbody>
+        </tbody>
+        </table>
+    </div>
+</div><!--estimate--> 
+<?php else: ?>
+   <p class="topSlog">This feature is no longer supported.</p>
+<?php endif; ?>
+<script	type="text/javascript" src="/font/cufon-yui.js"></script>
+<script	type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#topMenu a', {hover: true});	
+		Cufon.replace('#topMenu a');
+</script><script	type="text/javascript" src="/font/Headline_Two_400.font.js"></script><script type="text/javascript">
+	Cufon.replace('.footerBann h5');		
+	Cufon.replace('.footerBann p');	
+	Cufon.replace('.footerBann a', {hover: true});	
+	Cufon.replace('#content h1');		
+</script><script	type="text/javascript" src="/font/Proxima_Nova_Lt_300.font.js"></script><script type="text/javascript">
+		Cufon.replace('#footCopyr');	
+		Cufon.replace('.fMenu a', {textDecoration: 'underline'});		
+		Cufon.replace('.publisher h4');	
+		Cufon.replace('.publisher h4 span');	
+		Cufon.replace('.publMail a');	
+		Cufon.replace('.logOut span');					
+</script><script	type="text/javascript" src="/font/Proxima_Nova_Rg_700.font.js"></script><script type="text/javascript">
+		Cufon.replace('.fMenu h4');
+		Cufon.replace('.reportTop h5');		
+		Cufon.replace('.estimate h5');			
+</script><script type="text/javascript">
+$(document).ready(function() {
+Cufon.set("fontFamily", "Proxima_Nova_Lt_300.font.js");
+	$("#reportL li").hover(
+		function(){
+		$(this).children('a').children('span').addClass('black');
+		Cufon.refresh();		
+		Cufon.replace('.black', {color: '#000000'});	
+		}, 
+	  function () {
+		$(this).children('a').children('span').removeClass('black');
+		Cufon.refresh();			
+		Cufon.replace('#reportL li span', {color: '#DE3232'});	
+	  }
+	);
+	$("#showBox").click(
+		function(){
+		$('.subDate').toggle(220);
+		$('.dateBoxInn').toggleClass('curDate');
+		}
+	);
+	
+	$(".dCancelBtn").click(
+		function(){
+		$('.subDate').fadeOut(600);
+		$('.dateBoxInn').removeClass('curDate');
+		}
+	);	
+	
+
+
+	
+});
+</script>
+<script	type="text/javascript" src="/js/calendar.js.js"></script><script type="text/javascript">
+	$(function(){
+		$('#singleCont').css('backgroundImage', 'url(/images/contBg_1.png)');
+			$(".datepicker").datepicker({dateFormat: 'M d, yy'});
+});
+</script>

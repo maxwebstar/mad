@@ -1,0 +1,271 @@
+<div id="wrapper">
+ <div id="mainInsideIn">
+    <!--content-->
+    <div id="content" style="width: 100%">
+            <div id="content_container">
+        	<!--LEFT COLLUM-->
+            <div id="reportL">
+				<ul>
+					<li <?php if($this->status == '2') echo 'class="cur"' ?> ><a href="/buy/network/<?php echo $this->network;?>/2" title=""><span>Pending</span></a></li>
+					<li <?php if($this->status == '1') echo 'class="cur"' ?> ><a href="/buy/network/<?php echo $this->network;?>/1" title="" class="addCode"><span>Approved</span></a></li>
+					<li <?php if($this->status == '3') echo 'class="cur"' ?> ><a href="/buy/network/<?php echo $this->network;?>/3" title="" class="addCode"><span>Denied</span></a></li>
+				</ul>
+
+                <div class="publisher">
+                	<h4>Publisher: <span><?php echo Zend_Auth::getInstance()->getIdentity()->name ?></span></h4>
+                    <p class="publMail"><a href="#" title=""><?php echo Zend_Auth::getInstance()->getIdentity()->email ?></a></p>
+                    <a href="/logout/" title="" class="logOut"><span>LogOut</span></a>
+                </div>
+            </div>
+
+            <div id="network_table_container">
+                       <?php if (!$this->error) : ?>
+<script type="text/javascript">
+	$(document).ready(function() {
+		var oTable = $("#table_pending").dataTable({
+                "bProcessing": true,
+                "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+                "iDisplayLength": 100,
+                "aoColumns": [
+                    { "sTitle": "Website" },
+                    { "sTitle": "Impressions Yesterday" },
+                    { "sTitle": "USA Impressions Yesterday" },
+                    { "sTitle": "Date Added" },
+                    {
+                      "sTitle": "Accept",
+                      "bSortable": false
+                    },
+                    {
+                      "sTitle": "Deny",
+                      "bSortable": false
+                    }
+                ],
+                "aaSorting": [[ 1, "asc" ]]
+
+        });
+
+		$(".option").click(function() {
+			var item = $(this);
+			var name = item.data("name");
+
+			$.ajax({
+				url: "/buy/ajax-option",
+				data: {
+					sid:	item.parents("tr:first").data("sid"),
+					type:	name,
+					network: '<?php echo $this->network;?>'
+				},
+				dataType: "json",
+				success: function(response) {
+					if (response['res']) {
+						switch (name) {
+							case 'accept':
+								item.text(response['val'] == 0 ? 'Accept' : 'Accepted');
+								if(response['val'] == 0)
+								{
+									item.parents('tr').find('*[data-name="deny"]').html('Deny');
+									item.parents('tr').find('*[data-name=accept]').html('Accept');
+								}
+								else
+								{
+									item.parents('tr').find('*[data-name="deny"]').html('Deny');
+									item.parents('tr').find('*[data-name=accept]').html('Accepted');
+								}
+								break;
+
+							case 'deny':
+								item.text(response['val'] == 0 ? 'Deny' : 'Denied');
+								if(response['val'] == 0)
+								{
+									item.parents('tr').find('*[data-name="deny"]').html('Deny');
+									item.parents('tr').find('*[data-name=accept]').html('Accept');
+								}
+								else
+								{
+									item.parents('tr').find('*[data-name="deny"]').html('Denied');
+									item.parents('tr').find('*[data-name=accept]').html('Accept');
+								}
+								break;
+						}
+					}
+				},
+				error: function() {
+					alert('Error with the ajax query');
+				}
+			});
+		});
+	});
+</script>
+
+<h1><?php echo $this->showNetwork; ?></h1><br/>
+
+<table width="760px" cellpadding="0" cellspacing="0" border="0" class="display" id="table_pending">
+	<thead>
+		<tr>
+			<th width="20%">Website</th>
+			<th width="10%">Impressions Yesterday</th>
+			<th width="10%">USA Impressions Yesterday</th>
+			<th width="10%">Date Added</th>
+			<th width="10%">Accept</th>
+			<th width="10%">Deny</th>
+		</tr>
+	</thead>
+	<tbody>
+	<?php foreach ($this->data as $row) : ?>
+		<tr data-sid="<?php echo $row['SiteID']; ?>">
+			<td><?php echo $row['SiteName']; ?></td>
+			<td><?php echo $row['impressions']; ?></td>
+			<td><?php echo $row['usa']; ?></td>
+			<td><?php echo strtotime($row['date_add']) ? $row['date_add'] : '&mdash;'; ?></td>
+			<td><a href="javascript:void(0)" class="option" data-name="accept"><?php echo $row['accept_pending'] == 0 ? 'Accept' : 'Accepted'; ?></a></td>
+			<td><a href="javascript:void(0)" class="option" data-name="deny"><?php echo $row['deny_pending'] == 0 ? 'Deny' : 'Denied'; ?></a></td>
+		</tr>
+	<?php endforeach; ?>
+	</tbody>
+	<tfoot>
+		<tr>
+			<th>Website</th>
+			<th>Impressions Yesterday</th>
+			<th>USA Impressions Yesterday</th>
+			<th>Date Added</th>
+			<th>Accept</th>
+			<th>Deny</th>
+		</tr>
+	</tfoot>
+</table>
+<?php else : ?>
+<h1>Wrong network</h1>
+<?php endif; ?>
+            </div>
+        	<!--//LEFT COLLUM-->
+
+
+        </div>
+    </div>
+    <!--//content-->
+ </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" src="/font/cufon-yui.js"></script>
+<script type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#topMenu a', {hover: true});
+		Cufon.replace('#topMenu a');
+    Cufon.replace('.error', {color: 'red'});
+
+</script>
+<script type="text/javascript" src="/font/Headline_Two_400.font.js"></script>
+<script type="text/javascript">
+	Cufon.replace('.footerBann h5');
+	Cufon.replace('.footerBann p');
+	Cufon.replace('.footerBann a', {hover: true});
+	Cufon.replace('.contactUs h1');
+
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Lt_300.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#footCopyr');
+		Cufon.replace('.fMenu a');
+		Cufon.replace('.contactUs p');
+		Cufon.replace('.contUsL label');
+		Cufon.replace('#location');
+		Cufon.replace('.contBtn p');
+		Cufon.replace('.sendMasBtn',{textShadow: '-1px -1px #5F5F5F'});
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Rg_700.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('.fMenu h4');
+		Cufon.replace('.headquaters');
+</script>
+
+<style>
+#content_container
+{
+    float: left;
+    width: 960px;
+	min-height: 200px;
+    padding: 14px 0 20px 0;
+	padding-top: 0px;
+    margin: 0 auto;
+    border: solid 1px #E2E2E2;
+    background-color: #FFFFFF;
+	padding-bottom: 0px;
+}
+#reportL
+{
+	padding: 0px;
+	margin: 0px;
+	float: left;
+	width: 184px;
+	min-height: 800px;
+	position: relative;
+	padding-top: 20px;
+}
+#content,#wrapper
+{
+    min-height: 500px;
+}
+
+#table_pending
+{
+	position: relative;
+	float: left;
+}
+
+#network_table_container
+{
+	padding-top: 20px;
+	position: relative;
+	width: 762px;
+	min-height: 960px;
+	float: left;
+	border-left: solid 1px #E2E2E2;
+	padding-left: 10px;
+}
+
+</style>

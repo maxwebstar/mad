@@ -1,0 +1,16 @@
+<?php $atrib = $this->element->getAttribs(); ?>
+<?php $val = $this->element->getValue(); ?>
+<div class="<?php echo $this->class ?>" style="<?php echo $this->style ?>">
+<label for="<?php echo $this->element->getName() ?>"><?php echo $this->element->getLabel() ?></label>
+<select class="<?php echo $atrib['class'] ?>" name="<?php echo $this->element->getName() ?>" id="<?php echo $atrib['id'] ?>">
+    <?php foreach($atrib['dataValues'] as $item=>$value): ?>
+                <?php $arrVal = explode(":", $item); ?>
+            <?php if($arrVal[2]==$val)
+                $select='selected="selected"';
+              else
+                $select=''; ?>
+        <option alt="<?php echo $arrVal[0].':'.$arrVal[1] ?>" value="<?php echo $arrVal[2] ?>" <?php echo $select ?>><?php echo $value ?></option>
+    <?php endforeach; ?>
+</select>
+<?php echo $this->formErrors($this->element->getMessages()) ?>
+</div>

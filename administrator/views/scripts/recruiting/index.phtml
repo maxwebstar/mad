@@ -1,0 +1,1006 @@
+<link href="/fancybox2/jquery.fancybox.css" media="screen" rel="stylesheet" type="text/css"/>
+<link href="/styles/jquery.datetimepicker-xdsoft.css" media="screen" rel="stylesheet" type="text/css"/>
+
+<script type="text/javascript" src="/js/jquery-1.11.3.js"></script>
+<script type="text/javascript" src="/js/jquery-date-format.js"></script>
+<script type="text/javascript" src="/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="/fancybox2/jquery.fancybox.js"></script>
+<script type="text/javascript" src="/js/jquery.datetimepicker-xdsoft.js"></script>
+<script type="text/javascript" src="/js/server-time.js"></script>
+<script>
+
+    var globStaffID = 0;
+    var $templateTable;
+    var accessDate = new Object({sentHour24: true, sentFollow: true, sentFinal: true});
+
+    $(function(){
+
+        var day0 = new Date();
+        var day1 = new Date();
+        var day8 = new Date();
+        var day15 = new Date();
+
+        day0.setHours(day0.getHours()+1, 00);
+
+        day1.setDate(day1.getUTCDate());
+        day1.setDate(day1.getDate()+1);
+        day1.setHours(day1.getHours()+1, 00);
+
+        day8.setDate(day8.getUTCDate());
+        day8.setDate(day8.getDate()+8);
+        day8.setHours(06, 00);
+
+        day15.setDate(day15.getUTCDate());
+        day15.setDate(day15.getDate()+15);
+        day15.setHours(06, 00);
+
+        var dateMin = day0.getUTC();
+        var dateLine = day1.getUTC();
+        dateLine.setHours(00, 00)
+
+        $('.importDate input').datetimepicker({
+            format:'F d, Y g:00 A',
+            minDate: dateMin,
+            minTime: dateMin,
+            mask:true,
+            onSelectDate:function(value, param){
+
+                if(dateLine <= value){
+                    this.setOptions({minTime: false});
+                } else {
+                    this.setOptions({minTime: dateMin});
+                }
+            },
+            onShow:function(value, param){
+
+                if(dateLine <= value){
+                    this.setOptions({minTime: false});
+                } else {
+                    this.setOptions({minTime: dateMin});
+                }
+            },
+            onClose:function(value, param){
+                modifyDate(param[0].id, value);
+            }
+        });
+
+        day0 = $.format.date(day0.getUTC(), "MMMM dd, yyyy h:mm A");
+        day1 = $.format.date(day1.getUTC(), "MMMM dd, yyyy h:mm A");
+        day8 = $.format.date(day8, "MMMM dd, yyyy h:mm A");
+        day15 = $.format.date(day15, "MMMM dd, yyyy h:mm A");
+
+        $('.importDate #sentInitial').val(day0);
+        $('.importDate #sentHour24').val(day1);
+        $('.importDate #sentFollow').val(day8);
+        $('.importDate #sentFinal').val(day15);
+
+        if($('#immediatelyInitial').prop('checked')){
+            $('#immediatelyInitial').prop('checked', false);
+            $('#sentInitial').prop('disabled', false);
+        }
+
+        //import CSV file
+        $("#importCSVFile").change(function(e) {
+
+            var $csvfile = $(this);
+            var path = $csvfile.val();
+
+            if (path.length > 0) {
+
+                var file = $csvfile[0].files[0];
+
+                var extension = file.name.match(/\.[0-9a-z]+$/i);
+                if(extension != '.csv')
+                {
+                    alert('Extension File Error');
+                    return;
+                }
+
+                var oFReader = new FileReader();
+
+                oFReader.onload = function(oFREvent) {
+
+                    var result = oFREvent.target.result;
+
+                    var data = result.split(";");
+                    var base64 = data[1];
+                    var csvtext = base64.split(",")[1];
+
+                    $("#import").show();
+                    $importButton = $("#importButton");
+
+                    $importButton.click(function(e) {
+
+                        e.preventDefault();
+                        $importButton.html("Importing...");
+
+                        var href = $(this).attr("href");
+                        var eID = document.getElementById("upSel2");
+                        var staffID = eID.options[eID.selectedIndex].value;
+
+                        if (!staffID){
+
+                            $(eID).prev().css("color","red").css("font-weight","bold");
+
+                            $importButton.css("background-color","red").html("Please select a recruiter -->");
+                            setTimeout(function() {
+                                $importButton.css("background-color","#8E8E8E").html("Import");
+                            }, 3000)
+
+                            return;
+                        }
+
+                        var importEmailsOnly = ($("#importEmailsOnly").is(":checked")) ? 1 : 0;
+                        var skipInitialEmail = ($("#skipInitialEmail").is(":checked")) ? 1 : 0;
+                        var manually = ($("#manually").is(":checked")) ? 1 : 0;
+
+                        var temInitial = $('#temInitial').val();
+                        var temHour24 = $('#temHour24').val();
+                        var temFollow = $('#temFollow').val();
+                        var temFinal = $('#temFinal').val();
+
+                        var sentInitial = $('#sentInitial').val();
+                        var sentHour24 = $('#sentHour24').val();
+                        var sentFollow = $('#sentFollow').val();
+                        var sentFinal = $('#sentFinal').val();
+
+                        var SubID = $('.importSub #sub').val();
+
+                        var immediatelyInitial = 0;
+
+                        if($('#immediatelyInitial:checked').val()){
+                            sentInitial = '';
+                            immediatelyInitial = 1;
+                        }
+
+                        $.post(href, {data : csvtext,
+                                staffID : staffID,
+                                importEmailsOnly : importEmailsOnly,
+                                skipInitialEmail : skipInitialEmail,
+                                manually : manually,
+                                temInitial : temInitial,
+                                temHour24 : temHour24,
+                                temFollow : temFollow,
+                                temFinal : temFinal,
+                                sentInitial : sentInitial,
+                                sentHour24 : sentHour24,
+                                sentFollow : sentFollow,
+                                sentFinal : sentFinal,
+                                SubID : SubID,
+                                immediatelyInitial : immediatelyInitial},
+                            function(res) {
+
+                                if (!res.error) {
+
+                                    var imported = res.data;
+                                    $importButton.html("Imported " + imported + " records");
+
+                                    setTimeout(function() {
+                                        $importButton.html("Import");
+                                        $("#import").hide();
+                                        $csvfile.val("");
+                                        window.location.reload();
+                                    }, 3000)
+
+                                } else {
+                                    if (typeof console == "object")
+                                        console.log(res.data);
+
+                                    $importButton.html("Import failed");
+                                }
+                            });
+                    });
+                };
+
+                oFReader.readAsDataURL(file);
+
+            }
+        });
+
+//        $("#importCSVWSFile").change(function(e) {
+//
+//            var $csvfile = $(this);
+//            var path = $csvfile.val();
+//
+//            if (path.length > 0) {
+//
+//                var file = $csvfile[0].files[0];
+//
+//                var oFReader = new FileReader();
+//
+//                oFReader.onload = function(oFREvent) {
+//
+//                    var result = oFREvent.target.result;
+//
+//                    var data = result.split(";");
+//                    var base64 = data[1];
+//                    var csvtext = base64.split(",")[1];
+//
+//                    $("#importWS").show();
+//                    $importButton = $("#importWSButton");
+//                    $importHeader = $("#importWSHeader");
+//
+//                    $importButton.click(function(e) {
+//
+//                        e.preventDefault();
+//                        $importButton.html("Importing...");
+//
+//                        var href = $(this).attr("href");
+//                        var eID = document.getElementById("upSel1");
+//                        var staffID = eID.options[eID.selectedIndex].value;
+//                        $.post(href, {data: csvtext, staffID: staffID}, function(res) {
+//
+//                            if (!res.error) {
+//
+//                                var imported = res.data;
+//                                $importButton.html("Imported " + imported + " records");
+//
+//                                setTimeout(function() {
+//                                    $importButton.html("Import");
+//                                    $("#import").hide();
+//                                    $csvfile.val("");
+//                                    window.location.reload();
+//                                }, 3000)
+//
+//                            } else {
+//                                if (typeof console == "object")
+//                                    console.log(res.data);
+//
+//                                $importButton.html("Import failed");
+//                                $importHeader.show();
+//                                $importHeader.text(res.data);
+//
+//                            }
+//                        });
+//                    });
+//                };
+//
+//                oFReader.readAsDataURL(file);
+//
+//            }
+//        });
+
+
+        //upload email template
+        $("#uploadTemplateName").keyup(function(e) {
+
+            var name = $(this).val();
+            if (name.length >= 10)
+                $("#uploadTemplate").show();
+        });
+
+        $("#uploadTemplateOrder").change(function(e) {
+
+            var order = $(this).val();
+            if (parseInt(order) > 0)
+                $("#uploadTemplateNameDiv").show();
+        });
+
+
+        $("#uploadTemplateNewName").keyup(function(e) {
+
+            var name = $(this).val();
+            if (name.length >= 10)
+                $("#uploadTemplateFileContainer").show();
+        });
+
+        /*
+         $("#uploadTemplateName").keyup(function(e) {
+
+         var name = $(this).val();
+         if (name.length >= 10)
+         $("#uploadTemplate").show();
+         });
+         */
+
+        $("#uploadTemplateFile").change(function(e) {
+
+            var name = $("#uploadTemplateName").val();
+            var order = $("#uploadTemplateOrder").val();
+            var template_name = $("#uploadTemplateNewName").val();
+            var $uploadTemplateFile = $(this);
+            var path = $uploadTemplateFile.val();
+
+            if (path.length > 0) {
+
+                var file = $uploadTemplateFile[0].files[0];
+
+                var oFReader = new FileReader();
+
+                oFReader.onload = function(oFREvent) {
+
+                    var result = oFREvent.target.result;
+
+                    var data = result.split(";");
+                    var base64 = data[1];
+                    var template64 = base64.split(",")[1];
+
+                    $("#upload").show();
+                    $uploadButton = $("#uploadButton");
+
+                    $uploadButton.click(function(e) {
+                        e.preventDefault();
+
+                        $uploadButton.html("Uploading...");
+
+                        var href = $(this).attr("href");
+
+                        $.post(href, {'name': name, "order": order, data: template64, template_name: template_name}, function(res) {
+
+                            if (typeof res.error != "undefined" && !res.error) {
+
+                                var imported = res.data;
+                                $uploadButton.html("Uploaded");
+
+                                setTimeout(function() {
+                                    $uploadButton.html("Upload");
+                                    $("#upload").hide();
+                                    $uploadTemplateFile.val("");
+                                    window.location.reload();
+                                }, 3000)
+
+                            } else {
+                                if (typeof console == "object")
+                                    console.log(res.data);
+
+                                $uploadButton.html("Upload failed");
+                            }
+                        });
+                    });
+                };
+
+                oFReader.readAsDataURL(file);
+
+            }
+        });
+
+        //table of templates
+
+        var options = {
+            "bProcessing": true,
+            "bServerSide": true,
+            "sAjaxSource": null,
+            "fnServerParams": function ( aoData ) {  aoData.push( { "name": "staff", "value": globStaffID } ) },
+            "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+            "iDisplayLength": 50,
+            "aoColumns": [
+                {
+                    "sType": "num-html",
+                    "sTitle": "ID#",
+                    "bSortable": false,
+                    "fnRender": function(obj) {
+                        var id = obj.aData["id"];
+                        return id;
+                    }
+                },
+                {
+                    "sTitle": "Subject",
+                    "bSortable": false,
+                    "fnRender": function(obj) {
+
+                        return obj.aData["name"];
+                    }
+                },
+                {
+                    "sTitle": "Order",
+                    "bSortable": false,
+                    "fnRender": function(obj) {
+
+                        var order = "";
+
+                        if (obj.aData["order"] == "1")
+                            order = "Initial";
+                        else if (obj.aData["order"] == "4")
+                            order = "24 Hour";
+                        else if (obj.aData["order"] == "2")
+                            order = "Follow Up";
+                        else if (obj.aData["order"] == "3")
+                            order = "Final";
+
+
+                        return order;
+                    }
+                },
+                {
+                    "sTitle": "Will Send",
+                    "bSortable": false,
+                    "fnRender": function(obj){ return obj.aData["num"]; }
+                },
+                {
+                    "sTitle": "Default",
+                    "bSortable": false,
+                    "fnRender": function(obj){ return obj.aData["base"] ? '<img src="/images/status-green-check.gif"/>' : ''; }
+                },
+                {
+                    "sTitle": "Action",
+                    "bSortable": false,
+                    "fnRender": function(obj) {
+                        var id = obj.aData["id"];
+                        <?php if(Zend_Auth::getInstance()->getIdentity()->role == "recruiter"):?>
+                        return "<a style=\"cursor: pointer\" onClick=\"viewTemplate("+id+")\">View</a>";
+                        <?php else:?>
+                        return "<a style=\"cursor: pointer\" onClick=\"viewTemplate("+id+")\">View</a> | <a class=\"deleteTemplate\" href=\"/administrator/recruiting/template/id/" + id + "/case/delete\">Delete</a> | <a style=\"cursor: pointer\" onClick=\"editTemplate("+id+")\">Edit</a>";
+                        <?php endif;?>
+                    }
+                },
+            ],
+            "fnDrawCallback": function() {
+                $(".deleteTemplate").click(function(e) {
+
+                    e.preventDefault();
+
+                    var href = $(this).attr("href");
+
+                    $.get(href, function(res) {
+
+                        if (typeof res.error != "undefined" && !res.error)
+                        {
+                            $templateTable.fnClearTable(true);
+                        }
+                        else
+                        {
+                            if (typeof console == "object")
+                                console.log(res.data);
+                        }
+                    });
+                });
+            },
+            "aaSorting": [[0, "asc"]]
+        };
+
+        options.sAjaxSource = "/administrator/recruiting/templates";
+        $templateTable = $('#templateTable').dataTable(options);
+
+        //send out email templates
+//        $("#staff").change(function(e) {
+//
+//            var staff_id = parseInt($(this).val());
+//
+//            if (!isNaN(staff_id) && staff_id > 0){
+//                $("#sendTemplate").show();
+//                $("#blockSub").show();
+//            }
+//            
+//            globStaffID = staff_id;
+//            $templateTable.fnClearTable(true);
+//        });
+//
+//        $("#template").change(function(e) {
+//
+//            var template_id = parseInt($(this).val());
+//            if (!isNaN(template_id) && template_id > 0) {
+//                $("#send").show();
+//            }            
+//        });
+//                
+//        var sending = function(e) {
+//
+//            $(this).click(false);//$("#sendButton")
+//
+//            e.preventDefault();
+//            var $sendEmails = $(this);
+//            var href = $sendEmails.attr("href");
+//            $sendEmails.html("Sending Emails...");
+//            var sub_id = $("#sub").val();
+//            var staff_id = $("#staff").val();
+//            var template_id = $("#template").val();
+//
+//            $.get(href, {"staff_id": staff_id, "template_id": template_id, "sub_id": sub_id}, function(res) {
+//                if (typeof res.error != "undefined" && !res.error)
+//                    $sendEmails.html("Sent " + res.data + " emails");
+//                else
+//                    $sendEmails.after("An error occurred and recruiting emails could not be sent");
+//                $("#sendButton").click(sending);
+//            });
+//        };
+//
+//        $("#sendButton").click(sending);
+
+        initSub();
+        initSrverTime();
+
+    });
+
+    function initSrverTime()
+    {
+        var serverClock = jQuery("#serverClock");
+
+        if(serverClock.length > 0){
+            showServerTime(serverClock, serverClock.text(), false);
+        }
+
+        serverClock.css('display', 'inline');
+    }
+
+    function initSub()
+    {
+        $.ajax({ url : '/administrator/recruiting/ajax-get-sub',
+            data : {  },
+            type : "POST",
+            async: false, /* java script wait ajax */
+            dataType : "json",
+
+            success : function(response) {
+
+                var html = '<option value="">Select</option>';
+
+                $.each(response, function(key, iter){
+
+                    html += '<option value="'+iter.id+'">'+iter.name+'</option>'
+
+                });
+
+                $('#sub').html(html);
+
+            }, error : function(){ alert('ajax request return error'); }});
+
+    }
+
+    function viewTemplate(id)
+    {
+        $.fancybox({
+            type	     : 'iframe',
+            autoSize  : false,
+            width     : 450,
+            height    : 450,
+            href      : '/administrator/recruiting/view/id/'+id
+        });
+    }
+
+    function editTemplate(id)
+    {
+        $.fancybox({
+            type	       : 'iframe',
+            autoSize    : false,
+            width       : 450,
+            height      : 450,
+            href        : '/administrator/recruiting/edit/id/'+id,
+            afterClose  : function(){ $templateTable.fnClearTable(); }
+        });
+    }
+
+    function menuSub()
+    {
+        $.fancybox({
+            type	: 'iframe',
+            autoSize    : false,
+            width	: 800,
+            height	: 400,
+            href        : '/administrator/sub/index',
+            afterClose	: function(){ initSub(); }
+        });
+    }
+
+    function modifyDate(id, value)
+    {
+        var dayHour24 = new Date;
+        var dayFollow = new Date;
+        var dayFinal = new Date;
+
+        switch(id){
+            case 'sentInitial' :
+
+                dayHour24.setDate(value.getDate()+1);
+                dayHour24.setHours(value.getHours(), 00);
+
+                dayFollow.setDate(value.getDate()+8);
+                dayFollow.setHours(06, 00);
+
+                dayFinal.setDate(value.getDate()+15);
+                dayFinal.setHours(06, 00);
+
+                dayHour24 = $.format.date(dayHour24, "MMMM dd, yyyy h:mm A");
+                dayFollow = $.format.date(dayFollow, "MMMM dd, yyyy h:mm A");
+                dayFinal = $.format.date(dayFinal, "MMMM dd, yyyy h:mm A");
+
+                if(accessDate['sentHour24']){
+                    $('.importDate #sentHour24').val(dayHour24);
+                }
+                if(accessDate['sentFollow']){
+                    $('.importDate #sentFollow').val(dayFollow);
+                }
+                if(accessDate['sentFinal']){
+                    $('.importDate #sentFinal').val(dayFinal);
+                }
+
+                break;
+            case 'sentHour24' :
+
+                dayFollow.setDate(value.getDate()+7);
+                dayFollow.setHours(06, 00);
+
+                dayFinal.setDate(value.getDate()+14);
+                dayFinal.setHours(06, 00);
+
+                dayFollow = $.format.date(dayFollow, "MMMM dd, yyyy h:mm A");
+                dayFinal = $.format.date(dayFinal, "MMMM dd, yyyy h:mm A");
+
+                if(accessDate['sentFollow']){
+                    $('.importDate #sentFollow').val(dayFollow);
+                }
+                if(accessDate['sentFinal']){
+                    $('.importDate #sentFinal').val(dayFinal);
+                }
+
+                accessDate[id] = false;
+
+                break;
+            case 'sentFollow' :
+
+                dayFinal.setDate(value.getDate()+7);
+                dayFinal.setHours(06, 00);
+
+                dayFinal = $.format.date(dayFinal, "MMMM dd, yyyy h:mm A");
+
+                if(accessDate['sentFinal']){
+                    $('.importDate #sentFinal').val(dayFinal);
+                }
+
+                accessDate[id] = false;
+
+                break;
+            case 'sentFinal' :
+
+                accessDate[id] = false;
+
+                break;
+        }
+    }
+
+    function immediatelySent()
+    {
+        if($('#immediatelyInitial:checked').val()){
+            $('#sentInitial').prop('disabled', true);
+        } else {
+            $('#sentInitial').prop('disabled', false);
+        }
+    }
+
+    Date.prototype.getUTC =  function (){
+        return new Date(
+            this.getUTCFullYear(),
+            this.getUTCMonth(),
+            this.getUTCDate(),
+            this.getUTCHours(),
+            this.getUTCMinutes(),
+            this.getUTCSeconds()
+        );
+    }
+
+</script>
+<style>
+    .section {
+        padding:0 0 12px 0;
+    }
+
+    .section-sm {
+        padding:0 0 8px 0;
+
+    }
+    .sendMasBtn, .sendMasBtn:hover {
+        float:none;
+        padding:3px 18px 3px 18px;
+    }
+
+    .hidden {
+        display:none;
+    }
+
+    #import {
+        display:none;
+    }
+
+    #importWS {
+        display:none;
+    }
+    #importWSHeader{
+        display: none;
+    }
+
+    #uploadTemplateName {
+        border: 1px solid #C0C0C0;
+        padding:2px;
+        width:200px;
+    }
+
+    h2 {
+        font-weight:bold;
+        font-size:larger;
+        padding: 12px 0 0 0;
+    }
+
+    .importSub{  }
+    .importSub label{ display: inline-block; margin-left: 169px; width: 67px; }
+    .importSub #sub{ margin-right: 12px; min-width: 179px; }
+
+    #staff{ margin-left: 9px; }
+
+    .serverTime{ display: block; float: left; padding-top: 16px; padding-left: 15px; }
+    .serverTime label{ display: inline-block; width: 112px; padding-left: 12px; }
+    .serverTime span{ color: #de3232; font-weight: 600; margin-left: 5px; }
+    .serverTime span#serverClock{ display: none; }
+    .importTemplate{ display: block; float: left; width: 260px; margin-left: 30px; }
+    .importTemplate label{ float: left; width: 69px; }
+    .importTemplate select{ float: left; width: 180px; }
+    .importDate{ display: block; float: left; width: 280px; }
+    .importDate span{ float: left; margin-right: 10px; }
+    .importDate label{ float: left; width: 70px; }
+    .importDate input{ float: left; width: 175px; border: 1px solid #c0c0c0; padding: 1px 2px 1px 4px; font-size: 13px; }
+    .importImmediately{ display: block; float: left; }
+    .importImmediately input{ margin-top: 4px; }
+    .importImmediately label{  }
+
+
+</style>
+
+<div>
+    <h1>Recruiting Emailer</h1>
+
+    <p>
+        <a href="/administrator/contactnotification/index/">Manage Staff</a>
+    </p>
+
+    <!--<div class="section">
+            <h2>Import Web sites</h2>
+            <form name="importWSForm">
+                            <table><tr><td>
+                Select CSV file to import<br/>
+                <input type="file" id="importCSVWSFile" name="importCSVWSFile" />
+                                    </td><td>
+                <span id="importWS">
+                    Click to start import<br/>
+                    <a href="/administrator/recruiting/importws" id="importWSButton" title="Start Import" class="sendMasBtn">Import</a>
+                    </span>
+                        </td><td>
+                            <div style="padding-left: 20px;"><h3>Uploader</h3>
+                                <select id="upSel1" name="staff">
+                                    <php
+                                    foreach ($this->staff as $staff) {
+                                        echo "<option value=\"".$staff['id']."\">" . $staff['name'] . "</option>";
+                                    }
+                                    ?>
+                                </select>
+                            </div>
+                        </td></tr></table>
+            </form>
+
+
+            <h2 id="importWSHeader">Testing</h2>
+        </div>
+        <div class="section">
+            <h2>Export Websites</h2>
+            <a href="/administrator/recruiting/downloadwebsites" title="Download" class="sendMasBtn">Download</a>
+        </div>-->
+    <div class="section">
+        <h2>Import Web sites/Emails</h2>
+        <form name="importForm">
+            <table><tr>
+                    <td>
+                        Select CSV file to import<br/>
+                        <input type="file" id="importCSVFile" name="importCSVFile" />
+                    </td>
+                    <td>
+                        <span id="import">
+                            Click to start import<br/>
+                            <a href="/administrator/recruiting/import" id="importButton" title="Start Import" class="sendMasBtn">Import</a>
+                        </span>
+                    </td>
+                    <td>
+                        <div style="padding-left: 20px;"><h3>Uploader</h3>
+                            <select  id="upSel2" name="staff">
+                                <?php
+                                foreach ($this->staff as $staff) {
+                                    echo "<option value=\"".$staff['staff_id']."\">" . $staff['name'] . "</option>";
+                                }
+                                ?>
+                            </select>
+                        </div>
+                    </td>
+                    <td>
+                        <div style="padding-left: 20px;">
+                            Final Email Already Sent<br />
+                            <input type="checkbox" value="1" name="import_emails_only" id="importEmailsOnly" /> Import only, do not email
+                        </div>
+                    </td>
+                    <td>
+                        <div style="padding-left: 20px;">
+                            Skip Initial Email<br />
+                            <input type="checkbox" value="1" name="skip_initial_email" id="skipInitialEmail" /> Set to Pending
+                        </div>
+                    </td>
+                    <td>
+                        <div style="padding-left: 20px;">
+                            Manually Email<br />
+                            <input type="checkbox" value="1" name="manually" id="manually" />
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="6">
+                        <div class="serverTime">
+                            <label>Server Time</label>
+                            <br />
+                            <span><?php echo date('Y-m-d');?></span>
+                            <span id="serverClock"><?php echo date('H:i:s');?></span>
+                        </div>
+                        <div class="importTemplate">
+                            <label>Initial</label>
+                            <select name="temInitial" id="temInitial">
+                                <?php foreach($this->temInitial as $iter):?>
+                                    <option value="<?php echo $iter['id']; ?>" <?php echo $iter['base'] ? 'selected' : ''; ?>><?php echo '(id:'.$iter['id'].') '.$iter['name_label']; ?></option>
+                                <?php endforeach;?>
+                            </select>
+                            <label>24 Hour</label>
+                            <select name="temHour24" id="temHour24">
+                                <?php foreach($this->temHour24 as $iter):?>
+                                    <option value="<?php echo $iter['id']; ?>" <?php echo $iter['base'] ? 'selected' : ''; ?>><?php echo '(id:'.$iter['id'].') '.$iter['name_label']; ?></option>
+                                <?php endforeach;?>
+                            </select>
+                            <label>Follow Up</label>
+                            <select name="temFollow" id="temFollow">
+                                <?php foreach($this->temFollow as $iter):?>
+                                    <option value="<?php echo $iter['id']; ?>" <?php echo $iter['base'] ? 'selected' : ''; ?>><?php echo '(id:'.$iter['id'].') '.$iter['name_label']; ?></option>
+                                <?php endforeach;?>
+                            </select>
+                            <label>Final</label>
+                            <select name="temFinal" id="temFinal">
+                                <?php foreach($this->temFinal as $iter):?>
+                                    <option value="<?php echo $iter['id']; ?>" <?php echo $iter['base'] ? 'selected' : ''; ?>><?php echo '(id:'.$iter['id'].') '.$iter['name_label']; ?></option>
+                                <?php endforeach;?>
+                            </select>
+                        </div>
+                        <div class="importDate">
+                            <span>&mdash;</span>
+                            <label>Date sent</label>
+                            <input type="text" name="sentInitial" id="sentInitial"/>
+                            <span>&mdash;</span>
+                            <label>Date sent</label>
+                            <input type="text" name="sentHour24" id="sentHour24"/>
+                            <span>&mdash;</span>
+                            <label>Date sent</label>
+                            <input type="text" name="sentFollow" id="sentFollow"/>
+                            <span>&mdash;</span>
+                            <label>Date sent</label>
+                            <input type="text" name="sentFinal" id="sentFinal"/>
+                        </div>
+                        <div class="importImmediately">
+                            <input type="checkbox" name="immediatelyInitial" id="immediatelyInitial" onChange="immediatelySent()"/>
+                            <label>Send Immediately</label>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="6">
+                        <div class="importSub">
+                            <label>SubID</label>
+                            <select name="sub" id="sub">
+                                <option value="0">Select</option>
+                            </select>
+                            <a style="cursor: pointer" onClick="menuSub()">(New SubID)</a>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+
+    <div class="section">
+        <h2>Upload Template</h2>
+
+        <div class="section-sm">
+            Replace tags:
+            <?php foreach ($this->emailTags as $tag): ?>
+                <?= $tag ?>
+            <?php endforeach; ?>
+        </div>
+
+        <form name="uploadForm">
+            Create a new email template.
+            <label>Subject:
+                <input type="text" id="uploadTemplateName" name="uploadTemplateName" /></label>
+
+            <div id="uploadTemplate" class="hidden">
+
+                <div>
+                    <label for="uploadTemplateOrder">Select order:
+                        <select id="uploadTemplateOrder" name="uploadTemplateOrder">
+                            <option value="">Select Order</option>
+                            <option value="1">Initial Email</option>
+                            <option value="4">24 Hour Email</option>
+                            <option value="2">Follow Up Email</option>
+                            <option value="3">Final Email</option>
+                        </select>
+                    </label>
+                </div>
+                <br/>
+                <div id="uploadTemplateNameDiv" class="hidden">
+                    <label for="uploadTemplateNewName">Template Name:
+                        <input style="border: 1px silver solid;" type="text" id="uploadTemplateNewName" name="uploadTemplateNewName" /></label>
+                </div>
+
+                <div id="uploadTemplateFileContainer" class="hidden">
+                    <label for="uploadTemplateFile">Select template HTML file
+                        <input type="file" id="uploadTemplateFile" name="uploadTemplateFile" /></label>
+                </div>
+
+                <span id="upload" class="hidden">
+                    Click to start upload
+                    <a href="/administrator/recruiting/upload" id="uploadButton" title="Start Upload" class="sendMasBtn">Upload</a>			
+                </span>
+            </div>
+        </form>
+
+
+
+    </div>
+
+    <!--    <div class="section">
+            <h2>Email</h2>
+            <form name="sendForm">
+                Select a sender
+                <select name="staff" id="staff">
+                    <option value="">Select a Staff Member</option>
+                    <php foreach ($this->staff as $staff): ?>
+                        <option value="<= $staff->staff_id ?>"><= $staff->name ?></option>
+                    <php endforeach; ?>
+                </select>
+                <div id="sendTemplate" class="hidden">
+                    Select a template
+                    <select name="template" id="template">
+                        <option value="">Select an Email Template</option>
+                        <php foreach ($this->templates as $template): ?>
+                            <option value="<= $template->id ?>"><= $template->order ?>. <= $template->name_label ?></option>
+                        <php endforeach; ?>
+                    </select>
+                    <span id="send" class="hidden">
+                        Click to send out emails
+                        <a href="/administrator/recruiting/send" id="sendButton" title="Send out Emails" class="sendMasBtn">Send Emails</a>
+                    </span>
+                </div>
+                <div id="blockSub" class="hidden">
+                    SubID
+                    <select name="sub" id="sub">
+                        <option value="">Select</option>
+                    </select>
+                    <a style="cursor: pointer" onClick="menuSub()">(New SubID)</a>
+                </div>
+            </form>
+        </div>-->
+
+    <div class="section">
+        <h2>Templates</h2>
+        <div style="float:left; width:920px; ">
+            <table class="display" id="templateTable">
+                <thead>
+                <tr>
+                    <th width="10%">ID #</th>
+                    <th width="35%">Subject</th>
+                    <th width="15%">Order</th>
+                    <th width="10%">Will Send</th>
+                    <th width="7%">Default</th>
+                    <th width="25%">Action</th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+                <tfoot>
+                <tr>
+                    <th>ID #</th>
+                    <th>Subject</th>
+                    <th>Order</th>
+                    <th>Will Send</th>
+                    <th>Default</th>
+                    <th>Action</th>
+                </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<script type="text/javascript" src="/font/cufon-yui.js"></script>
+<script	type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script	type="text/javascript" src="/font/Headline_Two_400.font.js"></script>
+<script type="text/javascript">
+    Cufon.replace('h1');
+</script>

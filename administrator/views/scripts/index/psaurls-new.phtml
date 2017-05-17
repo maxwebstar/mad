@@ -1,0 +1,90 @@
+<style type="text/css">
+    
+    .dataTables_processing{ top: 10%; }
+    
+</style>
+<script type="text/javascript" charset="utf-8">
+        $(document).ready(function() {   
+            
+                var oTable = $('#users').dataTable( {
+                        "bProcessing": true,
+                        "bServerSide": true,
+                        "sAjaxSource": '/administrator/index/get-ajax-psaurls',
+                        "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+                        "iDisplayLength": 50
+                        ,
+                        "aoColumns": [
+                            { 
+                              "sTitle": "Domain",
+                              "fnRender": function(obj){ return obj.aData[0]; } 
+                            },
+                            { 
+                              "sTitle": "Impressions",
+                              "fnRender": function(obj){ return obj.aData[1]; } 
+                            },
+                            { 
+                              "sTitle": "Site",
+                              "fnRender": function(obj){ return obj.aData[2]; } 
+                            },
+                            { 
+                              "sTitle": "Last Attempt",
+                              "fnRender": function(obj){ return obj.aData[3]; } 
+                            }
+                        ],                                                
+                        "aaSorting": [[ 3, "desc" ]]
+                         
+                } );                
+        } );
+</script>
+<h1>Denied URLs Report</h1>
+<div class="contUsL" style="width: 750px;">
+<table width="740px" cellpadding="0" cellspacing="0" border="0" class="display" id="users">
+	<thead>
+		<tr>
+                    <th width="20%">Domain</th>
+                    <th width="20%">Impressions</th>
+                    <th width="20%">Site</th>
+                    <th width="20%">Last Attempt</th>
+		</tr>
+	</thead>
+	<tbody></tbody>
+	<tfoot>
+		<tr>
+                    <th>Domain</th>
+                    <th>Impressions</th>
+                    <th>Site</th>
+                    <th>Last Attempt</th>
+		</tr>
+	</tfoot>
+</table>    
+</div>
+
+<script type="text/javascript" src="/font/cufon-yui.js"></script>
+<script type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#topMenu a', {hover: true});	
+		Cufon.replace('#topMenu a');
+</script>
+<script type="text/javascript" src="/font/Headline_Two_400.font.js"></script>
+<script type="text/javascript">
+	Cufon.replace('.contInf h3', {hover: true});	
+	Cufon.replace('.contInf h3');
+	Cufon.replace('.contInf h3.white', {color: '#FFF'});	
+	Cufon.replace('.footerBann h5');		
+	Cufon.replace('.footerBann p');	
+	Cufon.replace('.footerBann a', {hover: true});		
+    Cufon.replace('h1');		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Lt_300.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#footCopyr');	
+		Cufon.replace('.contInf p', {hover: true});		
+		Cufon.replace('.contInf p', {color: '#333333'});	
+		Cufon.replace('.contInf p.white', {color: '#FFF'});	
+		Cufon.replace('.fMenu a', {textDecoration: 'underline'});		
+		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Rg_700.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('.fMenu h4');
+</script>

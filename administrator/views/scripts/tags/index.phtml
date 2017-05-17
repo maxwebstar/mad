@@ -1,0 +1,330 @@
+<h2 class="text-center">Generate tags</h2>
+<div class="form-group">
+    <label for="accounts" class="col-sm-2 control-label">Account Manager:</label>
+    <div class="col-sm-3">
+        <select class="form-control" name="accounts" id="filter-account">
+            <?php if($this->dataAuth->role == 'super'):?>
+                <option value="-1">All</option>
+                <?php foreach($this->contactManager as $iter):?>
+                    <option value="<?php echo $iter['id']?>"><?php echo $iter['mail'];?></option>
+                <?php endforeach;?>
+            <?php else: ?>
+                <option value="<?php echo $this->manager['id'] ? $this->manager['id'] : -1; ?>">Show My Accounts</option>
+                <option value="-1">Show All Accounts</option>
+            <?php endif;?>
+        </select>
+    </div>
+</div>
+<br><br>
+<ul class="nav nav-tabs" role="tablist">
+    <li role="presentation" class="active">
+        <a href="#notags" data-toggle="tab" aria-controls="notags" role="tab">Sites Missing Tags</a>
+    </li>
+    <li role="presentation">
+        <a href="#widthtags" data-toggle="tab" aria-controls="widthtags" role="tab">Sites With Tags</a>
+    </li>
+</ul>
+<div class="tab-content">
+    <div role="tabpanel" class="tab-pane fade active in" id="notags">
+        <br><br>
+        <a class="btn btn-primary sent-approval" data-table="tableNotags" href="#" role="button"><i class="fa fa-refresh fa-spin hidden"></i> Sent for Approval</a>
+        <br><br>
+        <table class="table table-striped table-bordered table-condensed table-responsive" id="tableNotags" cellspacing="0" width="100%">
+            <thead>
+            <tr>
+                <td></td>
+                <td>PubID</td>
+                <td>Website</td>
+                <td>Date Approved</td>
+                <td>Notes</td>
+                <td>Sent for Approval</td>
+                <td>Actions</td>
+            </tr>
+            </thead>
+            <tfoot>
+            <tr>
+                <td></td>
+                <td>PubID</td>
+                <td>Website</td>
+                <td>Date Approved</td>
+                <td>Notes</td>
+                <td>Sent for Approval</td>
+                <td>Actions</td>
+            </tr>
+            </tfoot>
+            <tbody></tbody>
+        </table>
+        <a class="btn btn-primary sent-approval" data-table="tableNotags" href="#" role="button"><i class="fa fa-refresh fa-spin hidden"></i> Sent for Approval</a>
+    </div>
+    <div role="tabpanel" class="tab-pane fade in" id="widthtags">
+        <br><br>
+        <div class="form-group">
+            <label for="networks" class="col-sm-1 control-label">Network:</label>
+            <div class="col-sm-3">
+                <select class="form-control" name="networks" id="filter-networks">
+                    <option value="-1">All</option>
+                    <?php foreach($this->dataNetworks as $network):?>
+                        <option value="<?php echo $network['id']?>"><?php echo $network['name'];?></option>
+                    <?php endforeach;?>
+                </select>
+            </div>
+        </div>
+        <br><br>
+        <a class="btn btn-primary sent-approval" data-table="tableWidthtags" href="#" role="button"><i class="fa fa-refresh fa-spin hidden"></i> Sent for Approval</a>
+        <br><br>
+        <table class="table table-striped table-bordered table-condensed table-responsive" id="tableWidthtags" cellspacing="0" width="100%">
+            <thead>
+            <tr>
+                <td></td>
+                <td>PubID</td>
+                <td>Website</td>
+                <td>Notified?</td>
+                <td>Notes</td>
+                <td>Sent for Approval</td>
+                <td>Actions</td>
+            </tr>
+            </thead>
+            <tfoot>
+            <tr>
+                <td></td>
+                <td>PubID</td>
+                <td>Website</td>
+                <td>Notified?</td>
+                <td>Notes</td>
+                <td>Sent for Approval</td>
+                <td>Actions</td>
+            </tr>
+            </tfoot>
+            <tbody></tbody>
+        </table>
+        <a class="btn btn-primary sent-approval" data-table="tableWidthtags" href="#" role="button"><i class="fa fa-refresh fa-spin hidden"></i> Sent for Approval</a>
+    </div>
+</div>
+
+<script>
+    var account = $('#filter-account').val();
+    var network = $('#filter-networks').val();
+
+    $(document).ready(function() {
+
+        var tableNo = $('#tableNotags').DataTable( {
+            "processing": true,
+            "serverSide": true,
+            "autoWidth" : false,
+            "lengthMenu": [ 10, 25, 50, 75, 100 ],
+            "pageLength": 50,
+            "ajax": {
+                "url" : "/administrator/tags/ajax-no-tags",
+                "type": "POST",
+                "data": {
+                    account: function(){ return window.account; }
+                }
+            },
+            "order": [[ 3, "desc" ]],
+            "columns": [
+                {
+                    "width": "5%",
+                    "searchable": false,
+                    "orderable" : false,
+                    "className": "text-center",
+                    "data" : "SiteID",
+                    "render" : function(data, type, full, meta){
+                        if(full.sent_approval==1)
+                            return '<div class="checkbox"><label><input type="checkbox" data-id="'+data+'" value="1" name="site_id[]"></label></div>';
+                        else
+                            return '<div class="checkbox"><label><input type="checkbox" data-id="'+data+'" value="0" name="site_id[]"></label></div>';;
+                    }
+                },
+                {
+                    "width": "10%",
+                    "data" : "PubID"
+                },
+                {"data" : "SiteName"},
+                {"data" : "co_approved_date"},
+                {
+                    "width": "10%",
+                    "orderable" : false,
+                    "searchable": false,
+                    "className": "text-center",
+                    "data" : "notes",
+                    "render" : function ( data, type, full, meta ){
+                        if(data)
+                            return '<a href="#" data-toggle="tooltip" data-placement="top" title="'+data+'"><i class="fa fa-check text-success"></i></a>';
+                        else
+                            return '';
+                    }
+                },
+                {
+                    "width": "10%",
+                    "orderable" : false,
+                    "searchable": false,
+                    "className": "text-center",
+                    "data" : "sent_approval",
+                    "render" : function(data, type, full, meta){
+                        if(data==1)
+                            return '<i class="fa fa-check text-success"></i>';
+                        else
+                            return '<i class="fa fa-times text-danger"></i>';
+                    }
+                },
+                {
+                    "width": "30%",
+                    "searchable": false,
+                    "className": "text-center",
+                    "data" : "SiteID",
+                    "orderable" : false,
+                    "render" : function (data, type, full, meta){
+                        return '<a class="btn btn-success btn-sm" href="/administrator/tags/add/site/'+data+'" role="button">Create tags</a>' +
+                            ' <a class="btn btn-info btn-sm fancybox" href="/administrator/pubmatic/add-site/id/'+data+'" role="button" data-fancybox-type="iframe">Pubmatic API</a>' +
+                            ' <a class="btn btn-danger btn-sm" href="/administrator/tags/block-site/SiteID/'+data+'" role="button">Deny</a>';
+                    }
+                }
+            ]
+        });
+
+        $('#tableNotags').on( 'draw.dt', function () {
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+
+        var tableWidth = $('#tableWidthtags').DataTable( {
+            "processing": true,
+            "serverSide": true,
+            "autoWidth" : false,
+            "ajax": {
+                "url" : "/administrator/tags/ajax-tags",
+                "type": "POST",
+                "data": {
+                    account: function(){ return window.account; },
+                    network: function(){ return window.network; }
+                }
+            },
+            "order": [[ 2, "asc" ]],
+            "columns": [
+                {
+                    "data" : "SiteID",
+                    "width": "5%",
+                    "searchable": false,
+                    "orderable" : false,
+                    "className": "text-center",
+                    "render" : function(data, type, full, meta){
+                        if(full.sent_approval==1)
+                            return '<div class="checkbox"><label><input type="checkbox" data-id="'+data+'" value="1" name="site_id[]"></label></div>';
+                        else
+                            return '<div class="checkbox"><label><input type="checkbox" data-id="'+data+'" value="0" name="site_id[]"></label></div>';;
+                    }
+                },
+                {
+                    "width": "10%",
+                    "data" : "PubID"
+                },
+                {"data" : "SiteName"},
+                {
+                    "width": "10%",
+                    "orderable" : false,
+                    "searchable": false,
+                    "className": "text-center",
+                    "data" : "notified",
+                    "render" : function(data, type, full, meta){
+                        if(data==1)
+                            return '<i class="fa fa-check text-success"></i>';
+                        else
+                            return '<a href="/administrator/tags/notified/id/'+full.PubID+'/site/'+full.SiteID+'" class="fancybox" data-fancybox-type="iframe"><i class="fa fa-times text-danger"></i></a>';
+                    }
+                },
+                {
+                    "width": "10%",
+                    "orderable" : false,
+                    "searchable": false,
+                    "className": "text-center",
+                    "data" : "notes",
+                    "render" : function ( data, type, full, meta ){
+                        if(data)
+                            return '<a href="#" data-toggle="tooltip" data-placement="top" title="'+data+'"><i class="fa fa-check text-success"></i></a>';
+                        else
+                            return '';
+                    }
+                },
+                {
+                    "width": "10%",
+                    "orderable" : false,
+                    "searchable": false,
+                    "className": "text-center",
+                    "data" : "sent_approval",
+                    "render" : function(data, type, full, meta){
+                        if(data==1)
+                            return '<i class="fa fa-check text-success"></i>';
+                        else
+                            return '<i class="fa fa-times text-danger"></i>';
+                    }
+                },
+                {
+                    "width": "30%",
+                    "searchable": false,
+                    "className": "text-center",
+                    "data" : "SiteID",
+                    "orderable" : false,
+                    "render" : function (data, type, full, meta){
+                        return '<a class="btn btn-success btn-sm" href="/administrator/tags/edit/site/'+data+'" role="button">Edit tags</a>' +
+                            ' <a class="btn btn-info btn-sm" href="http://<?php echo $_SERVER["HTTP_HOST"];?>/tag-test/test-tags.php?pubid='+full.PubID+'&siteid='+data+'" role="button">Test tags</a>' +
+                            ' <a class="btn btn-info btn-sm fancybox" href="/administrator/pubmatic/add-site/id/'+data+'" role="button" data-fancybox-type="iframe">Pubmatic API</a>';
+                    }
+                }
+            ]
+        });
+
+        $('.sent-approval').on('click', function(){
+            var checkboxes = $('#'+$(this).attr('data-table')+' tr td:first-child').find('input[type=checkbox]:checked');
+            $.each(checkboxes, function(key, iter){
+                //alert($(iter).val());
+                $.ajax({
+                    url : '/administrator/ajax/sent-for-approval',
+                    data : { SiteID : $(iter).attr('data-id'), status : $(iter).val() },
+                    type : "POST",
+                    async : false,
+                    dataType : "json",
+                    beforeSend : function(){
+                        $('.fa-refresh').removeClass('hidden');
+                    },
+                    error : function(){
+                        $('.fa-refresh').addClass('hidden');
+                        alert('ajax request for save site in DB return error');
+                    },
+                    success : function(){
+                        $('.fa-refresh').addClass('hidden');
+                    }
+                });
+            });
+            switch ($(this).attr('data-table')){
+                case 'tableNotags':
+                    tableNo.draw();
+                    break;
+                case 'tableWidthtags' :
+                    tableWidth.draw();
+            }
+        });
+
+        $(".fancybox").fancybox({
+            maxWidth	: 800,
+            maxHeight	: 600,
+            fitToView	: false,
+            width		: '70%',
+            height		: '70%',
+            autoSize	: false,
+            closeClick	: false,
+            openEffect	: 'none',
+            closeEffect	: 'none'
+        });
+
+        $('#filter-account').change(function(){
+            account = $(this).val();
+            tableNo.ajax.reload();
+            tableWidth.ajax.reload();
+        });
+
+        $('#filter-networks').change(function(){
+            network = $(this).val();
+            tableWidth.ajax.reload();
+        });
+
+    });
+</script>

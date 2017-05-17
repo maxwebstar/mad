@@ -1,0 +1,1100 @@
+<script type="text/javascript" charset="utf-8">
+
+        $(document).ready(function() {                           
+            
+                <?php if($this->dataAuth->role == 'super'):?>
+                    var managerAccount = $('#filterManager').val();
+                <?php else:?>
+                    var managerAccount = <?php echo $this->manager['id'] ? $this->manager['id'] : -1; ?>;
+                <?php endif;?>    
+                    
+                getImpressStat(managerAccount);
+                    
+                $('#filterManager').change(function(){
+                    
+                    managerAccount = $('#filterManager').val();
+                    
+                    getImpressStat(managerAccount);
+                    
+                    oTable.fnClearTable();
+                    oTable2.fnClearTable();
+                    oTable3.fnClearTable();
+                    oTable4.fnClearTable();
+                    oTable5.fnClearTable();   
+                    oTable6.fnClearTable();   
+                });                
+     
+                var oTable = $('#gainers').dataTable( {
+                        "bProcessing": true,
+                        "bServerSide": true,
+                        "sAjaxSource": '/administrator/sites/ajax-stats',
+                        "fnServerParams": function ( aoData ) {  aoData.push( { "name": "filter", "value": 'all' }, { "name": "date1", "value": '<?php echo date("Y-m-d", time()-86400) ?>' }, { "name": "date2", "value": '<?php echo date("Y-m-d", time()-172800) ?>' }, { "name": "filterType", "value": 'all' }, { "name": "manager", "value": managerAccount }, { "name": "sorting", "value": 'desc' }, { "name": "impress", "value": 'impress' } ); },
+                        "iDisplayLength": 10
+                        ,
+                        "aoColumns": [
+                            { 
+                              "sTitle": "PID",
+                              "fnRender": function(obj){ return obj.aData[0]; } 
+                            },
+                            { 
+                              "sTitle": "SID",
+                              "fnRender": function(obj){ return obj.aData[1]; } 
+                            },
+                            { 
+                              "sTitle": "Website",
+                              "bSortable": false,                              
+                              "fnRender": function(obj){ return '<a href="/administrator/sites/view/id/'+obj.aData[1]+'">'+obj.aData[2]+'</a>'; } 
+                            },
+                            { 
+                              "sTitle": "Contact",
+                              "bSortable": false,
+                              "fnRender": function(obj){ return obj.aData[3]; } 
+                            },
+                            { 
+                              "sTitle": '<?php echo date("Y-m-d", time()-86400) ?>',
+                              "fnRender": function(obj){ return number_format(obj.aData[4],0,'.',','); } 
+                            },
+                            { 
+                              "sTitle": '<?php echo date("Y-m-d", time()-172800) ?>',
+                              "fnRender": function(obj){ return number_format(obj.aData[5],0,'.',','); } 
+                            },
+                            { 
+                              "sTitle": "Impres change",
+                              "fnRender": function(obj){ return number_format(obj.aData[6],0,'.',','); } 
+                            },
+                            { 
+                              "sTitle": "Alexa rank",
+                              "fnRender": function(obj){ return number_format(obj.aData[7],0,'.',','); } 
+                            },
+                            { 
+                              "sTitle": "Live",
+                              "fnRender": function(obj){ 
+                                  
+                                  if(obj.aData[8]){  return  '<a href="#" onclick="updateInfo(\'live\', \''+obj.aData[13]+'\', '+obj.aData[1]+', \'red\')"><img src="/images/status-green-check.gif"></a>'; }
+                                  else            {               return  '<a href="#" onclick="updateInfo(\'live\', \''+obj.aData[13]+'\', '+obj.aData[1]+', \'green\')"><img src="/images/stats-red-x.gif"></a>';    } 
+                                  
+                                  }
+                                                        
+                            },
+                            { 
+                              "sTitle": "Ever Live",
+                              "fnRender": function(obj){  
+                                  
+                                  if(obj.aData[9]) return '<img src="/images/status-green-check.gif"/>';
+                                  else             return '<img src="/images/stats-red-x.gif"/>';       } 
+                            },
+                            { 
+                              "sTitle": "Tags",
+                              "bSortable": false,
+                              "fnRender": function(obj){                                    
+                                  if(obj.aData[10] == 4)
+                                  	return '<a href="/administrator/tags/edit/site/'+obj.aData[1]+'">G</a>';
+                                  else if(obj.aData[10] == 5)
+                                  	return '<a href="/administrator/tags/edit/site/'+obj.aData[1]+'">R</a>';
+                                  else if(obj.aData[10] == 6)
+                                  	return '<a href="/administrator/tags/edit/site/'+obj.aData[1]+'">B</a>';
+                                  else if(obj.aData[10] == 7)
+                                  	return '<a href="/administrator/tags/edit/site/'+obj.aData[1]+'">M</a>';
+                                  else if(obj.aData[10] == 8)
+                                  	return '<a href="/administrator/tags/edit/site/'+obj.aData[1]+'">P</a>';
+                                  else if(obj.aData[10] == 9)
+                                      return '<a href="/administrator/tags/edit/site/'+obj.aData[1]+'">A</a>';
+                                  else if(obj.aData[10] == 10)
+                                      return '<a href="/administrator/tags/edit/site/'+obj.aData[1]+'">PP</a>';
+                                  else
+                                  	return '';	                                                                              
+								}
+                            },
+                            { 
+                              "sTitle": "Login",
+                              "bSortable": false,
+                              "fnRender": function(obj){ return '<a href="/administrator/index/auth/id/'+obj.aData[0]+'" target="_blank">Login</a>'; } 
+                            },
+                            { 
+                              "sTitle": "CSV",
+                              "sClass": "csv",
+                              "bSortable": false,
+                              "fnRender": function(obj){ return '<div id="csv_'+obj.aData[1]+'"><a onClick="getCsv('+obj.aData[1]+')">create</a></div>'; obj.aData[0]; }
+                            }
+                                          
+                        ],                                                
+                        "aaSorting": [[ 6, "desc" ]]
+                         
+                } );                
+                
+                var oTable2 = $('#losers').dataTable( {
+                        "bProcessing": true,
+                        "bServerSide": true,
+                        "sAjaxSource": '/administrator/sites/ajax-stats',
+                        "fnServerParams": function ( aoData ) {  aoData.push( { "name": "filter", "value": 'all' }, { "name": "date1", "value": '<?php echo date("Y-m-d", time()-86400) ?>' }, { "name": "date2", "value": '<?php echo date("Y-m-d", time()-172800) ?>' }, { "name": "filterType", "value": 'all' }, { "name": "manager", "value": managerAccount }, { "name": "sorting", "value": 'asc' }, { "name": "impress", "value": 'impress' } ); },
+                        "iDisplayLength": 10
+                        ,
+                        "aoColumns": [
+                            { 
+                              "sTitle": "PID",
+                              "fnRender": function(obj){ return obj.aData[0]; } 
+                            },
+                            { 
+                              "sTitle": "SID",
+                              "fnRender": function(obj){ return obj.aData[1]; } 
+                            },
+                            { 
+                              "sTitle": "Website",
+                              "bSortable": false,
+                              "fnRender": function(obj){ return '<a href="/administrator/sites/view/id/'+obj.aData[1]+'">'+obj.aData[2]+'</a>'; } 
+                            },
+                            { 
+                              "sTitle": "Contact",
+                              "bSortable": false,
+                              "fnRender": function(obj){ return obj.aData[3]; } 
+                            },
+                            { 
+                              "sTitle": '<?php echo date("Y-m-d", time()-86400) ?>',
+                              "fnRender": function(obj){ return number_format(obj.aData[4],0,'.',','); } 
+                            },
+                            { 
+                              "sTitle": '<?php echo date("Y-m-d", time()-172800) ?>',
+                              "fnRender": function(obj){ return number_format(obj.aData[5],0,'.',','); } 
+                            },
+                            { 
+                              "sTitle": "Impres change",
+                              "fnRender": function(obj){ return obj.aData[6] < 0 ? '-'+number_format(Math.abs(obj.aData[6]),0,'.',',') : number_format(obj.aData[6],0,'.',','); } 
+                            },
+                            { 
+                              "sTitle": "Alexa rank",
+                              "fnRender": function(obj){ return number_format(obj.aData[7],0,'.',','); } 
+                            },
+                            { 
+                              "sTitle": "Live",
+                              "fnRender": function(obj){ 
+                                  
+                                  if(obj.aData[8]){  return  '<a href="#" onclick="updateInfo(\'live\', \''+obj.aData[13]+'\', '+obj.aData[1]+', \'red\')"><img src="/images/status-green-check.gif"></a>'; }
+                                  else            {               return  '<a href="#" onclick="updateInfo(\'live\', \''+obj.aData[13]+'\', '+obj.aData[1]+', \'green\')"><img src="/images/stats-red-x.gif"></a>';    } 
+                                  
+                                  }
+                                                        
+                            },
+                            { 
+                              "sTitle": "Ever Live",
+                              "fnRender": function(obj){  
+                                  
+                                  if(obj.aData[9]) return '<img src="/images/status-green-check.gif"/>';
+                                  else             return '<img src="/images/stats-red-x.gif"/>';       } 
+                            },
+                            { 
+                              "sTitle": "Tags",
+                              "bSortable": false,
+                              "fnRender": function(obj){
+                                  if(obj.aData[10] == 4)
+                                      return '<a href="/administrator/tags/edit/site/'+obj.aData[1]+'">G</a>';
+                                  else if(obj.aData[10] == 5)
+                                      return '<a href="/administrator/tags/edit/site/'+obj.aData[1]+'">R</a>';
+                                  else if(obj.aData[10] == 6)
+                                      return '<a href="/administrator/tags/edit/site/'+obj.aData[1]+'">B</a>';
+                                  else if(obj.aData[10] == 7)
+                                      return '<a href="/administrator/tags/edit/site/'+obj.aData[1]+'">M</a>';
+                                  else if(obj.aData[10] == 8)
+                                      return '<a href="/administrator/tags/edit/site/'+obj.aData[1]+'">P</a>';
+                                  else if(obj.aData[10] == 9)
+                                      return '<a href="/administrator/tags/edit/site/'+obj.aData[1]+'">A</a>';
+                                  else if(obj.aData[10] == 10)
+                                      return '<a href="/administrator/tags/edit/site/'+obj.aData[1]+'">PP</a>';
+                                  else
+                                      return '';
+                              }
+                            },
+                            { 
+                              "sTitle": "Login",
+                              "bSortable": false,
+                              "fnRender": function(obj){ return '<a href="/administrator/index/auth/id/'+obj.aData[0]+'" target="_blank">Login</a>'; } 
+                            },
+                            { 
+                              "sTitle": "CSV",
+                              "sClass": "csv",
+                              "bSortable": false,
+                              "fnRender": function(obj){ return '<div id="csv_'+obj.aData[1]+'"><a onClick="getCsv('+obj.aData[1]+')">create</a></div>'; obj.aData[0]; }
+                            }
+                                          
+                        ],                                                
+                        "aaSorting": [[ 6, "asc" ]]
+                         
+                } );                
+                var oTable3 = $('#inactive').dataTable( {
+                        "bProcessing": true,
+                        "bServerSide": true,
+                        "sAjaxSource": '/administrator/dashboard/ajax-inactive',
+                        "fnServerParams": function ( aoData ) {  aoData.push( { "name": "filterType", "value": 'all' }, { "name": "manager", "value": managerAccount } ); },
+                        "iDisplayLength": 10
+                        ,
+                        "aoColumns": [
+                            { 
+                              "sTitle": "PID",
+                              "fnRender": function(obj){ return obj.aData[0]; } 
+                            },
+                            { 
+                              "sTitle": "SID",
+                              "fnRender": function(obj){ return obj.aData[1]; } 
+                            },
+                            { 
+                              "sTitle": "Website",
+                              "bSortable": false,
+                              "fnRender": function(obj){ return '<a href="/administrator/sites/view/id/'+obj.aData[1]+'">'+obj.aData[2]+'</a>'; } 
+                            },
+                            { 
+                              "sTitle": "Contact",
+                              "bSortable": false,
+                              "fnRender": function(obj){ return obj.aData[3]; } 
+                            },
+                            { 
+                              "sTitle": "<?php echo date("Y-m-d", time()-86400) ?>",
+                              "fnRender": function(obj){  return obj.aData[4] < 0 ? '-'+number_format(Math.abs(obj.aData[4]),0,'.',',') : number_format(obj.aData[4],0,'.',','); } 
+                            },
+                            { 
+                              "sTitle": "<?php echo date("Y-m-d", time()-172800) ?>",
+                              "fnRender": function(obj){ return number_format(obj.aData[5],0,'.',','); } 
+                            },
+                            { 
+                              "sTitle": "Impres change",
+                              "fnRender": function(obj){ var percent = 0; if(obj.aData[6]) percent = obj.aData[6]; return percent+'%'; } 
+                            },
+                            { 
+                              "sTitle": "Highest Impres",
+                              "fnRender": function(obj){ return number_format(obj.aData[7],0,'.',',')+'<br/>('+obj.aData[17]+')'; } 
+                            },                            
+                            { 
+                              "sTitle": "Alexa rank",
+                              "fnRender": function(obj){ return number_format(obj.aData[8],0,'.',','); } 
+                            },
+                            { 
+                              "sTitle": "Date Inactive",
+                              "fnRender": function(obj){ if(obj.aData[9]) return $.format.date(new Date(obj.aData[9]), "yyyy MMM, dd"); else return ''; }
+                                                        
+                            },
+                            { 
+                              "sTitle": "Auto- Emailed?",
+                              "fnRender": function(obj){  
+                                  
+                                  if(obj.aData[10]==1) return '<img src="/images/stats-red-x.gif"/>';
+                                  else             return '<img src="/images/status-green-check.gif"/>';       } 
+                            },
+                            { 
+                              "sTitle": "Manual Followup",
+                              "fnRender": function(obj){  
+                                  
+                                  if(obj.aData[11]!=1) return '<a href="/administrator/sites/followup/id/'+obj.aData[1]+'/actions/1"><img src="/images/stats-red-x.gif"/></a>';
+                                  else             return '<a href="/administrator/sites/followup/id/'+obj.aData[1]+'/actions/0"><img src="/images/status-green-check.gif"/></a>';       } 
+                            },                            
+                            { 
+                              "sTitle": "Tags",
+                              "bSortable": false,
+                              "fnRender": function(obj){
+                                  if(obj.aData[12] == 4)
+                                      return '<a href="/administrator/tags/edit/site/'+obj.aData[1]+'">G</a>';
+                                  else if(obj.aData[12] == 5)
+                                      return '<a href="/administrator/tags/edit/site/'+obj.aData[1]+'">R</a>';
+                                  else if(obj.aData[12] == 6)
+                                      return '<a href="/administrator/tags/edit/site/'+obj.aData[1]+'">B</a>';
+                                  else if(obj.aData[12] == 7)
+                                      return '<a href="/administrator/tags/edit/site/'+obj.aData[1]+'">M</a>';
+                                  else if(obj.aData[12] == 8)
+                                      return '<a href="/administrator/tags/edit/site/'+obj.aData[1]+'">P</a>';
+                                  else if(obj.aData[12] == 9)
+                                      return '<a href="/administrator/tags/edit/site/'+obj.aData[1]+'">A</a>';
+                                  else if(obj.aData[12] == 10)
+                                      return '<a href="/administrator/tags/edit/site/'+obj.aData[1]+'">PP</a>';
+                                  else
+                                      return '';
+                              }
+                            },
+                            { 
+                              "sTitle": "Login",
+                              "bSortable": false,
+                              "fnRender": function(obj){ return '<a href="/administrator/index/auth/id/'+obj.aData[0]+'" target="_blank">Login</a>'; } 
+                            }
+                                          
+                        ],                                                
+                        "aaSorting": [[ 9, "desc" ]]
+                         
+                } );                                
+                
+                var oTable4 = $('#live').dataTable( {
+                        "bProcessing": true,
+                        "bServerSide": true,
+                        "sAjaxSource": '/administrator/dashboard/ajax-live',
+                        "fnServerParams": function ( aoData ) {  aoData.push( { "name": "filter", "value": 'live' }, { "name": "filterType", "value": 'all' }, { "name": "accounts", "value": 'all' }, { "name": "filterCategory", "value": 'all' }, { "name": "filterSize", "value": 'all' }, { "name": "manager", "value": managerAccount } ); },
+                        "iDisplayLength": 10
+                        ,
+                        "aoColumns": [
+                            { 
+                              "sTitle": "PID",
+                              "fnRender": function(obj){ return obj.aData[0]; } 
+                            },
+                            { 
+                              "sTitle": "SID",
+                              "fnRender": function(obj){ return obj.aData[1]; } 
+                            },
+                            { 
+                              "sTitle": "Website",
+                              "bSortable": false,
+                              "fnRender": function(obj){ return '<a href="/administrator/sites/view/id/'+obj.aData[1]+'">'+obj.aData[2]+'</a>'; } 
+                            },
+                            { 
+                              "sTitle": "Contact",
+                              "bSortable": false,
+                              "fnRender": function(obj){ return '<a href="/administrator/index/view/id/'+obj.aData[0]+'">'+obj.aData[3]+'</a>'; } 
+                            },
+                            { 
+                              "sTitle": "<?php echo date("Y-m-d", time()-86400) ?>",
+                              "fnRender": function(obj){ return number_format(obj.aData[4],0,'.',','); } 
+                            },
+                            { 
+                              "sTitle": "<?php echo date("Y-m-d", time()-172800) ?>",
+                              "fnRender": function(obj){ return number_format(obj.aData[5],0,'.',','); } 
+                            },
+                            { 
+                              "sTitle": "Impres change",
+                              "fnRender": function(obj){ var percent = 0; if(obj.aData[6]) percent = obj.aData[6]; return percent+'%'; } 
+                            },
+                            { 
+                              "sTitle": "Denied Impres <?php echo date("Y-m-d", time()-86400) ?>",
+                              "fnRender": function(obj){ return '<a style="cursor: pointer" onClick="showNotApproved('+obj.aData[1]+')">'+obj.aData[7]+'</a>'; } 
+                            },                            
+                            { 
+                              "sTitle": "Alexa rank",
+                              "fnRender": function(obj){ return number_format(obj.aData[8],0,'.',','); } 
+                            },
+                            { 
+                              "sTitle": "Top Alexa Country",
+                              "fnRender": function(obj){ return obj.aData[9]; } 
+                            }, 
+                            { 
+                              "sTitle": "Date Live",
+                              "fnRender": function(obj){ return obj.aData[10] ? $.format.date(new Date(obj.aData[10]), "yyyy MMM, dd") : obj.aData[10]; } 
+                            }, 
+                            { 
+                              "sTitle": "Live",
+                              "fnRender": function(obj){ 
+                                  
+                                  if(obj.aData[11]){  return  '<a href="#" onclick="updateInfo(\'live\', \''+obj.aData[16]+'\', '+obj.aData[1]+', \'red\')"><img src="/images/status-green-check.gif"></a>'; }
+                                  else            {               return  '<a href="#" onclick="updateInfo(\'live\', \''+obj.aData[16]+'\', '+obj.aData[1]+', \'green\')"><img src="/images/stats-red-x.gif"></a>';    } 
+                                  
+                                  }
+                                                        
+                            },
+                            { 
+                              "sTitle": "Ever Live",
+                              "fnRender": function(obj){  
+                                  
+                                  if(obj.aData[12]) return '<img src="/images/status-green-check.gif"/>';
+                                  else             return '<img src="/images/stats-red-x.gif"/>';       } 
+                            },
+                            { 
+                              "sTitle": "Tags",
+                              "bSortable": false,
+                              "fnRender": function(obj){
+                                  if(obj.aData[13] == 4)
+                                      return '<a href="/administrator/tags/edit/site/'+obj.aData[1]+'">G</a>';
+                                  else if(obj.aData[13] == 5)
+                                      return '<a href="/administrator/tags/edit/site/'+obj.aData[1]+'">R</a>';
+                                  else if(obj.aData[13] == 6)
+                                      return '<a href="/administrator/tags/edit/site/'+obj.aData[1]+'">B</a>';
+                                  else if(obj.aData[13] == 7)
+                                      return '<a href="/administrator/tags/edit/site/'+obj.aData[1]+'">M</a>';
+                                  else if(obj.aData[13] == 8)
+                                      return '<a href="/administrator/tags/edit/site/'+obj.aData[1]+'">P</a>';
+                                  else if(obj.aData[13] == 9)
+                                      return '<a href="/administrator/tags/edit/site/'+obj.aData[1]+'">A</a>';
+                                  else if(obj.aData[13] == 10)
+                                      return '<a href="/administrator/tags/edit/site/'+obj.aData[1]+'">PP</a>';
+                                  else
+                                      return '';
+								}
+                            },
+                            { 
+                              "sTitle": "Login",
+                              "bSortable": false,
+                              "fnRender": function(obj){ return '<a href="/administrator/index/auth/id/'+obj.aData[0]+'" target="_blank">Login</a>'; } 
+                            },
+                            { 
+                              "sTitle": "CSV",
+                              "sClass": "csv",
+                              "bSortable": false,
+                              "fnRender": function(obj){ return '<div id="csv_'+obj.aData[1]+'"><a onClick="getCsv('+obj.aData[1]+')">create</a></div>'; obj.aData[0]; }
+                            }                                          
+                        ],                                                
+                        "aaSorting": [[ 10, "desc" ]]
+                         
+                } );                                
+
+                var oTable5 = $('#never').dataTable( {
+                        "bProcessing": true,
+                        "bServerSide": true,
+                        "sAjaxSource": '/administrator/dashboard/ajax-never-live',
+                        "fnServerParams": function ( aoData ) {  aoData.push( { "name": "filter", "value": 'never_live' }, { "name": "filterType", "value": 'all' }, { "name": "accounts", "value": 'all' }, { "name": "filterCategory", "value": 'all' }, { "name": "filterSize", "value": 'all' }, { "name": "manager", "value": managerAccount } ); },
+                        "iDisplayLength": 10
+                        ,
+                        "aoColumns": [
+                            { 
+                              "sTitle": "PID",
+                              "fnRender": function(obj){ return obj.aData[0]; } 
+                            },
+                            { 
+                              "sTitle": "SID",
+                              "fnRender": function(obj){ return obj.aData[1]; } 
+                            },
+                            { 
+                              "sTitle": "Website",
+                              "bSortable": false,
+                              "fnRender": function(obj){ return '<a href="/administrator/sites/view/id/'+obj.aData[1]+'">'+obj.aData[2]+'</a>'; } 
+                            },
+                            { 
+                              "sTitle": "Contact",
+                              "bSortable": false,
+                              "fnRender": function(obj){ return '<a href="/administrator/index/view/id/'+obj.aData[0]+'">'+obj.aData[3]+'</a>'; } 
+                            },
+                            { 
+                              "sTitle": "<?php echo date("Y-m-d", time()-86400) ?>",
+                              "fnRender": function(obj){ return number_format(obj.aData[4],0,'.',','); } 
+                            },
+                            { 
+                              "sTitle": "<?php echo date("Y-m-d", time()-172800) ?>",
+                              "fnRender": function(obj){ return number_format(obj.aData[5],0,'.',','); } 
+                            },
+                            { 
+                              "sTitle": "Impres change",
+                              "fnRender": function(obj){ var percent = 0; if(obj.aData[6]) percent = obj.aData[6]; return percent+'%'; } 
+                            },
+                            { 
+                              "sTitle": "Denied Impres <?php echo date("Y-m-d", time()-86400) ?>",
+                              "fnRender": function(obj){ return '<a style="cursor: pointer" onClick="showNotApproved('+obj.aData[1]+')">'+obj.aData[7]+'</a>'; } 
+                            },                            
+                            { 
+                              "sTitle": "Alexa rank",
+                              "fnRender": function(obj){ return number_format(obj.aData[8],0,'.',','); } 
+                            },
+                            { 
+                              "sTitle": "Top Alexa Country",
+                              "fnRender": function(obj){ return obj.aData[9]; } 
+                            }, 
+                            {
+                              "sTitle": "Tags Created",
+                              "fnRender": function(obj){ return obj.aData[10] ? $.format.date(new Date(obj.aData[10]), "yyyy MMM, dd") : obj.aData[10]; }  
+                            },
+                            { 
+                              "sTitle": "Live",
+                              "fnRender": function(obj){ 
+                                  
+                                  if(obj.aData[11]){  return  '<a href="#" onclick="updateInfo(\'live\', \''+obj.aData[16]+'\', '+obj.aData[1]+', \'red\')"><img src="/images/status-green-check.gif"></a>'; }
+                                  else            {               return  '<a href="#" onclick="updateInfo(\'live\', \''+obj.aData[16]+'\', '+obj.aData[1]+', \'green\')"><img src="/images/stats-red-x.gif"></a>';    } 
+                                  
+                                  }
+                                                        
+                            },
+                            { 
+                              "sTitle": "Ever Live",
+                              "fnRender": function(obj){  
+                                  
+                                  if(obj.aData[12]) return '<img src="/images/status-green-check.gif"/>';
+                                  else             return '<img src="/images/stats-red-x.gif"/>';       } 
+                            },
+                            { 
+                              "sTitle": "Tags",
+                              "bSortable": false,
+                              "fnRender": function(obj){
+                                  if(obj.aData[13] == 4)
+                                      return '<a href="/administrator/tags/edit/site/'+obj.aData[1]+'">G</a>';
+                                  else if(obj.aData[13] == 5)
+                                      return '<a href="/administrator/tags/edit/site/'+obj.aData[1]+'">R</a>';
+                                  else if(obj.aData[13] == 6)
+                                      return '<a href="/administrator/tags/edit/site/'+obj.aData[1]+'">B</a>';
+                                  else if(obj.aData[13] == 7)
+                                      return '<a href="/administrator/tags/edit/site/'+obj.aData[1]+'">M</a>';
+                                  else if(obj.aData[13] == 8)
+                                      return '<a href="/administrator/tags/edit/site/'+obj.aData[1]+'">P</a>';
+                                  else if(obj.aData[13] == 9)
+                                      return '<a href="/administrator/tags/edit/site/'+obj.aData[1]+'">A</a>';
+                                  else if(obj.aData[13] == 10)
+                                      return '<a href="/administrator/tags/edit/site/'+obj.aData[1]+'">PP</a>';
+                                  else
+                                      return '';
+								}
+                            },
+                            { 
+                              "sTitle": "Login",
+                              "bSortable": false,
+                              "fnRender": function(obj){ return '<a href="/administrator/index/auth/id/'+obj.aData[0]+'" target="_blank">Login</a>'; } 
+                            },
+                            { 
+                              "sTitle": "CSV",
+                              "sClass": "csv",
+                              "bSortable": false,
+                              "fnRender": function(obj){ return '<div id="csv_'+obj.aData[1]+'"><a onClick="getCsv('+obj.aData[1]+')">create</a></div>'; obj.aData[0]; }
+                            }                                          
+                        ],                                                
+                        "aaSorting": [[ 10, "desc" ]]
+                         
+                } );     
+                
+                var oTable6 = $('#week_statistic').dataTable({
+                     "bProcessing": true,
+                     "bServerSide": true,
+                     "iDisplayLength": 7,
+                     "bFilter": false,
+                     "bInfo": false,
+                     "bPaginate": false,
+                     "sAjaxSource": '/administrator/dashboard/ajax-week-statistic',
+                     "fnServerParams": function ( aoData ) {  aoData.push( { "name": "manager", "value": managerAccount } ); },
+                     "aoColumns": [
+                         { 
+                            "sTitle": "Date",
+                            "bSortable": true,
+                            "fnRender": function(obj){  var date = new Date(obj.aData[0]);
+                                                            date.setDate(date.getUTCDate());
+                                       return $.format.date(date, "dd MMM");
+                            } 
+                         },
+                         { 
+                            "sTitle": "Impressions",
+                            "bSortable": true,
+                            "fnRender": function(obj){ return '<a target="_blank" href="/administrator/dashboard/site-day-statistic/date/'+obj.aData[4]+'">'+number_format(obj.aData[1],0,'.',',')+'</a>'; } 
+                         },
+                         { 
+                             "sTitle": "Paid Impressions",
+                             "bSortable": true,
+                             "fnRender": function(obj){ return '<a target="_blank" href="/administrator/dashboard/site-day-statistic/date/'+obj.aData[4]+'">'+number_format(obj.aData[2],0,'.',',')+'</a>'; } 
+                         },
+                         { 
+                            "sTitle": "Revenue",
+                            "bSortable": true,
+                            "fnRender": function(obj){ return '<a target="_blank" href="/administrator/dashboard/site-day-statistic/date/'+obj.aData[4]+'">$ '+number_format(obj.aData[3],2,'.',',')+'</a>'; } 
+                         },
+                         { 
+                             "sTitle": "ECPM",
+                             "bSortable": false,
+                             "fnRender": function(obj){ return '<a target="_blank" href="/administrator/dashboard/site-day-statistic/date/'+obj.aData[4]+'">$ '+number_format(obj.aData[5],2,'.',',')+'</a>'; } 
+                          }                       
+                     ],
+                      "aaSorting": [[ 0, "desc" ]]
+                });
+                
+                var oTable7 = $('#earners').dataTable( {
+                    "bProcessing": true,
+                    "bServerSide": true,
+                    "sAjaxSource": '/administrator/dashboard/ajax-top-earners',
+                    "fnServerParams": function ( aoData ) {  aoData.push( { "name": "filter", "value": 'live' }, { "name": "filterType", "value": 'all' }, { "name": "accounts", "value": 'all' }, { "name": "filterCategory", "value": 'all' }, { "name": "filterSize", "value": 'all' }, { "name": "manager", "value": managerAccount }, { "name": "filterAdxStatus", "value": 3 } ); },
+                    "iDisplayLength": 10
+                    ,
+                    "aoColumns": [
+                        { 
+                          "sTitle": "PID",
+                          "bSortable": true,
+                          "fnRender": function(obj){ return obj.aData[0]; } 
+                        },
+                        { 
+                          "sTitle": "SID",
+                          "bSortable": true,
+                          "fnRender": function(obj){ return obj.aData[1]; } 
+                        },
+                        { 
+                          "sTitle": "Website",
+                          "bSortable": false,
+                          "fnRender": function(obj){ return '<a href="/administrator/sites/view/id/'+obj.aData[1]+'">'+obj.aData[2]+'</a>'; } 
+                        },
+                        { 
+                          "sTitle": "Contact",
+                          "bSortable": false,
+                          "fnRender": function(obj){ return '<a href="/administrator/index/view/id/'+obj.aData[0]+'">'+obj.aData[3]+'</a>'; } 
+                        },
+                        { 
+                          "sTitle": "<?php echo date("Y-m-d", time()-86400) ?>",
+                          "bSortable": true,
+                          "fnRender": function(obj){ return number_format(obj.aData[4],0,'.',','); } 
+                        },
+                        { 
+                          "sTitle": "<?php echo date("Y-m-d", time()-172800) ?>",
+                          "bSortable": true,
+                          "fnRender": function(obj){ return number_format(obj.aData[5],0,'.',','); } 
+                        },
+                        { 
+                          "sTitle": "Impres change",
+                          "bSortable": true,
+                          "fnRender": function(obj){ var percent = 0; if(obj.aData[6]) percent = obj.aData[6]; return percent+'%'; } 
+                        },
+                        { 
+                          "sTitle": "Denied Impres <?php echo date("Y-m-d", time()-86400) ?>",
+                          "bSortable": true,
+                          "fnRender": function(obj){ return '<a style="cursor: pointer" onClick="showNotApproved('+obj.aData[1]+')">'+obj.aData[7]+'</a>'; } 
+                        },                            
+                        { 
+                          "sTitle": "Alexa rank",
+                          "bSortable": true,
+                          "fnRender": function(obj){ return number_format(obj.aData[8],0,'.',','); } 
+                        },
+                        { 
+                          "sTitle": "Top Alexa Country",
+                          "bSortable": true,
+                          "fnRender": function(obj){ return obj.aData[9]; } 
+                        }, 
+                        { 
+                          "sTitle": "Revenue",
+                          "bSortable": true,
+                          "fnRender": function(obj){ 
+								return obj.aData[8] < 0 ? '-$'+number_format(Math.abs(obj.aData[10]),0,'.',',') : '$'+number_format(obj.aData[10],0,'.',','); 
+                           } 
+                        }, 
+                        { 
+                          "sTitle": "Live",
+                          "bSortable": true,
+                          "fnRender": function(obj){ 
+                              
+                              if(obj.aData[11]){  return  '<a href="#" onclick="updateInfo(\'live\', \''+obj.aData[16]+'\', '+obj.aData[1]+', \'red\')"><img src="/images/status-green-check.gif"></a>'; }
+                              else             {  return  '<a href="#" onclick="updateInfo(\'live\', \''+obj.aData[16]+'\', '+obj.aData[1]+', \'green\')"><img src="/images/stats-red-x.gif"></a>';      } 
+                              
+                              }
+                                                    
+                        },
+                        { 
+                          "sTitle": "Ever Live",
+                          "bSortable": true,
+                          "fnRender": function(obj){  
+                              
+                              if(obj.aData[12]) return '<img src="/images/status-green-check.gif"/>';
+                              else             return '<img src="/images/stats-red-x.gif"/>';       } 
+                        },
+                        { 
+                          "sTitle": "Tags",
+                          "bSortable": false,
+                          "fnRender": function(obj){
+                              if(obj.aData[13] == 4)
+                                  return '<a href="/administrator/tags/edit/site/'+obj.aData[1]+'">G</a>';
+                              else if(obj.aData[13] == 5)
+                                  return '<a href="/administrator/tags/edit/site/'+obj.aData[1]+'">R</a>';
+                              else if(obj.aData[13] == 6)
+                                  return '<a href="/administrator/tags/edit/site/'+obj.aData[1]+'">B</a>';
+                              else if(obj.aData[13] == 7)
+                                  return '<a href="/administrator/tags/edit/site/'+obj.aData[1]+'">M</a>';
+                              else if(obj.aData[13] == 8)
+                                  return '<a href="/administrator/tags/edit/site/'+obj.aData[1]+'">P</a>';
+                              else if(obj.aData[13] == 9)
+                                  return '<a href="/administrator/tags/edit/site/'+obj.aData[1]+'">A</a>';
+                              else if(obj.aData[13] == 10)
+                                  return '<a href="/administrator/tags/edit/site/'+obj.aData[1]+'">PP</a>';
+                              else
+                                  return '';
+							}
+                        },
+                        { 
+                          "sTitle": "Login",
+                          "bSortable": false,
+                          "fnRender": function(obj){ return '<a href="/administrator/index/auth/id/'+obj.aData[0]+'" target="_blank">Login</a>'; } 
+                        },
+                        { 
+                          "sTitle": "CSV",
+                          "sClass": "csv",
+                          "bSortable": false,
+                          "fnRender": function(obj){ return '<div id="csv_'+obj.aData[1]+'"><a onClick="getCsv('+obj.aData[1]+')">create</a></div>'; obj.aData[0]; }
+                        }                                          
+                    ],                                                
+                    "aaSorting": [[ 10, "desc" ]]
+                     
+            } );  
+                 
+
+        } );
+        
+function number_format( number, decimals, dec_point, thousands_sep ) {	// Format a number with grouped thousands
+	// 
+	// +   original by: Jonas Raoni Soares Silva (http://www.jsfromhell.com)
+	// +   improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+	// +	 bugfix by: Michael White (http://crestidg.com)
+
+	var i, j, kw, kd, km;
+
+	// input sanitation & defaults
+	if( isNaN(decimals = Math.abs(decimals)) ){
+		decimals = 2;
+	}
+	if( dec_point == undefined ){
+		dec_point = ",";
+	}
+	if( thousands_sep == undefined ){
+		thousands_sep = ".";
+	}
+
+	i = parseInt(number = (+number || 0).toFixed(decimals)) + "";
+
+	if( (j = i.length) > 3 ){
+		j = j % 3;
+	} else{
+		j = 0;
+	}
+
+	km = (j ? i.substr(0, j) + thousands_sep : "");
+	kw = i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousands_sep);
+	//kd = (decimals ? dec_point + Math.abs(number - i).toFixed(decimals).slice(2) : "");
+	kd = (decimals ? dec_point + Math.abs(number - i).toFixed(decimals).replace(/-/, 0).slice(2) : "");
+
+
+	return km + kw + kd;
+}
+
+function updateInfo(action, name, id, color)
+{   
+    var popup=prompt('Your Name:',name)
+    
+    if(popup){
+        location.href = '/administrator/sites/update/act/'+action+'/name/'+popup+'/id/'+id+'/color/'+color;
+    }else{
+        return false;
+    }
+}
+
+function getImpressStat(id)
+{
+    $.ajax({
+      url: "/administrator/dashboard/get-impress-stat/id/"+id,
+      dataType: "json",
+      type: "GET",
+      success: function(data){
+                    if(data.status=='ok'){
+                        $("#yesterday_impress").html(data.yesterday);
+                        $("#daysTwoAgo_impress").html(data.daysTwoAgo);
+                        $("#last_week_impress").html(data.last_week);
+                        $("#last_month_impress").html(data.last_month);
+                    }else{
+                        alert('ERROR: something went wrong');
+                    }
+                }
+    });    
+}
+</script>
+<h1>Dashboard</h1>
+<div id="showTable" class="contUsL" style="width: 900px;">
+    <p><span style="font-weight: bold;">Yesterday's Impressions (<?php echo date('l', strtotime('-1 day'))?>): </span><span id="yesterday_impress"><?php echo number_format($this->yesterday->impress, 0, '.', ','); ?></span></p>
+    <p><span style="font-weight: bold;">2 Days Ago Impressions (<?php echo date('l', strtotime('-2 day'))?>): </span><span id="daysTwoAgo_impress"><?php echo number_format($this->daysTwoAgo->impress, 0, '.', ','); ?></span></p>
+    <p><span style="font-weight: bold;">Yesterday last week: </span><span id="last_week_impress"><?php echo number_format($this->last_week->impress, 0, '.', ','); ?></span></p>
+    <p><span style="font-weight: bold;">Yesterday last month: </span><span id="last_month_impress"><?php echo number_format($this->last_month->impress, 0, '.', ','); ?></span></p>
+    
+    <?php if($this->dataAuth->role == 'super'):?>
+        <p>
+            <span style="font-weight: 600">View As Account Manager:</span> 
+            <select style="margin-left: 14px;" id="filterManager">
+                <option value="-1">All</option>
+                <?php foreach($this->contactManager as $iter):?>
+                     <option value="<?php echo $iter['id']?>"><?php echo $iter['mail'];?></option>
+                <?php endforeach;?>
+            </select>  
+        </p>
+    <?php endif;?>
+        
+    <div style="display: block; float: left; clear: both; width: 400px; margin: 30px 0px 30px 0px;">            
+        <table width="400px" cellpadding="0" cellspacing="0" border="0" class="display" id="week_statistic">
+            <thead>
+                    <tr>
+                        <th width="20%">Date</th> 
+                        <th width="20%">Impressions</th>
+                        <th width="20%">Paid Impressions</th>
+                        <th width="30%">Revenue</th>    
+                        <th width="20%">ECPM</th>                                                       
+                    </tr>
+            </thead>
+            <tbody></tbody>
+            <tfoot>
+                    <tr>
+                        <th>Date</th> 
+                        <th>Impressions</th>
+                        <th>Paid Impressions</th>
+                        <th>Revenue</th>    
+                        <th>ECPM</th>                                                       
+                    </tr>
+            </tfoot>
+        </table>     
+    </div>
+    <div style="clear: both;"></div>    
+									
+    <p style="font-weight: bold; font-size: 16px;">Biggest Gainers: </p> 
+    
+    <table width="740px" cellpadding="0" cellspacing="0" border="0" class="display" id="gainers">
+            <thead>
+                    <tr>
+                        <th width="5%">PID</th>
+                        <th width="5%">SID</th>
+                        <th width="20%">Website</th>
+                        <th width="20%">Contact</th>
+                        <th width="10%">Date 1</th>
+                        <th width="10%">Date 2</th>
+                        <th width="10%">Impres change</th>
+                        <th width="10%">Alexa rank</th>
+                        <th width="10%">Live</th>
+                        <th width="10%">Ever Live</th>
+                        <th width="10%">Tags</th>
+                        <th width="10%">Login</th>
+                        <th width="20%">CSV</th>
+                    </tr>
+            </thead>
+            <tbody></tbody>
+            <tfoot>
+                    <tr>
+                        <th>PID</th>
+                        <th>SID</th>
+                        <th>Website</th>
+                        <th>Contact</th>
+                        <th>Date 1</th>
+                        <th>Date 2</th>
+                        <th>Impres change</th>
+                        <th>Alexa rank</th>
+                        <th>Live</th>
+                        <th>Ever Live</th>
+                        <th>Tags</th>
+                        <th>Login</th>
+                        <th>CSV</th>
+                    </tr>
+            </tfoot>
+    </table>  
+    <br><br>
+    <p style="font-weight: bold; font-size: 16px;">Biggest Losers: </p>    
+    <table width="740px" cellpadding="0" cellspacing="0" border="0" class="display" id="losers">
+            <thead>
+                    <tr>
+                        <th width="5%">PID</th>
+                        <th width="5%">SID</th>
+                        <th width="20%">Website</th>
+                        <th width="20%">Contact</th>
+                        <th width="10%">Date 1</th>
+                        <th width="10%">Date 2</th>
+                        <th width="10%">Impres change</th>
+                        <th width="10%">Alexa rank</th>
+                        <th width="10%">Live</th>
+                        <th width="10%">Ever Live</th>
+                        <th width="10%">Tags</th>
+                        <th width="10%">Login</th>
+                        <th width="20%">CSV</th>
+                    </tr>
+            </thead>
+            <tbody></tbody>
+            <tfoot>
+                    <tr>
+                        <th>PID</th>
+                        <th>SID</th>
+                        <th>Website</th>
+                        <th>Contact</th>
+                        <th>Date 1</th>
+                        <th>Date 2</th>
+                        <th>Impres change</th>
+                        <th>Alexa rank</th>
+                        <th>Live</th>
+                        <th>Ever Live</th>
+                        <th>Tags</th>
+                        <th>Login</th>
+                        <th>CSV</th>
+                    </tr>
+            </tfoot>
+    </table>    
+    <br><br>
+    <p style="font-weight: bold; font-size: 16px;">Recent Inactive: </p>
+    <table width="740px" cellpadding="0" cellspacing="0" border="0" class="display" id="inactive">
+            <thead>
+                    <tr>
+                        <th width="5%">PID</th>
+                        <th width="5%">SID</th>
+                        <th width="20%">Website</th>
+                        <th width="20%">Contact</th>
+                        <th width="10%">Impres yesterday</th>
+                        <th width="10%">Impres 2 day ago</th>
+                        <th width="10%">Impres change</th>
+                        <th width="10%">Highest Impres</th>
+                        <th width="10%">Alexa rank</th>
+                        <th width="10%">Date Inactive</th>
+                        <th width="10%">Auto- Emailed?</th>
+                        <th width="10%">Manual Followup</th>
+                        <th width="10%">Tags</th>
+                        <th width="10%">Login</th>
+                    </tr>
+            </thead>
+            <tbody></tbody>
+            <tfoot>
+                    <tr>
+                        <th>PID</th>
+                        <th>SID</th>
+                        <th>Website</th>
+                        <th>Contact</th>
+                        <th>Impres yesterday</th>
+                        <th>Impres 2 day ago</th>
+                        <th>Impres change</th>
+                        <th>Highest Impres</th>
+                        <th>Alexa rank</th>
+                        <th>Date Inactive</th>
+                        <th>Auto- Emailed?</th>
+                        <th>Manual Followup</th>
+                        <th>Tags</th>
+                        <th>Login</th>
+                    </tr>
+            </tfoot>
+    </table>    
+    <br><br>
+    <p style="font-weight: bold; font-size: 16px;">Recent Live Sites: </p>
+    <table width="740px" cellpadding="0" cellspacing="0" border="0" class="display" id="live">
+            <thead>
+                    <tr>
+                        <th width="5%">PID</th>
+                        <th width="5%">SID</th>
+                        <th width="20%">Website</th>
+                        <th width="20%">Contact</th>
+                        <th width="10%">Impres yesterday</th>
+                        <th width="10%">Impres 2 day ago</th>
+                        <th width="10%">Impres change</th>
+                        <th width="10%">Denied Impres Yesterday</th>
+                        <th width="10%">Alexa rank</th>
+                        <th width="10%">Top Alexa Country</th>
+                        <th width="15%">Date Live</th>
+                        <th width="10%">Live</th>
+                        <th width="10%">Ever Live</th>
+                        <th width="10%">Tags</th>
+                        <th width="10%">Login</th>
+                        <th width="20%">CSV</th>
+                    </tr>
+            </thead>
+            <tbody></tbody>
+            <tfoot>
+                    <tr>
+                        <th>PID</th>
+                        <th>SID</th>
+                        <th>Website</th>
+                        <th>Contact</th>
+                        <th>Impres yesterday</th>
+                        <th>Impres 2 day ago</th>
+                        <th>Impres change</th>
+                        <th>Denied Impres Yesterday</th>
+                        <th>Alexa rank</th>
+                        <th>Top Alexa Country</th>
+                        <th>Date Live</th>
+                        <th>Live</th>
+                        <th>Ever Live</th>
+                        <th>Tags</th>
+                        <th>Login</th>
+                        <th>CSV</th>
+                    </tr>
+            </tfoot>
+    </table>    
+    <br><br>
+    <p style="font-weight: bold; font-size: 16px;">Sites Never Live: </p>
+    <table width="740px" cellpadding="0" cellspacing="0" border="0" class="display" id="never">
+            <thead>
+                    <tr>
+                        <th width="5%">PID</th>
+                        <th width="5%">SID</th>
+                        <th width="20%">Website</th>
+                        <th width="20%">Contact</th>
+                        <th width="10%">Impres yesterday</th>
+                        <th width="10%">Impres 2 day ago</th>
+                        <th width="10%">Impres change</th>
+                        <th width="10%">Denied Impres Yesterday</th>
+                        <th width="10%">Alexa rank</th>
+                        <th width="10%">Top Alexa Country</th>
+                        <th width="10%">Tags Created</th>
+                        <th width="10%">Live</th>
+                        <th width="10%">Ever Live</th>
+                        <th width="10%">Tags</th>
+                        <th width="10%">Login</th>
+                        <th width="20%">CSV</th>
+                    </tr>
+            </thead>
+            <tbody></tbody>
+            <tfoot>
+                    <tr>
+                        <th>PID</th>
+                        <th>SID</th>
+                        <th>Website</th>
+                        <th>Contact</th>
+                        <th>Impres yesterday</th>
+                        <th>Impres 2 day ago</th>
+                        <th>Impres change</th>
+                        <th>Denied Impres Yesterday</th>
+                        <th>Alexa rank</th>
+                        <th>Top Alexa Country</th>
+                        <th>Tags Created</th>
+                        <th>Live</th>
+                        <th>Ever Live</th>
+                        <th>Tags</th>
+                        <th>Login</th>
+                        <th>CSV</th>
+                    </tr>
+            </tfoot>
+    </table>      
+        <br><br>
+    <p style="font-weight: bold; font-size: 16px;">Top Earners: </p>    
+        <table width="740px" cellpadding="0" cellspacing="0" border="0" class="display" id="earners">
+            <thead>
+                    <tr>
+                        <th width="5%">PID</th>
+                        <th width="5%">SID</th>
+                        <th width="20%">Website</th>
+                        <th width="20%">Contact</th>
+                        <th width="10%">Impres yesterday</th>
+                        <th width="10%">Impres 2 day ago</th>
+                        <th width="10%">Impres change</th>
+                        <th width="10%">Denied Impres Yesterday</th>
+                        <th width="10%">Alexa rank</th>
+                        <th width="10%">Top Alexa Country</th>
+                        <th width="15%">Revenue</th>
+                        <th width="10%">Live</th>
+                        <th width="10%">Ever Live</th>
+                        <th width="10%">Tags</th>
+                        <th width="10%">Login</th>
+                        <th width="20%">CSV</th>
+                    </tr>
+            </thead>
+            <tbody></tbody>
+            <tfoot>
+                    <tr>
+                        <th>PID</th>
+                        <th>SID</th>
+                        <th>Website</th>
+                        <th>Contact</th>
+                        <th>Impres yesterday</th>
+                        <th>Impres 2 day ago</th>
+                        <th>Impres change</th>
+                        <th>Denied Impres Yesterday</th>
+                        <th>Alexa rank</th>
+                        <th>Top Alexa Country</th>
+                        <th>Revenue</th>
+                        <th>Live</th>
+                        <th>Ever Live</th>
+                        <th>Tags</th>
+                        <th>Login</th>
+                        <th>CSV</th>
+                    </tr>
+            </tfoot>
+    </table>     
+    <br><br>              
+</div>
+
+<script type="text/javascript" src="/font/cufon-yui.js"></script>
+<script type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#topMenu a', {hover: true});	
+		Cufon.replace('#topMenu a');
+</script>
+<script type="text/javascript" src="/font/Headline_Two_400.font.js"></script>
+<script type="text/javascript">
+//	Cufon.replace('.contInf h3', {hover: true});	
+//	Cufon.replace('.contInf h3');
+//	Cufon.replace('.contInf h3.white', {color: '#FFF'});	
+//	Cufon.replace('.footerBann h5');		
+//	Cufon.replace('.footerBann p');	
+//	Cufon.replace('.footerBann a', {hover: true});		
+    Cufon.replace('h1');		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Lt_300.font.js"></script>
+<script type="text/javascript">
+//		Cufon.replace('#footCopyr');	
+//		Cufon.replace('.contInf p', {hover: true});		
+//		Cufon.replace('.contInf p', {color: '#333333'});	
+//		Cufon.replace('.contInf p.white', {color: '#FFF'});	
+//		Cufon.replace('.fMenu a', {textDecoration: 'underline'});		
+		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Rg_700.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('.fMenu h4');
+</script>

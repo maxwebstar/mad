@@ -1,0 +1,917 @@
+<link rel="stylesheet" type="text/css" href="/fancybox/jquery.fancybox-1.3.4.css" media="screen" />
+<style type="text/css">
+    
+    .error li{ color: red; }
+    .sendMasBtn{ cursor: pointer; }
+    #serving_url{ cursor: pointer; font-size: 13px; font-weight: 600; color: blue; }
+   
+    #cke_SiteURL{ margin-left: 156px; }
+    #cke_ServingURL{ margin-left: 156px; }
+    #cke_BlockedURL{ margin-left: 156px; }    
+
+    #linkMinusFloorPrice a{ margin-left: 165px; margin-top: 7px; color: red; cursor: pointer; display: none; }
+    #store_tag_url-holder { display: block; margin-top: 6px; }
+    #store_tag_url-holder label, #store_tag_url-holder input{ float: left; }
+    #store_tag_url-holder span{ float: left; font-size: 16px; margin-left: 15px; }
+    
+    #logs
+    {
+    	height: 250px;
+    	overflow : hidden; 
+    	padding-top: 10px;
+    	padding-bottom: 20px;
+    	position: relative;
+    	width: 500px;
+    	text-align: left;
+    	color: red;
+    	font-size: 12px;
+    	font-weight: bold;
+    	margin-left: 197px;
+    }
+    
+        #tabs-overview, #tabs-optimizations, #tabs-floor-requests
+	{
+		position: relative;
+		height: 150px;
+		width: 460px;
+		overflow : auto; 	
+	}
+    
+    #logs_content
+    {
+    	color: red;	
+    }
+    
+    #add_note
+    {
+    	color: red;
+    	font-size: 14px;
+    	font-weiht: bold;
+    	cursor: pointer;
+    }
+    
+    #note_form	span
+    {
+    	font-size: 14px;
+    	font-weight: bold;
+    }
+    
+    #note_form	input
+    {
+    	width: 500px;
+    	border-style: solid;
+    	border-width: 1px;
+    	border-color: silver;
+    }
+    
+    .delete_log
+    {
+    	position: relative;
+    	width: 440px;
+    	min-height: 25px;
+    	display: block;
+    	word-wrap:  break-word;
+    }
+    
+    .delete_button
+    {
+    	width: 20px;
+    	height: 20px;
+    	float: left;
+    	cursor: pointer;
+    	background-image: url(/images/details_close.png);
+    }
+    
+    #confirm_dialog
+    {
+    	display: none;
+    }
+    
+</style>
+
+<script type="text/javascript" src="/fancybox/jquery.mousewheel-3.0.4.pack.js"></script>	
+<script type="text/javascript" src="/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
+<script type="text/javascript">   
+    
+function updateInfo(action, name, id, color)
+{
+    var popup=prompt('Your Name:',name)
+    
+    if(popup) location.href = '/administrator/sites/update/act/'+action+'/name/'+popup+'/id/'+id+'/color/'+color;
+    else      return false;
+    
+}
+
+var note_id;
+var tagType = <?php echo isset($this->dataTag['type']) ? $this->dataTag['type'] : 0;?>;
+
+ $(document).ready(function(){
+    
+	$( ".datepicker" ).live('click', function(){
+		$(this).datepicker({
+			showOn:'focus',
+			'dateFormat'  : "yy-mm-dd"
+			}).focus();				
+	});
+
+	$(".addPrice").click(function(){            
+                      
+                var num = $('#florPriceContent').children().length + 1;
+                                     
+		$("#florPriceContent").append('<div id="item-'+num+'"><label style="width: 160px;"></label><input type="text" style="width: 100px;" class="datepicker" name="floor_price_date[]" value="" /> <input type="text" style="width: 100px;" name="floor_price[]" value="0." /> <input type="text" style="width: 100px;" name="floor_percent[]" value="0.5" /></div>');
+		
+                $('#linkMinusFloorPrice a').css('display', 'block');         
+                
+                return false;
+	});
+        
+        if(<?php echo count($this->pricing);?> > 1) $('#linkMinusFloorPrice a').css('display', 'block'); 
+
+	if($("#pay_estimates").attr('checked'))	$("#cpm").css('display', 'block');
+	else		                        $("#cpm").css('display', 'none');
+
+	$("#pay_estimates").click(function(){
+		if($("#pay_estimates").attr('checked')) $("#cpm").css('display', 'block');
+		else            			$("#cpm").css('display', 'none');		
+	});
+
+	$("#define_url_check").click(function(){
+		if($("#define_url_check").attr('checked')) $("#define_url_input").css('display', 'block');
+		else            			$("#define_url_input").css('display', 'none');		
+	});
+
+        if($("#io").attr('checked')){ $("#rub_io").css('display', 'block'); }else{ $("#rub_io").css('display', 'none'); }
+
+        $("#io").click(function(){ 
+
+            if($("#io").attr('checked')){ $("#rub_io").css('display', 'block'); } 
+            else                                   { $("#rub_io").css('display', 'none');  }	
+        });				
+
+	if($("#floor_pricing").attr('checked')){ 
+            $("#florPriceContent").css('display', 'block');            
+	}else{                    		
+            $("#florPriceContent").css('display', 'none');
+            $("#factor_revshare").attr('checked', false);
+        }
+        
+	$("#floor_pricing").click(function(){
+		if($("#floor_pricing").attr('checked'))	$("#florPriceContent").css('display', 'block');
+		else{			                
+                    $("#florPriceContent").css('display', 'none');
+                    $("#factor_revshare").attr('checked', false);
+                }
+	});	
+            
+        $('#SiteURL').ckeditor(function(){ },{ 
+            toolbar : [],
+            width : '300px',
+            height : '150px',
+            language : 'en',
+            enterMode : CKEDITOR.ENTER_BR,
+            shiftEnterMode : CKEDITOR.ENTER_BR
+
+        });  
+        var editor = $('#SiteURL').ckeditorGet();
+            editor.on("instanceReady", function(){                    
+                this.document.on("keyup", function(){                          
+                    if(editor.checkDirty()) $('#update_tags').attr('checked', true); 
+                    else                    $('#update_tags').attr('checked', false);   
+              });
+        });
+            
+        $('#ServingURL').ckeditor(function(){ },{ 
+            toolbar : [],
+            width : '300px',
+            height : '150px',
+            language : 'en',
+            enterMode : CKEDITOR.ENTER_BR,
+            shiftEnterMode : CKEDITOR.ENTER_BR
+
+        });  
+        var editorServing = $('#ServingURL').ckeditorGet();
+            editorServing.on("instanceReady", function(){                    
+                this.document.on("keyup", function(){                          
+                    if(editorServing.checkDirty()) $('#update_tags').attr('checked', true); 
+                    else                    $('#update_tags').attr('checked', false);   
+              });
+        });  
+        /*if(tagType != 4){ $('#holderServingURL').hide(); }*/          
+
+        $('#BlockedURL').ckeditor(function(){ },{ 
+            toolbar : [],
+            width : '300px',
+            height : '150px',
+            language : 'en',
+            enterMode : CKEDITOR.ENTER_BR,
+            shiftEnterMode : CKEDITOR.ENTER_BR
+
+        });  
+        var editorBlocked = $('#BlockedURL').ckeditorGet();
+            editorBlocked.on("instanceReady", function(){                    
+                this.document.on("keyup", function(){                          
+                    if(editorBlocked.checkDirty()) $('#update_tags').attr('checked', true); 
+                    else                           $('#update_tags').attr('checked', false);   
+                });
+            });     
+            
+            
+         $('#limited_demand_tag').change(function(){
+             
+             if($('#limited_demand_tag').attr('checked')){ 
+                 
+                 $('#update_tags').attr('checked', true); 
+             
+                 modefiServingURL();
+             }
+             
+         });   
+         $('#iframe_tags').change(function(){
+             
+             if($('#iframe_tags').attr('checked')){ 
+                 
+                 $('#update_tags').attr('checked', true); 
+                 
+                 modefiServingURL();             
+             }        
+             
+         }); 
+         $('#store_tag_url').change(function(){
+             
+             if($('#store_tag_url').attr('checked')){ 
+                 
+                 $('#update_tags').attr('checked', true); 
+             
+                 modefiServingURL(); 
+             }
+             
+         }); 
+
+         $('#define_url_check').change(function(){
+             
+             $('#update_tags').attr('checked', true);
+             
+             modefiServingURL();
+             
+         });  
+         
+         $('#hide_question').change(function(){
+             
+             $('#update_tags').attr('checked', true);
+             
+         });  
+         
+         $('#burst_tag').change(function(){
+             
+             $('#update_tags').attr('checked', true);
+             
+             modefiServingURL();
+             
+         });           
+         
+	$("#disable_google_revenue").click(function(){
+		if($("#disable_google_revenue").attr('checked'))	
+                    $("#date_disable_google").css('display', 'block');
+		else{
+                    $("#date_disable_google").css('display', 'none');
+                    $('input[name="date_disable_google"]').val('');
+                }
+	});	         
+
+	$("#disable_rubicon_revenue").click(function(){
+		if($("#disable_rubicon_revenue").attr('checked'))	
+                    $("#date_disable_rubicon").css('display', 'block');
+		else{
+                    $("#date_disable_rubicon").css('display', 'none');
+                    $('input[name="date_disable_rubicon"]').val('');
+                }
+	});
+        
+     $('#blank_ref_serve').change(function(){
+                      
+     	$('#update_tags').attr('checked', true);              
+         
+     });
+
+     $("#logs_tabs").tabs();
+
+     $("#add_note").click(function()
+   	 {
+		$("#note_form").dialog("open");
+     });
+
+
+     $(".delete_button").live('click',function()
+     {
+		 window.note_id = $(this).parent().attr('data-noteid');
+    	 $("#confirm_dialog").dialog('open');
+     });
+
+
+		$("#confirm_dialog").dialog({
+			autoOpen: false,
+			height: 50,
+			width: 250,
+			resizable: false,
+			modal: true,
+			title: 'Are you sure',
+			buttons: 
+    		{
+    			"OK": function() 
+    			{
+    			      $.ajax({
+    			            type: "POST",
+    			            url: '/administrator/sites/delete-note',
+    			            dataType: 'json',
+    			            data: 
+	    			        {
+								note_id: window.note_id,
+		    			    },
+    			            success: function (data) 
+    			            {
+								console.log(data);
+								if(data.status == 0)
+								{
+									if(data.data != undefined)
+									{
+										$('[data-noteid="'+data.data.note_id+'"]').remove();
+										$('#confirm_dialog').dialog( "close" );
+									}
+								}
+    			            }
+    			        });
+	    		},
+    			"Cancel": function() 
+    			{
+    				$(this).dialog( "close" );
+    			}
+			},
+			});
+
+
+		$("#note_form").dialog({
+			autoOpen: false,
+			height: 250,
+			width: 530,
+			resizable: false,
+			modal: true,
+			title: 'Add New Note',
+			buttons: 
+    		{
+    			"Add": function() 
+    			{
+    			      $.ajax({
+    			            type: "POST",
+    			            url: '/administrator/sites/add-note',
+    			            dataType: 'json',
+    			            data: 
+	    			        {
+    			            	note_type: $("#note_type").val(),
+								note: $("#note_form input").val(),
+								SiteID: <?php echo $this->data['SiteID'];?>,
+								PubID: <?php echo $this->data['PubID'];?>,
+		    			    },
+    			            success: function (data) 
+    			            {
+								if(data.status == 0)
+								{
+									if(data.data != undefined)
+									{
+										var str = '<span data-noteid="'+data.data.id+'" class="delete_log"><div class="delete_button"></div>'+data.data.changed + ' (' + data.data.SiteName + ' by ' + data.data.name + ') ' + data.data.AdminNote + '<br/></span>';  
+										$("#tabs-overview").prepend(str);
+										$( "#tabs-overview" ).removeClass('ui-tabs-hide');
+										$("#first_li").addClass('ui-tabs-selected ui-state-active');
+										$( "#tabs-optimizations" ).addClass('ui-tabs-hide');
+										$("#second_li").removeClass('ui-tabs-selected ui-state-active');
+										if(data.data.note_type == '1')
+										{
+											$( "#tabs-overview" ).addClass('ui-tabs-hide');
+											$( "#tabs-optimizations" ).removeClass('ui-tabs-hide');
+											$("#second_li").addClass('ui-tabs-selected ui-state-active');
+											$("#first_li").removeClass('ui-tabs-selected ui-state-active');
+											$("#tabs-optimizations").prepend(str);
+										}	
+									}
+								}
+								else
+								{
+									switch(data.status)
+									{
+										case 1:
+											alert("ERROR: Note is empty");
+											break;
+										case 2:
+											alert("ERROR: Unknows params");
+											break;
+										case 3:
+											alert("ERROR: Database");
+											break;
+									}
+								}
+								$("#note_form").dialog( "close" );
+    			            }
+    			        });
+	    		},
+    			"Cancel": function() 
+    			{
+    				$(this).dialog( "close" );
+    			}
+			},
+			});
+
+});
+
+function minusPrice()
+{
+    var num = $('#florPriceContent').children().length;
+
+    if(num > 1) $('#florPriceContent #item-'+num).remove();
+    if(num <= 2) $('#linkMinusFloorPrice a').css('display', 'none');
+       
+}
+
+function showUrl()
+{   
+   $.fancybox({
+		'width'	: '75%',
+		'height': '75%',
+                'href'  : '/administrator/sites/load-url/id/<?php echo $this->data['SiteID']?>',
+                'autoScale'     : false,
+                'transitionIn'  : 'none',
+		'transitionOut'	: 'none',
+		'type'		: 'iframe'
+   });    
+}
+
+function denied()
+{        
+        $.fancybox({
+		'width'	: '75%',
+		'height': '75%',
+                'href'  : '/administrator/sites/block/SiteID/<?php echo $this->formValues['SiteID']?>',
+                'autoScale'     : false,
+                'transitionIn'  : 'none',
+		'transitionOut'	: 'none',
+		'type'		: 'iframe',
+                onClosed: function(){ location.reload(); }
+        });    
+}
+
+function mySubmit()
+{
+    $("input[class*='itemSize']").each(function(){
+        if($(this).attr('class')=='itemSize New' && $(this).attr('checked')){
+            alert('Check off "RTB" and "Standard" for <?php echo $this->mobileName ?> in Pubmatic (it may take up to 5 minutes to appear)');
+            return false;
+        }
+    });
+
+    if(myValid()) $('.sign-up').submit();
+}
+
+function myValid()
+{
+    var defineUrlCheck = $('#define_url_check:checked').val();
+    var defineUrl = $('input[name=define_url]').val();
+    var servingURL = CKEDITOR.instances['ServingURL'].getData();
+
+    if(servingURL){
+
+        if(defineUrlCheck && defineUrl){ $('#errorServingURL').html(''); return true; }        
+                                   else{ $('#errorServingURL').html('<li>IF Ad SERVING Page_URL is not empty. DEFINE Page_URL IS REQUIRED</li>'); return false; }     
+    
+    }else{ $('#errorServingURL').html(''); return true; }
+}
+
+function modefiServingURL()
+{
+    var change = 0;
+    var servingURL = $('#ServingURL').val();
+    
+    if(servingURL.indexOf("http://madadsmedia.com") == -1){ 
+       servingURL += servingURL.length ? '<br />http://madadsmedia.com' : 'http://madadsmedia.com'; 
+       change = 1; 
+    } 
+    if(servingURL.indexOf("http://ads-by.madadsmedia.com") == -1){ 
+       servingURL += servingURL.length ? '<br />http://ads-by.madadsmedia.com' : 'http://ads-by.madadsmedia.com'; 
+       change = 1; 
+    }
+    if(change == 1){ $('#ServingURL').val(servingURL); }
+}
+
+function mailContact(PubID)
+{
+    $.fancybox({
+        'width'	: '75%',
+        'height'	: '80%',
+        'href'          : '/administrator/sites/contact/PubID/'+PubID,
+        'autoScale'    	: false,
+        'transitionIn'	: 'none',
+        'transitionOut'	: 'none',
+        'type'		: 'iframe',
+        'onClosed'      : function(){}
+    }); 
+}
+</script>
+
+<div id="confirm_dialog">
+</div>
+
+
+<div id="note_form">
+    <select name="note_type" id="note_type">
+	    <option value = "0" selected= "true">Overview</option>
+	    <option value = "1">Optimizations</option>
+    </select><br/><br/>
+	<span>Note:</span><br/>
+	<input  type="text" name="note" value=""/>
+</div>
+<h1>Website Details</h1>
+		<div id="logs">
+			<span id="add_note">+ Add New Note</span><br/><br/>
+			<div id="logs_tabs">
+				<ul>
+					<li id="first_li"><a href="#tabs-overview">Overview</a></li>
+					<li id="second_li"><a href="#tabs-optimizations">Optimizations</a></li>
+					<li id="third_li"><a href="#tabs-floor-requests">Floor Requests</a></li>
+				</ul>
+				<div id="tabs-overview">
+					<?php foreach($this->logs['logs'] as $log):?>
+					<?php if(!$log['ServingURL'] AND !$log['SiteURL'] AND !$log['IFrame'] AND !$log['Enabled']  AND !$log['AdminNote']):?>
+						<?php $time = strtotime($log['created']);?>
+						<?php if($time):?>
+				    		<span data-noteid="<?php echo $log['id'];?>" class="delete_log"><?php echo date('m/d/Y H:i',$time);?> (<?php echo $log['SiteName'];?>) - Website Created <br/></span>
+				    	<?php else:?>
+				    		<span data-noteid="<?php echo $log['id'];?>" class="delete_log">(<?php echo $log['SiteName'];?>) - Website Created<br/></span>			    	
+				    	<?php endif;?>
+			 		<?php elseif($log['ServingURL'] == 1):?>
+						<span data-noteid="<?php echo $log['id'];?>" class="delete_log"><?php echo $log['note_type']!=2 ? '<div class="delete_button"></div>' : ''?><?php echo date('m/d/Y H:i',strtotime($log['changed']))?> (<?php echo $log['SiteName'];?> by <?php echo $log['name'];?>) Serving URLs were deleted <br/></span>
+					<?php elseif ($log['ServingURL'] == 2):?>
+						<span data-noteid="<?php echo $log['id'];?>" class="delete_log"><?php echo $log['note_type']!=2 ? '<div class="delete_button"></div>' : ''?><?php echo date('m/d/Y H:i',strtotime($log['changed']))?> (<?php echo $log['SiteName'];?> by <?php echo $log['name'];?>) Serving URLs were added <br/></span>
+					<?php elseif ($log['ServingURL'] == 3):?>
+						<span data-noteid="<?php echo $log['id'];?>" class="delete_log"><?php echo $log['note_type']!=2 ? '<div class="delete_button"></div>' : ''?><?php echo date('m/d/Y H:i',strtotime($log['changed']))?> (<?php echo $log['SiteName'];?> by <?php echo $log['name'];?>) Serving URLs were changed <br/></span>
+					<?php endif;?>
+					<?php if($log['SiteURL'] == 1):?>
+						<span data-noteid="<?php echo $log['id'];?>" class="delete_log"><?php echo $log['note_type']!=2 ? '<div class="delete_button"></div>' : ''?><?php echo date('m/d/Y H:i',strtotime($log['changed']))?> (<?php echo $log['SiteName'];?> by <?php echo $log['name'];?>) Site URLs were deleted <br/></span>
+					<?php elseif ($log['SiteURL'] == 2):?>
+						<span data-noteid="<?php echo $log['id'];?>" class="delete_log"><?php echo $log['note_type']!=2 ? '<div class="delete_button"></div>' : ''?><?php echo date('m/d/Y H:i',strtotime($log['changed']))?> (<?php echo $log['SiteName'];?> by <?php echo $log['name'];?>) Site URLs were added <br/></span>
+					<?php elseif ($log['SiteURL'] == 3):?>
+						<span data-noteid="<?php echo $log['id'];?>" class="delete_log"><?php echo $log['note_type']!=2 ? '<div class="delete_button"></div>' : ''?><?php echo date('m/d/Y H:i',strtotime($log['changed']))?> (<?php echo $log['SiteName'];?> by <?php echo $log['name'];?>) Site URLs were changed <br/></span>
+					<?php endif;?>
+					<?php if($log['IFrame'] == 1):?>
+						<span data-noteid="<?php echo $log['id'];?>" class="delete_log"><?php echo $log['note_type']!=2 ? '<div class="delete_button"></div>' : ''?><?php echo date('m/d/Y H:i',strtotime($log['changed']))?> (<?php echo $log['SiteName'];?> by <?php echo $log['name'];?>) IFrame tags were enabled <br/></span>
+					<?php elseif ($log['IFrame'] == 2):?>
+						<span data-noteid="<?php echo $log['id'];?>" class="delete_log"><?php echo $log['note_type']!=2 ? '<div class="delete_button"></div>' : ''?><?php echo date('m/d/Y H:i',strtotime($log['changed']))?> (<?php echo $log['SiteName'];?> by <?php echo $log['name'];?>) IFrame tags were disabled <br/></span>
+					<?php endif;?>
+					<?php if($log['Enabled'] == 1):?>
+						<span data-noteid="<?php echo $log['id'];?>" class="delete_log"><?php echo $log['note_type']!=2 ? '<div class="delete_button"></div>' : ''?><?php echo date('m/d/Y H:i',strtotime($log['changed']))?> (<?php echo $log['SiteName'];?> by <?php echo $log['name'];?>) Site is active <br/></span>
+					<?php elseif ($log['Enabled'] == 2):?>
+						<span data-noteid="<?php echo $log['id'];?>" class="delete_log"><?php echo $log['note_type']!=2 ? '<div class="delete_button"></div>' : ''?><?php echo date('m/d/Y H:i',strtotime($log['changed']))?> (<?php echo $log['SiteName'];?> by <?php echo $log['name'];?>) Site is denied <br/></span>
+					<?php endif;?>
+					<?php if($log['AdminNote'] != NULL AND strlen($log['name'])):?>
+						<span data-noteid="<?php echo $log['id'];?>" class="delete_log"><?php echo $log['note_type']!=2 ? '<div class="delete_button"></div>' : ''?><?php echo date('m/d/Y H:i',strtotime($log['changed']))?> (<?php echo $log['SiteName'];?> by <?php echo $log['name'];?>) <?php echo $log['AdminNote'];?><br/> </span>
+					<?php elseif($log['AdminNote'] != NULL AND !strlen($log['name'])):?>
+						<span data-noteid="<?php echo $log['id'];?>" class="delete_log"><?php echo $log['note_type']!=2 ? '<div class="delete_button"></div>' : ''?><?php echo date('m/d/Y H:i',strtotime($log['changed']))?> (<?php echo $log['SiteName'];?> ) <?php echo $log['AdminNote'];?> <br/></span>				
+					<?php endif;?>
+				<?php endforeach;?>
+				</div>
+				<div id="tabs-optimizations">
+					<?php foreach($this->logs['logs'] as $log):?>
+						<?php if($log['AdminNote'] != NULL AND $log['note_type'] == '1'):?>
+							<span data-noteid="<?php echo $log['id'];?>" class="delete_log"><?php echo $log['note_type']!=2 ? '<div class="delete_button"></div>' : ''?><?php echo date('m/d/Y H:i',strtotime($log['changed']))?> (<?php echo $log['SiteName'];?> by <?php echo $log['name'];?>) <?php echo $log['AdminNote'];?> <br/></span>
+						<?php endif;?>
+					<?php endforeach;?>
+				</div>
+				<div id="tabs-floor-requests">
+					<?php foreach($this->logs['logs'] as $log):?>
+						<?php if($log['AdminNote'] != NULL AND $log['note_type'] == '2'):?>
+							<?php if(strlen($log['name'])):?>
+								<span data-noteid="<?php echo $log['id'];?>" class="delete_log"><?php echo $log['note_type']!=2 ? '<div class="delete_button"></div>' : ''?><?php echo date('m/d/Y H:i',strtotime($log['changed']))?> (<?php echo $log['SiteName'];?> by <?php echo $log['name'];?>) <?php echo $log['AdminNote'];?> <br/></span>
+							<?php elseif(!strlen($log['name'])):?>
+								<span data-noteid="<?php echo $log['id'];?>" class="delete_log"><?php echo $log['note_type']!=2 ? '<div class="delete_button"></div>' : ''?><?php echo date('m/d/Y H:i',strtotime($log['changed']))?> (<?php echo $log['SiteName'];?> ) <?php echo $log['AdminNote'];?> <br/></span>				
+							<?php endif;?>						
+						<?php endif;?>
+					<?php endforeach;?>
+				</div>			
+			</div>
+			<!--
+			-->
+		</div>
+
+<form action="" method="post" class="sign-up">
+<div class="contUsL" style="width: 740px;">
+<p><label style="width: 160px;">Website: </label><?php echo $this->formValues['SiteName'] ?> <a href="/administrator/tags/edit/tag/<?php echo $this->dataTag['id']?>/site/<?php echo $this->formValues['SiteID']?>/user/<?php echo $this->formValues['user_id'] ?>">(Edit Ad Tags)</a></p>
+<p><label style="width: 160px;">Contact: </label><?php echo $this->formValues['name'] ?> (#<?php echo $this->formValues['user_id'] ?>) 
+    <strong><a href="/administrator/index/view/id/<?php echo $this->formValues['user_id'] ?>" style="text-decoration: underline; margin-left: 20px;">View</a></strong> 
+    <strong><a href="/administrator/index/auth/id/<?php echo $this->formValues['user_id'] ?>" target="_blank" style="text-decoration: underline; margin-left: 20px;">Login</a></strong>
+    <button style="cursor: pointer; margin-left: 20px;" type="button" onClick="mailContact(<?php echo $this->formValues['user_id'] ?>)">Contact</button>
+</p>
+
+
+<?php if($this->formValues['status'] == 2):?>
+    <p><label style="width: 160px;">Status: </label> <span style="color: red; font-weight: 600;">Denied</span> &nbsp;&nbsp;&nbsp; <a href="/administrator/sites/un-block/SiteID/<?php echo $this->formValues['SiteID']?>" style="color: green; font-weight: 600;">change the status to ACTIVE</a></p>
+<?php elseif($this->formValues['status'] == 3):?>
+    <p><label style="width: 160px;">Status: </label> <span style="color: green; font-weight: 600;">Active</span> &nbsp;&nbsp;&nbsp; <a onClick="denied()" style="color: red;  font-weight: 600; cursor: pointer;">change the status to DENIED</a></p>
+<?php endif;?>
+
+<p><label style="width: 160px;">Live: </label><?php echo $this->formValues['live']==1 ? '<a href="#" onclick="updateInfo(\'live\', \''.$this->formValues['live_name'].'\', '.$this->formValues['SiteID'].', \'red\')"><img src="/images/status-green-check.gif"></a>' : '<a href="#" onclick="updateInfo(\'live\', \''.$this->formValues['live_name'].'\', '.$this->formValues['SiteID'].', \'green\')"><img src="/images/stats-red-x.gif"></a>' ?></p>
+<p><label style="width: 160px;">Privacy Policy: </label><?php echo $this->formValues['privacy']==1 ? '<a href="#" onclick="updateInfo(\'privacy\', \''.$this->formValues['privacy_name'].'\', '.$this->formValues['SiteID'].', \'red\')"><img src="/images/status-green-check.gif"></a>' : '<a href="#" onclick="updateInfo(\'privacy\', \''.$this->formValues['privacy_name'].'\', '.$this->formValues['SiteID'].', \'green\')"><img src="/images/stats-red-x.gif"></a>' ?></p>
+<p><label style="width: 160px;">Pop-Unders Enabled: </label><?php echo $this->formValues['pop_unders']==1 ? '<a href="/administrator/sites/update/act/popup/name/admin/id/'.$this->formValues['SiteID'].'/color/red"><img src="/images/status-green-check.gif"></a>' : '<a href="/administrator/sites/update/act/popup/name/admin/id/'.$this->formValues['SiteID'].'/color/green"><img src="/images/stats-red-x.gif"></a>' ?></p>
+<p><label style="width: 160px;">Alexa rank: </label><?php echo isset($this->formValues['alexaRank']) ?'<a href="http://www.alexa.com/siteinfo/'.$this->formValues['SiteName'].'" target="_blank">'. number_format($this->formValues['alexaRank']).'</a> (Last update: '.$this->formValues['alexaRank_update'].')' : '' ?></p>
+<p><label style="width: 160px;">Top Alexa Country: </label><?php echo isset($this->formValues['alexaRankUS']) ?'<a href="http://www.alexa.com/siteinfo/'.$this->formValues['SiteName'].'" target="_blank">'. $this->formValues['alexaRankUS'].'</a> (Last update: '.$this->formValues['alexaRank_update'].')' : '' ?></p>
+<div style="clear:both"></div>
+<p>
+    <label style="width: 160px;">Serving URLs:</label><a id="serving_url" onClick="showUrl()">view</a>
+</p>
+<p id="holderServingURL">
+    <label style="width: 160px;">Ad Serving URLs:</label>
+    <textarea name="ServingURL" id="ServingURL" cols="50" row="5"><?php 
+    
+                      $servingURL = preg_split('/[\n]/', $this->formValues['ServingURL']); 
+              foreach($servingURL as $key => $iter){ 
+
+              $iter = trim($iter);
+              $BR = isset($servingURL[$key+1]) ? '<br />' : '';
+              
+              echo $iter.$BR;             
+              
+           }?></textarea>
+    <ul id="errorServingURL" class="error"></ul>
+</p>
+<p>
+    <label style="width: 160px;">Site URL: </label>
+    <textarea name="SiteURL" id="SiteURL" cols="50" rows="5"><?php 
+    
+                      $siteURLs = preg_split('/[\n]/', $this->formValues['SiteURL']); 
+              foreach($siteURLs as $key => $iter){ 
+
+              $iter = trim($iter);
+              $BR = isset($siteURLs[$key+1]) ? '<br />' : '';
+              
+              if($this->siteUrl()->check($this->data['SiteID'], $iter)) 
+                   echo '<span>'.$iter.$BR.'</span>';
+              else echo '<span style="color: red; font-weight: 600;">'.$iter.'</span>'.$BR;
+              
+           }?></textarea>
+    <?php if($this->formErrors['SiteURL']): ?>
+        <ul class="error">
+        <?php foreach($this->formErrors['SiteURL'] as $errors): ?>
+            <li><?php echo $errors ?></li>
+        <?php endforeach; ?>
+        </ul>
+    <?php endif; ?>                                               
+</p>
+<p>    
+    <label style="width: 160px;">Blocked URLs:</label>
+    <textarea name="BlockedURL" id="BlockedURL" cols="50" row="5"><?php 
+    
+                      $blockedURL = preg_split('/[\n]/', $this->formValues['BlockedURL']); 
+              foreach($blockedURL as $key => $iter){ 
+
+              $iter = trim($iter);
+              $BR = isset($blockedURL[$key+1]) ? '<br />' : '';
+              
+              echo $iter.$BR;             
+              
+           }?></textarea>
+    <?php if($this->formErrors['BlockedURL']): ?>
+        <ul class="error">
+        <?php foreach($this->formErrors['BlockedURL'] as $errors): ?>
+            <li><?php echo $errors ?></li>
+        <?php endforeach; ?>
+        </ul>
+    <?php endif; ?>   
+</p>
+<!--<p><label style="width: 185px;">Google Revenue disable</label> <input type="checkbox" id="disable_google_revenue" value="1" name="disable_google_revenue" <?php echo $this->formValues['disable_google_revenue']==1 ? 'checked="checked"' : '' ?> style="width: 20px;" /></p>
+<p id="date_disable_google" <?php echo $this->formValues['disable_google_revenue']==1 ? 'style="display:block"' : 'style="display:none"' ?>><label style="width: 185px;">Date: </label> <input type="text" class="datepicker" name="date_disable_google" value="<?php echo $this->formValues['date_disable_google'] ?>" /></p>-->
+<p><label style="width: 185px;">Rubicon Revenue disable</label> <input type="checkbox" id="disable_rubicon_revenue" value="1" name="disable_rubicon_revenue" <?php echo $this->formValues['disable_rubicon_revenue']==1 ? 'checked="checked"' : '' ?> style="width: 20px;" /></p>    
+<p id="date_disable_rubicon" <?php echo $this->formValues['disable_rubicon_revenue']==1 ? 'style="display:block"' : 'style="display:none"' ?>><label style="width: 185px;">Date: </label> <input type="text" class="datepicker" name="date_disable_rubicon" value="<?php echo $this->formValues['date_disable_rubicon'] ?>" /></p>
+<p>
+    <label style="width: 160px;">Notes: </label> <div>&nbsp;<?php echo $this->data['reject_notes'] ?></div>
+</p>  
+<p>
+    <label style="width: 160px;">Approved: </label>
+    <?php echo '<span style="font-size: 16px;">'.($this->formValues['approved'] ? date("M d, Y", strtotime($this->formValues['approved'])) : 'None').''.($this->data['approved_by'] ? ',&nbsp;&nbsp;&nbsp;by:&nbsp;&nbsp;&nbsp;'.$this->data['approved_by'] : '').'</span>'; ?>
+</p>
+<p>
+    <label style="width: 160px;">Co-Approved: </label>
+    <?php echo '<span style="font-size: 16px;">'.($this->formValues['co_approved_date'] ? date("M d, Y", strtotime($this->formValues['co_approved_date'])) : '-').''.($this->data['co_approved_by'] ? ',&nbsp;&nbsp;&nbsp;by:&nbsp;&nbsp;&nbsp;'.$this->data['co_approved_by'] : '').'</span>'; ?>
+</p>
+
+    <p>
+        <label style="width: 140px; margin-right: 20px;">Define Page_URL: </label> 
+        <input type="checkbox" id="define_url_check" name="define_url_check" value="1" <?php echo !empty($this->formValues['define_url']) || (isset($this->formValues['define_url_check']) && $this->formValues['define_url_check']==1) ? 'checked="checked"' : '' ?> style="width: 20px;" />
+    </p>
+    <p <?php echo !$this->formValues['define_url'] && (empty($this->formValues['define_url_check']) || isset($this->formValues['define_url_check']) && $this->formValues['define_url_check']!=1) ? 'style="display:none"' : '' ?> id="define_url_input"><label>&nbsp;</label> <input type="text" name="define_url" value="<?php echo $this->formValues['define_url'] ? $this->formValues['define_url'] : '' ?>"  />
+    <?php if($this->formErrors['define_url']): ?>
+        <ul class="error">
+        <?php foreach($this->formErrors['define_url'] as $errors): ?>
+            <li><?php echo $errors ?></li>
+        <?php endforeach; ?>
+        </ul>
+    <?php endif; ?>                                                   
+    </p>
+
+
+	<p>
+		<label style="width: 140px; margin-right: 20px;">Desired Ad Types: </label>
+		<select name="desired_types" id="desired_types">
+			<option value="1" <?php echo $this->formValues['desired_types']==1 ? 'selected' : '' ?>>Banner Ads Only</option>
+			<option value="2" <?php echo $this->formValues['desired_types']==2 ? 'selected' : '' ?>>Video Ads Only</option>
+			<option value="3" <?php echo $this->formValues['desired_types']==3 ? 'selected' : '' ?>>Banner & Video Ads</option>
+		</select>
+	</p>
+		<?php if($this->formErrors['desired_types']): ?>
+			<ul class="error">
+			<?php foreach($this->formErrors['desired_types'] as $errors): ?>
+				<li><?php echo $errors ?></li>
+			<?php endforeach; ?>
+			</ul>
+		<?php endif; ?>
+
+    <p>
+        <label style="width: 140px; margin-right: 20px;">Update ad tags: </label> 
+        <input type="checkbox" id="update_tags" name="update_tags" value="1" <?php echo $this->formValues['update_tags']==1 ? 'checked="checked"' : '' ?> style="width: 20px;" />
+    </p>
+	<!--
+    <p><label style="width: 160px;">Tag Name: </label>
+    	<input type="text" name="tag_name" value="<?php echo $this->formValues['tag_name']; ?>" />
+    <?php if($this->formErrors['tag_name']): ?>
+        <ul class="error">
+        <?php foreach($this->formErrors['tag_name'] as $errors): ?>
+            <li><?php echo $errors ?></li>
+        <?php endforeach; ?>
+        </ul>
+    <?php endif; ?>                                               
+    </p>
+    
+<p><label style="width: 160px;">Category: </label>
+        <select name="category">
+            <option>Please Select...</option>
+            <?php foreach($this->category as $item): ?>
+            <option value="<?php echo $item['key'] ?>" <?php echo $item['key']==$this->formValues['category'] ? 'selected="selected"' : '' ?> ><?php echo $item['value'] ?></option>
+            <?php endforeach; ?>
+        </select>
+    <?php if($this->formErrors['category']): ?>
+        <ul class="error">
+        <?php foreach($this->formErrors['category'] as $errors): ?>
+            <li><?php echo $errors ?></li>
+        <?php endforeach; ?>
+        </ul>
+    <?php endif; ?>                                               
+    </p>
+    <p><label style="width: 160px;">Category (Rubicon): </label>
+        <select name="cat_rubicon">
+            <option>Please Select...</option>
+            <?php foreach($this->cat_rubicon as $item): ?>
+            <option value="<?php echo $item['key'] ?>" <?php echo $item['key']==$this->formValues['cat_rubicon'] ? 'selected="selected"' : '' ?> ><?php echo $item['value'] ?></option>
+            <?php endforeach; ?>
+        </select>
+    <?php if($this->formErrors['cat_rubicon']): ?>
+        <ul class="error">
+        <?php foreach($this->formErrors['cat_rubicon'] as $errors): ?>
+            <li><?php echo $errors ?></li>
+        <?php endforeach; ?>
+        </ul>
+    <?php endif; ?>                                               
+    </p>
+    <p><label style="width: 140px; margin-right: 20px;">Pay on estimates: </label> <input type="checkbox" id="pay_estimates" name="pay_estimates" value="1" <?php echo $this->formValues['pay_estimates']==1 ? 'checked="checked"' : '' ?> style="width: 20px;" />
+    <p style="display:none" id="cpm"><label>CPM: </label> <input type="text" name="cpm" value="<?php echo $this->formValues['cpm'] ?>"  />    
+    <p><label style="width: 140px; margin-right: 20px;">Rubicon IO: </label> <input type="checkbox" id="io" name="io" value="1" <?php echo $this->formValues['rub_io'] ? 'checked="checked"' : '' ?> style="width: 20px;" />
+    <p style="display:none" id="rub_io"><label>IO #: </label> <input type="text" name="rub_io" value="<?php echo $this->formValues['rub_io'] ?>"  />    
+-->
+
+    <p><label style="width: 160px;">Floor Pricing?: </label> <input type="checkbox" id="floor_pricing" name="floor_pricing" value="1" <?php echo $this->formValues['floor_pricing']==1 ? 'checked="checked"' : '' ?> style="width: 20px;" />
+
+    <div id="florPriceContent" style="display: none">  
+        <?php if($this->data['tag_type']==4): ?>
+        <p><label style="width: 240px;">Factor Revshare Into Floor Price: </label> <input type="checkbox" id="factor_revshare" name="factor_revshare" value="1" <?php echo $this->formValues['factor_revshare']==1 ? 'checked="checked"' : '' ?> style="width: 20px;" /></p>
+        <?php endif; ?>
+        <?php if($this->pricing):?>
+            <?php $count = 0;?>
+            <?php foreach ($this->pricing as $item):?>
+            <?php $count++;?>
+                       <div id="item-<?php echo $count;?>">
+                       <?php if($count == 1):?>
+                            <label style="width: 160px;">Floor price: <a href="#" class="addPrice">+</a></label>
+                       <?php else:?>
+                            <label style="width: 160px;"></label>
+                       <?php endif;?>
+                         <input type="text" style="width: 100px;" class="datepicker" name="floor_price_date[]" value="<?php echo $item['date'] ?>" /> 
+                         <input type="text" style="width: 100px;" name="floor_price[]" value="<?php echo $item['price'] ?>" /> 
+                         <input type="text" style="width: 100px;" name="floor_percent[]" value="<?php echo $item['percent'] ?>" />
+                       </div>
+            <?php endforeach;?>
+        <?php else:?>
+            <div id="item-1">
+                  <label style="width: 160px;">Floor price: <a href="#" class="addPrice">+</a></label> 
+                  <input type="text" style="width: 100px;" class="datepicker" name="floor_price_date[]" value="" /> 
+                  <input type="text" style="width: 100px;" name="floor_price[]" value="0." /> 
+                  <input type="text" style="width: 100px;" name="floor_percent[]" value="0.5" />
+            </div>      
+        <?php endif;?>
+    </div>
+    <div id="linkMinusFloorPrice"><a onClick="minusPrice()">- Minus Floor Pricing</a></div>
+    
+    <?php if($this->formErrors['floor_pricing']): ?>
+        <ul class="error">
+        <?php foreach($this->formErrors['floor_pricing'] as $errors): ?>
+            <li><?php echo $errors ?></li>
+        <?php endforeach; ?>
+        </ul>
+    <?php endif; ?>                
+      </p>  
+    
+    <!--<p><label style="width: 170px;">Admeld: </label> <input type="checkbox" id="auto_report_file" name="auto_report_file" value="1" <?php echo $this->formValues['auto_report_file']==1 ? 'checked="checked"' : '' ?> style="width: 20px; margin-left: 36px;" /></p>   -->
+    <p><label style="width: 170px;">Disable Notifications: </label> <input type="checkbox" id="auto_report_file" name="email_notlive_3day" value="1" <?php echo $this->formValues['email_notlive_3day'] != 1 ? 'checked="checked"' : '' ?> style="width: 20px; margin-left: 36px;"/></p>   
+    <!--<p><label style="width: 170px;">Limited Demand Tags: </label> <input type="checkbox" id="limited_demand_tag" name="limited_demand_tag" value="1" <?php echo $this->formValues['limited_demand_tag'] == 1 ? 'checked="checked"' : '' ?> style="width: 20px; margin-left: 36px;"/></p>-->     
+    <p><label style="width: 170px;">Iframe Tags: </label> <input type="checkbox" id="iframe_tags" name="iframe_tags" value="1" <?php echo $this->formValues['iframe_tags'] == 1 ? 'checked="checked"' : '' ?> style="width: 20px; margin-left: 36px;"/></p>
+    
+    <div id="store_tag_url-holder">
+        <label style="width: 185px; margin-right: 20px;">Enable Full URL Tracking: </label> 
+        <input type="checkbox" id="store_tag_url" name="store_tag_url" value="1" <?php echo $this->formValues['store_tag_url']==1 ? 'checked="checked"' : '' ?> style="width: 20px;"/>
+        <?php if($this->formValues['store_tag_url'] == 1 && $this->formValues['store_tag_url_start']):?>
+           <span>start: <?php echo date('Y M, d', strtotime($this->formValues['store_tag_url_start']));?></span>
+        <?php endif;?>
+        
+    </div>
+    <div style="clear: both;"></div>
+    <p><label style="width: 170px;">Lock Ad Tags: </label> <input type="checkbox" id="lock_tags" name="lock_tags" value="1" <?php echo $this->formValues['lock_tags'] == 1 ? 'checked="checked"' : '' ?> style="width: 20px; margin-left: 36px;"/></p>
+    <p><label style="width: 170px;">Hide ? On Ads: </label> <input type="checkbox" id="hide_question" name="hide_question" value="1" <?php echo $this->formValues['hide_question'] == 1 ? 'checked="checked"' : '' ?> style="width: 20px; margin-left: 36px;"/></p>
+    <?php if($this->data['tag_type']==5): ?>
+    <p><label style="width: 170px;">320x50 mobile ad size: </label> <input type="checkbox" id="baner_320" name="baner_320" value="1" <?php echo $this->formValues['baner_320'] == 1 ? 'checked="checked"' : '' ?> style="width: 20px; margin-left: 36px;"/></p>
+    <?php endif; ?>    
+    <?php if($this->data['tag_type']==4): ?>
+    <p><label style="width: 170px;">Video Ads: </label> <input type="checkbox" id="video_ads" name="video_ads" value="1" <?php echo $this->formValues['video_ads'] == 1 ? 'checked="checked"' : '' ?> style="width: 20px; margin-left: 36px;"/></p>
+    <?php endif; ?>
+    <p><label style="width: 170px;">Enable New Ad Tags: </label> <input type="checkbox" id="blank_ref_serve" name="blank_ref_serve" value="1" <?php echo $this->formValues['blank_ref_serve'] == 1 ? 'checked="checked"' : '' ?> style="width: 20px; margin-left: 36px;"/></p>
+	<p><label style="width: 170px;">Enable Header Bidding: </label> <input type="checkbox" id="header_bidding" name="header_bidding" value="1" <?php echo $this->formValues['header_bidding'] == 1 ? 'checked="checked"' : '' ?> style="width: 20px; margin-left: 36px;"/></p>
+    <p><label style="width: 160px;">Approved: </label> <?php echo $this->formValues['approved'] ? date("M d, Y", strtotime($this->formValues['approved'])) : 'None'; ?></p>
+    <!--
+    <p><label style="width: 160px;">Ad Partners: </label>
+            <table border="0" cellspacing="0" cellpadding="0">
+            <tr align="left">
+            <?php $counter = 0; ?>
+            <?php foreach($this->partners as $item): ?>
+                <?php if($counter%2==0): ?>
+                    </tr><tr align="left">
+                <?php endif; ?>
+                        <td><label class="checkBox"><input type="checkbox" <?php echo in_array($item['key'], $this->formValues['partners']) ? 'checked="checked"' : '' ?> class="checkBoxInp" name="partners[]" value="<?php echo $item['key'] ?>" /> <?php echo $item['value'] ?></label></td>
+            <?php $counter++; endforeach; ?>
+            </tr>
+            </table>
+    <?php if($this->formErrors['partners']): ?>
+        <ul class="error">
+        <?php foreach($this->formErrors['partners'] as $errors): ?>
+            <li><?php echo $errors ?></li>
+        <?php endforeach; ?>
+        </ul>
+    <?php endif; ?>                                               
+    </p>    
+    -->
+    <div id="enableSize" style="padding-top: 20px;">
+        <div style="display: block; float: left; width: 230px; font-size: 16px;">Manually Enable for Websites: </div>
+        <div style="display: block; float: left; width: 480px;">                
+            <?php foreach($this->userSize as $iter): ?>
+                <div style="float: left; width: 130px;">                            
+                    <div style="float: left; width: 20px;"><input style="width: 10px;" type="checkbox" class="itemSize<?php echo in_array($iter['description'], $this->wantPubm) ? "" : " New" ?>" name="itemSize_<?php echo $iter['id']?>" value="1" <?php echo $iter['active'] ? 'checked' : ''?>/></div>
+                    <div style="float: left; width: 100px; font-size: 16px; margin-top: 2px;"><?php echo $iter['description']?></div>
+                </div>            
+            <?php endforeach; ?>                
+        </div>                                          
+    </div> 
+<p><a title="" onclick="mySubmit()" class="sendMasBtn">Save</a></p>
+<input type="submit" id="subForm" style="display: none;" />
+</div>
+</form>
+
+<script type="text/javascript" src="/font/cufon-yui.js"></script>
+<script type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#topMenu a', {hover: true});	
+		Cufon.replace('#topMenu a');
+        Cufon.replace('.error', {color: 'red'});
+</script>
+<script type="text/javascript" src="/font/Headline_Two_400.font.js"></script>
+<script type="text/javascript">
+	Cufon.replace('.contInf h3', {hover: true});	
+	Cufon.replace('.contInf h3');
+	Cufon.replace('.contInf h3.white', {color: '#FFF'});	
+	Cufon.replace('.footerBann h5');		
+	Cufon.replace('.footerBann p');	
+	Cufon.replace('.footerBann a', {hover: true});		
+    Cufon.replace('h1');		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Lt_300.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#footCopyr');	
+		Cufon.replace('.contInf p', {hover: true});		
+		Cufon.replace('.contInf p', {color: '#333333'});	
+		Cufon.replace('.contInf p.white', {color: '#FFF'});	
+		Cufon.replace('.fMenu a', {textDecoration: 'underline'});		
+		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Rg_700.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('.fMenu h4');
+</script>

@@ -1,0 +1,112 @@
+<script type="text/javascript" src="/js/jquery.form.js" ></script>
+<script type="text/javascript">
+/*
+    // prepare the form when the DOM is ready 
+    $(document).ready(function() { 
+        // bind form using ajaxForm 
+        $('#cpmForm').ajaxForm({ 
+            // dataType identifies the expected content type of the server response 
+            dataType:  'json', 
+     
+            // success identifies the function to invoke when the server response 
+            // has been received 
+            success:   processJson 
+        }); 
+    });  
+    
+    function processJson(data) { 
+        // 'data' is the json object returned from the server 
+        if(data.cpm){
+            //alert(data.cpm);
+            $("#enterInfo").css('display', 'none');
+            
+            $("#imp").html("Impressions:<b> "+data.imp+"</b>");
+            $("#imp").css('display', 'block'); 
+
+            $("#cpm").html("Your eCPM:<b> "+data.cpm+"</b>");
+            $("#cpm").css('display', 'block'); 
+
+            $("#daily").html("Estimated Daily Revenue:<b> "+data.daily+"</b>");
+            $("#daily").css('display', 'block'); 
+
+            $("#monthly").html("Estimated Monthly Revenue:<b> "+data.monthly+"</b>");
+            $("#monthly").css('display', 'block'); 
+            
+            $("#applyNow").css('display', 'block');             
+        }
+    }      
+	*/
+</script>
+      <h1 class="revPos">Mad Ads Media Revenue Calculator</h1>
+      <p  class="topSlog">The Mad Ads Media revenue calculator has been discontinued. </p>    
+
+<!--
+		<div id="revCalc">
+			<div class="calcL">
+            	<h3>Enter Your Traffic Stats Below to Estimate Your Daily/Monthly Revenue:</h3>
+<iframe src="/html/cpm.php" height="300" width="100%" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"></iframe>
+				<form action="/getcpm/" id="cpmForm" method="post">
+				<div class="dailyAd"><label>Daily Ad Impressions:</label><input type="text" name="IMP" value="" /></div>
+                <div class="percentage">
+                	<h4>Percentage of Visitors by Country:</h4>
+                    <p><label>USA (example: 75%)</label><input type="text" name="USA" value="" /></p>
+                    <p><label>United Kingdom: </label><input type="text" name="UK" value="" /></p>
+                    <p><label>Canada:</label><input type="text" name="CA" value="" /></p>
+                    <p><label>Australia: </label><input type="text" name="AU" value="" /></p>
+                    <p><label>Rest of World/International: </label><input type="text" name="INT" value="" /></p>
+                    <a href="#" title="" onclick="document.getElementById('subForm').click(); return false;" class="calculBtn">Calculate</a>   
+                    <input type="submit" id="subForm" style="display: none;" />                   
+                </div>
+                </form>
+
+
+            </div>
+            <div class="calcR">
+            	<h3>Output Estimate Revenue</h3>
+				<p class="enterInfo" id="enterInfo">Please enter information in the left form and click "Calculate"</p>
+                <p id="imp" style="display: none;"></p>
+                <p id="cpm" style="display: none;"></p>
+                <p id="daily" style="display: none;"></p>
+                <p id="monthly" style="display: none;"></p>
+                <a href="/registration/" id="applyNow" style="display: none;" title="" class="applyNow"><span>Apply now</span></a>                	
+            </div>   
+            <div class="bottGray">
+            	*These are provided as estimates only and are no guarantee of how much you'll make with MadAdsMedia. 
+            </div>   
+        </div>
+-->
+
+
+<script type="text/javascript" src="/font/cufon-yui.js"></script>
+<script type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#topMenu a', {hover: true});	
+		Cufon.replace('#topMenu a');
+</script>
+<script type="text/javascript" src="/font/Headline_Two_400.font.js"></script>
+<script type="text/javascript">
+	Cufon.replace('.footerBann h5');		
+	Cufon.replace('.footerBann p');	
+	Cufon.replace('.footerBann a', {hover: true});	
+	Cufon.replace('#content h1');		
+				
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Lt_300.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#footCopyr');	
+		Cufon.replace('.fMenu a', {textDecoration: 'underline'});		
+		Cufon.replace('.topSlog');	
+		Cufon.replace('.sendMasBtn',{textShadow: '-1px -1px #5F5F5F'});		
+		Cufon.replace('.dailyAd label');
+		Cufon.replace('.percentage label');		
+		Cufon.replace('.percentage h4');		
+		Cufon.replace('.calculBtn',{textShadow: '-1px -1px #5F5F5F'});		
+		Cufon.replace('.bottGray');			
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Rg_700.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('.fMenu h4');
+		Cufon.replace('#revCalc h3');	
+		Cufon.replace('.applyNow span');		
+			
+</script>

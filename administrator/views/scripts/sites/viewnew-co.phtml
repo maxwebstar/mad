@@ -1,0 +1,538 @@
+<style type="text/css">
+    
+    .sign-up .sendMasBtn{ cursor: pointer; }
+    #action-error, #title-error, #message-error, #notes-error{  }    
+    .approve-checkbox ul{ float: left; margin-top: 5px; }
+    .approve-checkbox ul li{ color: #E43232; font-size: 16px; }    
+    #action-error li, #title-error li, #message-error li, #notes-error li{ color: #E43232; font-size: 16px; }
+    #alexa-error, #ban_check-error{ float: left; margin-top: 5px; }
+    #alexa-error li, #ban_check-error li{ color: #E43232; font-size: 16px; } 
+    #adomain-error li, #rdomain-error li { color: #E43232; font-size: 16px; }
+    .approve-checkbox{ display: block; clear: both; }
+    .approve-checkbox label { float: left; width: 170px; }
+    .approve-checkbox label a { font-size: 15px; }
+    .approve-checkbox input { float: left; width: 50px; }
+    input[type="radio"]{ width: 20px; }
+    
+    #notes-holder{ display: none; }
+    .BlockedURL{ display: none; }    
+    #needBlockedURL{ display: none; font-size: 16px; color: #e43232; width: 430px; }
+    
+</style>
+<script type="text/javascript">
+    
+    var checkContent = <?php echo json_encode($this->checkContent)?>;
+
+    $(document).ready(function(){                        
+        
+        $("#data_url").keyup(function(){            
+		    $("#changed_url").val($("#data_url").val());
+        });
+        
+        $("#SiteURL").keyup(function(){            
+		    $("#SiteURL_changed").val($("#SiteURL").val());
+        });
+
+        $("#desired_types").change(function(){
+            $("#desired_types_change").val($("#desired_types").val());
+        });
+
+        $("input[name=action]").click(function(){
+            if($(this).val()==1){
+                $("#tabs-2 #title").val('Site Approval Update for <?php echo $this->data['url'] ?>');
+                $("#tabs-2 #message").val('We regret to inform you, but we’re unable to accept <?php echo $this->data['url'] ?> into the Mad Ads Media network at this time.<br /><br />\r\n\r\n<strong>Reason:</strong><br />\r\n(enter reason here)<br /><br />\r\n\r\nWe encourage you to make the required changes and to submit your site for approval again.<br /><br />\r\n\r\nThank You,<br />\r\nMadAdsMedia.com Publisher Team');                
+                $('#tabs-2 #notes-holder').show();
+            }else if($(this).val()==2){
+                $("#tabs-1 #title").val('Site Approval Update for <?php echo $this->data['url'] ?>');
+                $("#tabs-1 #message").val('Congratulations, <?php echo $this->data['url'] ?> has been approved and added to your account!<br /><br />\r\n\r\nWe are now working on preparing your ad tags and building up advertiser demand for your website. This process can take anywhere from 3-5 business days.<br /><br />\r\n\r\n<b>In the meantime</b>, please ensure you have a privacy policy created and the following text is in it: <a href="http://madadsmedia.com/help/privacy-policy-example.html">http://madadsmedia.com/help/privacy-policy-example.html</a>. Your privacy policy must be linked from your website\'s homepage.  Without a privacy policy, your site may be excluded from major ad campaigns.<br /><br />\r\n\r\nWe will send a follow up email when this process is complete.<br /><br />\r\n\r\nWelcome to the MadAds Media Network!<br /><br />\r\n\r\n-MadAdsMedia.com Publisher Team');                
+            }else if($(this).val()==4){
+                $("#tabs-2 #title").val('Site Approval Update for <?php echo $this->data['url'] ?>');
+                $("#tabs-2 #message").val('We regret to inform you, but we’re unable to accept <?php echo $this->data['url'] ?> into the Mad Ads Media network at this time.<br /><br />\r\n\r\n<strong>Reason:</strong><br />\r\n(enter reason here)<br /><br />\r\n\r\nWe encourage you to make the required changes and to submit your site for approval again.<br /><br />\r\n\r\nThank You,<br />\r\nMadAdsMedia.com Publisher Team');                
+                $('#tabs-2 #notes-holder').hide();
+            }else{
+                $("#tabs-1 #title").val('');
+                $("#tabs-1 #message").val('');
+                $("#tabs-2 #title").val('');
+                $("#tabs-2 #message").val('');
+                $("#tabs-2 #notes").val('');
+                $('#tabs-2 #notes-holder').hide();
+            }            
+        });
+        
+        $("#tabs").tabs({
+            select: function(event, ui){
+                
+               var tab = getTab();
+               
+                if(tab == '#tabs-1'){
+                    
+                   $('#tabs-2 input[name=action]').attr("checked", false); 
+                   $('#tabs-2 #title').val('');
+                   $('#tabs-2 #message').val('');
+                   $('#tabs-2 #notes').val('');
+                   
+                   $('#tabs-2 #action-error').html(''); 
+                   $('#tabs-2 #title-error').html(''); 
+                   $('#tabs-2 #message-error').html('');
+                   $('#tabs-2 #notes-error').html('');
+                   
+                   $('#tabs-2 #notes-holder').css('display', 'none');
+                   
+                }else if(tab == '#tabs-2'){
+                                       
+                   $('#tabs-1 input[name=alexa]').attr("checked", false); 
+                   $('#tabs-1 input[name=nude]').attr("checked", false); 
+                   $('#tabs-1 input[name=porn]').attr("checked", false); 
+                   $('#tabs-1 input[name=sex]').attr("checked", false); 
+                   $('#tabs-1 input[name=nswf]').attr("checked", false); 
+                   $('#tabs-1 input[name=fuck]').attr("checked", false); 
+                   
+                   $('#tabs-1 #alexa-error').html('');
+                   $('#tabs-1 #nude-error').html('');
+                   $('#tabs-1 #porn-error').html('');
+                   $('#tabs-1 #sex-error').html('');
+                   $('#tabs-1 #nswf-error').html('');
+                   $('#tabs-1 #fuck-error').html(''); 
+                    
+                   $('#tabs-1 input[name=action]').attr("checked", false); 
+                   $('#tabs-1 #title').val('');
+                   $('#tabs-1 #message').val(''); 
+                   
+                   $('#tabs-1 #action-error').html(''); 
+                   $('#tabs-1 #title-error').html(''); 
+                   $('#tabs-1 #message-error').html(''); 
+                }
+            }        
+        });
+
+        <?php if(empty($this->formValues['action'])): ?>                   
+              $('#tabs-1 input[name=action][value=2]').click();                
+        <?php endif;?>
+
+    });
+    
+    function validate()
+    {
+        var valAction = 0;
+        var valTitle = 0;
+        var valMessage = 0;
+        var valNotes = 0;
+        
+        var valAlexa = 0;
+        var valNude = 0;
+        var valPorn = 0;
+        var valSex  = 0;
+        var valNswf = 0;
+        var valFuck = 0;
+        
+        var tab = getTab();  
+        
+        var title = $(tab+' #title').val();
+        var message = $(tab+' #message').val();
+        var action = $(tab+' input[name=action]:checked').val();
+        
+        $(tab+' #action-error').html(''); 
+        $(tab+' #title-error').html(''); 
+        $(tab+' #message-error').html(''); 
+
+        if(tab == '#tabs-1'){
+     
+            var alexa = $(tab+' input[name=alexa]:checked').val();
+            var nude = $(tab+' input[name=nude]:checked').val();
+            var porn = $(tab+' input[name=porn]:checked').val();
+            var sex = $(tab+' input[name=sex]:checked').val();
+            var nswf = $(tab+' input[name=nswf]:checked').val();
+            var fuck = $(tab+' input[name=fuck]:checked').val();
+            
+            $(tab+' #alexa-error').html('');
+            $(tab+' #nude-error').html('');
+            $(tab+' #porn-error').html('');
+            $(tab+' #sex-error').html('');
+            $(tab+' #nswf-error').html('');
+            $(tab+' #fuck-error').html(''); 
+     
+            if(alexa) valAlexa = 1;
+            else $(tab+' #alexa-error').html('<li>Fileld is required</li>');
+            
+            if(nude) valNude = 1;
+            else $(tab+' #nude-error').html('<li>Fileld is required</li>');
+            
+            if(porn) valPorn = 1;
+            else $(tab+' #porn-error').html('<li>Fileld is required</li>');
+            
+            if(sex) valSex = 1;
+            else $(tab+' #sex-error').html('<li>Fileld is required</li>');
+            
+            if(nswf) valNswf = 1;
+            else $(tab+' #nswf-error').html('<li>Fileld is required</li>');
+            
+            if(fuck) valFuck = 1;
+            else $(tab+' #fuck-error').html('<li>Fileld is required</li>'); 
+            
+            if(action) valAction = 1;
+            else $(tab+' #action-error').html('<li>Fileld is required</li>');
+            
+            if(title) valTitle = 1;
+            else $(tab+' #title-error').html('<li>Fileld is required</li>'); 
+            
+            if(message) valMessage = 1;
+            else $(tab+' #message-error').html('<li>Fileld is required</li>'); 
+                        
+            return (valAction && valTitle && valMessage && valAlexa && valNude && valPorn && valSex && valNswf && valFuck);
+        
+        }else if(tab == '#tabs-2'){ 
+            
+            var notes = $(tab+' #notes').val();
+            
+            $(tab+' #notes-error').html('');
+            
+            if(action) valAction = 1;
+            else $(tab+' #action-error').html('<li>Fileld is required</li>'); 
+            
+            if(title) valTitle = 1;
+            else $(tab+' #title-error').html('<li>Fileld is required</li>'); 
+            
+            if(message) valMessage = 1;
+            else $(tab+' #message-error').html('<li>Fileld is required</li>');
+     
+            return (valAction && valTitle && valMessage);            
+        }
+    }
+        
+    function getTab()
+    {
+        var tmp = $('#tabs').find($("#tabs .ui-tabs-nav .ui-tabs-active a").attr('href'));
+       
+       return '#'+$(tmp).attr('id');
+    }
+    
+    function mySubmit()
+    {
+        var valid = validate();
+        var tab = getTab();
+        
+        if(valid) $(tab+' .sign-up').submit();
+    }
+        
+</script>
+
+<div class="contUsL" style="margin-top: 30px;"> 
+
+<table width="760px">
+    <tr>
+        <td width="20%"><strong>Company Name:</strong> </td>
+        <td width="80%"><?php echo $this->data['company'] ?></td>
+    </tr>
+    <tr>
+        <td><strong>Contact Name:</strong> </td>
+        <td><?php echo $this->data['name'] ?></td>
+    </tr>
+    <tr>
+        <td><strong>Email:</strong> </td>
+        <td><?php echo $this->data['email'] ?></td>
+    </tr>
+    <tr>
+        <td><strong>Phone Number:</strong> </td>
+        <td><?php echo $this->data['phone'] ?></td>
+    </tr>
+    <tr>
+        <td><strong>Time Zone:</strong> </td>
+        <td><?php echo $this->data['zone'] ?></td>
+    </tr>
+    <tr>
+        <td><strong>Country:</strong> </td>
+        <td><?php echo $this->data['country'] ?></td>
+    </tr>
+    <tr>
+        <td><strong>SSN or EIN:</strong> </td>
+        <td><?php echo $this->data['ssn'] ? $this->data['ssn'] : $this->data['ein'] ?></td>
+    </tr>
+    <tr>
+        <td><strong>Ad Server:</strong> </td>
+        <td><?php echo $this->data['server'] ?></td>
+    </tr>
+    <tr>
+        <td><strong>SiteName:</strong> </td>
+        <td><input style="border: 1px silver solid;" type="text" id="data_url" value="<?php echo $this->data['url'] ?>">
+            <?php if($this->formErrors['changed_url']): ?>
+                <ul class="error">
+                    <?php foreach($this->formErrors['changed_url'] as $errors): ?>
+                        <li><?php echo $errors ?></li>
+                    <?php endforeach; ?>
+                </ul>
+            <?php endif; ?>
+        </td>
+    </tr>
+    <tr>
+        <td><strong>SiteURL:</strong> </td>
+        <td><input style="border: 1px silver solid;" type="text" id="SiteURL" value="<?php echo $this->data['SiteURL'] ?>"></td>
+    </tr>
+    <tr>
+        <td><strong>Title:</strong> </td>
+        <td><?php echo $this->data['title'] ?></td>
+    </tr>
+    <tr>
+        <td><strong>Description:</strong> </td>
+        <td><?php echo $this->data['description'] ?></td>
+    </tr>
+    <tr>
+        <td><strong>Keywords:</strong> </td>
+        <td><?php echo $this->data['keywords'] ?></td>
+    </tr>
+    <tr>
+        <td><strong>Desired Ad Types:</strong> </td>
+        <td>
+            <select name="desired_types" id="desired_types">
+                <option value="1" <?php echo $this->data['desired_types']==1 ? 'selected' : '' ?>>Banner Ads Only</option>
+                <option value="2" <?php echo $this->data['desired_types']==2 ? 'selected' : '' ?>>Video Ads Only</option>
+                <option value="3" <?php echo $this->data['desired_types']==3 ? 'selected' : '' ?>>Banner & Video Ads</option>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td><strong>Category:</strong> </td>
+        <td><?php echo $this->data['category'] ?></td>
+    </tr>
+    <tr>
+        <td><strong>Privacy Policy:</strong> </td>
+        <td><?php echo $this->data['privacy']==0 ? 'No' : 'Yes' ?></td>
+    </tr>
+
+    <tr>
+        <td><strong>Daily Visits:</strong> </td>
+        <td><?php echo $this->data['daily'] ?></td>
+    </tr>
+    <tr>
+        <td><strong>Followers:</strong> </td>
+        <td><?php echo $this->data['followers'] ?></td>
+    </tr>
+    <tr>
+        <td><strong>Rubicon IO:</strong> </td>
+        <td><?php echo $this->data['rub_io'] ?></td>
+    </tr>
+
+</table>
+<br /><br />
+
+      
+<div id="tabs">
+<ul>
+    <li><a href="#tabs-1">Approve</a></li>
+    <li><a href="#tabs-2">Deny</a></li>
+</ul>
+    
+    <div id="tabs-1">
+    
+        <form method="post" class="sign-up"> 
+                        
+    <div class="approve-checkbox">
+        <label><a target="_blank" href="http://www.alexa.com/siteinfo/<?php echo $this->data['url'] ?>%2FAlexaWebInfoService%2Flatest#clickstream">Alexa Clickstream</a></label>
+        <input type="checkbox" name="alexa" value="1"/>
+        <ul id="alexa-error"></ul>
+    </div>
+    
+<input type="hidden" name="changed_url" value="<?php echo $this->data['url'] ?>" id="changed_url">    
+<input type="hidden" name="SiteURL_changed" value="<?php echo $this->data['SiteURL'] ?>" id="SiteURL_changed">
+<input type="hidden" name="desired_types" value="<?php echo $this->data['desired_types']>0 ? $this->data['desired_types'] : 1; ?>" id="desired_types_change">
+
+    <div class="approve-checkbox">
+        <?php if($this->data['alexa_click']): ?>
+            <?php foreach (unserialize($this->data['alexa_click']) as $item=>$value): ?>
+                <?php echo $item." - ".$value."<br>" ?>
+            <?php endforeach; ?>
+        <?php endif; ?>
+    </div>            
+    <div class="approve-checkbox">
+        <label><a target="_blank" href='https://www.google.com/search?q=site:<?php echo $this->data['url'] ?>+"nude"&hl=en&tbo=d&tbm=isch'>Google Search - Nude</a></label>
+        <input type="checkbox" name="nude" value="1"/>
+        <ul id="nude-error"></ul>
+    </div>
+    <div class="approve-checkbox">
+        <label><a target="_blank" href='https://www.google.com/search?q=site:<?php echo $this->data['url'] ?>+"porn"&hl=en&tbo=d&tbm=isch'>Google Search - Porn</a></label>
+        <input type="checkbox" name="porn" value="1"/>
+        <ul id="porn-error"></ul>
+    </div>
+    <div class="approve-checkbox">
+        <label><a target="_blank" href='https://www.google.com/search?q=site:<?php echo $this->data['url'] ?>+"sex"&hl=en&tbo=d&tbm=isch'>Google Search - Sex</a></label>
+        <input type="checkbox" name="sex" value="1"/>
+        <ul id="sex-error"></ul>
+    </div>
+    <div class="approve-checkbox">
+        <label><a target="_blank" href='https://www.google.com/search?q=site:<?php echo $this->data['url'] ?>+"nsfw"&hl=en&tbo=d&tbm=isch'>Google Search - NSFW</a></label>
+        <input type="checkbox" name="nswf" value="1"/>
+        <ul id="nswf-error"></ul>
+    </div>
+    <div class="approve-checkbox">
+        <label><a target="_blank" href='https://www.google.com/search?q=site:<?php echo $this->data['url'] ?>+"fuck"&hl=en&tbo=d&tbm=isch'>Google Search - Fuck</a></label>
+        <input type="checkbox" name="fuck" value="1"/>
+        <ul id="fuck-error"></ul>
+    </div>
+    <div class="approve-checkbox">
+        <label><a target="_blank" href='http://gbanned.com/?domain=<?php echo $this->data['url'] ?>'>Adsense Ban Check</a></label>
+        <input type="checkbox" name="ban_check" value="1"/>
+    </div>
+    
+    <div style="clear: both"></div>              
+      
+                <p id="title-holder">
+                    <label>Message title</label> 
+                    <input type="text" name="title" id="title" value="<?php echo $this->formValues['title'] ?>" />
+                    <?php if($this->formErrors['title']): ?>
+                        <ul class="error">
+                        <?php foreach($this->formErrors['title'] as $errors): ?>
+                            <li><?php echo $errors ?></li>
+                        <?php endforeach; ?>
+                        </ul>
+                    <?php endif; ?>  
+                    <ul id="title-error"></ul>
+                </p>
+                <p id="message-holder">
+                    <label>Message</label> 
+                    <textarea rows="10" cols="50" name="message" id="message"><?php echo $this->formValues['message'] ?></textarea>
+                    <?php if($this->formErrors['message']): ?>
+                        <ul class="error">
+                        <?php foreach($this->formErrors['message'] as $errors): ?>
+                            <li><?php echo $errors ?></li>
+                        <?php endforeach; ?>
+                        </ul>
+                    <?php endif; ?>   
+                    <ul id="message-error"></ul>
+                </p>
+                            <p><label style="width: 290px">Update the site approvals spreadsheet</label>
+                <input type="checkbox" name="represent_domain" value="1" style="width: 20px;" <?php echo $this->formValues['represent_domain']==1 ? 'checked="checked"' : '' ?> />
+                <ul id="rdomain-error"></ul>
+                <?php if($this->formErrors['represent_domain']): ?>
+                    <ul class="error">
+                    <?php foreach($this->formErrors['represent_domain'] as $errors): ?>
+                        <li><?php echo $errors ?></li>
+                    <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>                                                    
+            </p>
+            <p><label style="width: 290px">Added to Pubmatic spreadsheet (if applicable)</label>
+                <input type="checkbox" name="authorize_domain" value="1" style="width: 20px;" <?php echo $this->formValues['authorize_domain']==1 ? 'checked="checked"' : '' ?> />
+                <ul id="adomain-error"></ul>
+                <?php if($this->formErrors['authorize_domain']): ?>
+                    <ul class="error">
+                    <?php foreach($this->formErrors['authorize_domain'] as $errors): ?>
+                        <li><?php echo $errors ?></li>
+                    <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>                                                    
+            </p>
+
+            
+            <div id="action-holder">
+                <p>
+                    <label style="width: 160px;">Confirm Site</label>
+                    <input type="radio" style="" name="action" id="action-confirm" value="2" <?php echo $this->formValues['action']==2 ? 'checked' : '' ?> />
+                </p>
+            <!--<p>
+                    <label style="width: 160px;">Send message only</label>
+                    <input type="radio" style="" name="action" value="3" <php echo $this->formValues['action']==3 ? 'checked' : '' ?> />
+                </p>-->
+                <?php if($this->formErrors['action']): ?>
+                    <ul class="error">
+                    <?php foreach($this->formErrors['action'] as $errors): ?>
+                        <li><?php echo $errors ?></li>
+                    <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>  
+                <div style="clear: both"></div>
+                <ul id="action-error"></ul>
+            </div>
+            <p><a title="" onclick="mySubmit();" class="sendMasBtn">Send</a></p>
+
+        </form>
+        
+    </div>
+    <div id="tabs-2">
+    
+        <form method="post" class="sign-up">
+
+            <p><label>Message title</label> <input type="text" name="title" id="title" value="<?php echo $this->formValues['title'] ?>" />
+                <?php if($this->formErrors['title']): ?>
+                    <ul class="error">
+                    <?php foreach($this->formErrors['title'] as $errors): ?>
+                        <li><?php echo $errors ?></li>
+                    <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?> 
+                <ul id="title-error"></ul>
+            </p>
+            <p><label>Message</label> <textarea rows="10" cols="50" name="message" id="message"><?php echo $this->formValues['message'] ?></textarea>
+                <?php if($this->formErrors['message']): ?>
+                    <ul class="error">
+                    <?php foreach($this->formErrors['message'] as $errors): ?>
+                        <li><?php echo $errors ?></li>
+                    <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?> 
+                <ul id="message-error"></ul>
+            </p>
+            <div>
+                <p>
+                    <label>Delete Site</label>
+                    <input type="radio" style="" name="action" value="4" <?php echo $this->formValues['action']==4 ? 'checked' : '' ?> />
+                </p>
+                <p>
+                    <label>Reject Site</label>
+                    <input type="radio" style="" name="action" value="1" <?php echo $this->formValues['action']==1 ? 'checked' : '' ?> />
+                </p>
+                <?php if($this->formErrors['action']): ?>
+                    <ul class="error">
+                    <?php foreach($this->formErrors['action'] as $errors): ?>
+                        <li><?php echo $errors ?></li>
+                    <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>
+                <div style="clear: both"></div>
+                <ul id="action-error"></ul>
+            </div>
+            <div id="notes-holder">
+                <label>Notes</label>
+                <textarea rows="5" cols="50" name="notes" id="notes"></textarea> 
+                <ul id="notes-error"></ul>
+            </div>
+            
+            <p><a title="" onclick="mySubmit();" class="sendMasBtn">Send</a></p>
+
+        </form>
+        
+    </div> 
+            
+</div>
+</div>
+
+
+<script type="text/javascript" src="/font/cufon-yui.js"></script>
+<script type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#topMenu a', {hover: true});	
+		Cufon.replace('#topMenu a');
+    Cufon.replace('.error', {color: 'red'});	    
+
+</script>
+<script type="text/javascript" src="/font/Headline_Two_400.font.js"></script>
+<script type="text/javascript">
+	Cufon.replace('.footerBann h5');		
+	Cufon.replace('.footerBann p');	
+	Cufon.replace('.footerBann a', {hover: true});	
+	Cufon.replace('.contactUs h1');		
+				
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Lt_300.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#footCopyr');	
+		Cufon.replace('.fMenu a');		
+		Cufon.replace('.contactUs p');	
+		Cufon.replace('.contUsL label');		
+		Cufon.replace('#location');		
+		Cufon.replace('.contBtn p');			
+		Cufon.replace('.sendMasBtn',{textShadow: '-1px -1px #5F5F5F'});		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Rg_700.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('.fMenu h4');
+		Cufon.replace('.headquaters');		
+</script>

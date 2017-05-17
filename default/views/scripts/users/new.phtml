@@ -1,0 +1,266 @@
+<style type="text/css">
+
+    #mask{
+        position: fixed;
+        height: 100%;
+        width: 100%;
+        display: none;
+        opacity: 0.3;
+        filter: alpha(opacity=30);
+        background-color: #000000;
+        z-index: 9000;
+        left:0;
+        top:0;
+    }
+
+    #loading{
+        position: fixed;
+        display: none;
+        height: 50px;
+        width: 200px;
+        z-index: 10000;
+        border: 1px solid #B7B7B7;
+        border-radius: 4px;
+        background-color: #F4F4F4;
+        left: 43%;
+        top: 44%;
+    }
+
+    #loading span{
+        font-size: 14px;
+        display: block;
+        margin: 15px 0px 0px 62px;
+    }
+</style>
+<script type="text/javascript">
+    $(document).ready(function(){
+        $("input[type='radio'][name='type']").click(function(){
+            if($(this).val()==3){
+                $("#privacyPolicyField").css('display', 'none');
+                $("#dailyVisitsField").css('display', 'none');
+                $("#followersField").css('display', 'block');
+            }else{
+                $("#privacyPolicyField").css('display', 'block');
+                $("#dailyVisitsField").css('display', 'block');
+                $("#followersField").css('display', 'none');                
+            }
+        });
+        <?php if($this->auth->id==3578): ?>
+        if($("#io").attr('checked')){ $("#rub_io").css('display', 'block'); }else{ $("#rub_io").css('display', 'none'); }
+
+        $("#io").click(function(){ 
+
+            if($("#io").attr('checked')){ $("#rub_io").css('display', 'block'); } 
+            else                                   { $("#rub_io").css('display', 'none');  }	
+        });				
+        <?php endif; ?>
+
+        $(".sendMasBtn").click(function()
+        {
+                var siteName = $("#site_name").val();
+                display('block');
+                $.ajax(
+                {
+                          type: 'POST',
+                          url: '/check-site-name',
+                          dataType: 'json',
+                          data: 
+                          {
+                                  site_name: siteName
+                          },
+                          success: function(data)
+                          {
+                              display('none');
+                                  console.log(data);
+                                  if(data != undefined)
+                                  {
+                                       if(data.status == 1){ $("#hidden_site_name").val(data.site_name); }
+                                                       else{ $("#hidden_site_name").val(siteName); }
+                                       
+                                       $(".sign-up").submit();
+                                  }
+                          },
+                    error : function(){ alert('Ajax Error! please try again.'); display('none'); }
+                });
+                return false;
+        });
+    });
+function display(status)
+{
+    $('#mask').css('display', status);
+    $('#loading').css('display', status);
+}
+
+</script>
+<?php if($this->message): ?>
+<?php echo $this->message ?>
+<?php else: ?>
+            <h1>About Your Site</h1>
+			<form method="post" class="sign-up">
+            <div class="contUsL" style="width: 520px;">
+            <input type="hidden" name="type" value="1" />
+
+                <?php if($this->formErrors['type']): ?>
+                    <div class="clear"></div>
+                    <ul class="error">
+                    <?php foreach($this->formErrors['type'] as $errors): ?>
+                        <li><?php echo $errors ?></li>
+                    <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>           
+                </p>
+                <p><label style="width: 135px;">URL: </label><input type="text" name="url" id="site_name" value="<?php echo $this->formValues['url'] ?>" /></p>
+                <?php if($this->formErrors['url']): ?>
+                    <ul class="error">
+                    <?php foreach($this->formErrors['url'] as $errors): ?>
+                        <li><?php echo $errors ?></li>
+                    <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>
+                <?php if($this->formErrors['hidden-url']): ?>
+                    <ul class="error">
+                    <?php foreach($this->formErrors['hidden-url'] as $errors): ?>
+                        <li><?php echo $errors ?></li>
+                    <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>
+                <input type="hidden" value="<?php echo $this->formValues['hidden_url']?>" id="hidden_site_name" name="hidden_url"/>
+                
+                <p><label style="width: 135px;">Title: </label><input type="text" name="title" value="<?php echo $this->formValues['title'] ?>" /></p>
+                <?php if($this->formErrors['title']): ?>
+                    <ul class="error">
+                    <?php foreach($this->formErrors['title'] as $errors): ?>
+                        <li><?php echo $errors ?></li>
+                    <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>                                                                                       
+                
+                <p><label style="width: 135px;">Description: </label><input type="text" name="description" value="<?php echo $this->formValues['description'] ?>" /></p>
+                <?php if($this->formErrors['description']): ?>
+                    <ul class="error">
+                    <?php foreach($this->formErrors['description'] as $errors): ?>
+                        <li><?php echo $errors ?></li>
+                    <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>                                                                                               
+                
+                <p><label style="width: 135px;">Keywords: </label><input type="text" name="keywords" value="<?php echo $this->formValues['keywords'] ?>" /></p>
+                <?php if($this->formErrors['keywords']): ?>
+                    <ul class="error">
+                    <?php foreach($this->formErrors['keywords'] as $errors): ?>
+                        <li><?php echo $errors ?></li>
+                    <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>
+
+                <p><label style="width: 135px;">Desired Ad Types: </label>
+                    <select name="desired_types">
+                        <option value="1" <?php echo $this->formValues['desired_types']==1 ? 'selected' : '' ?>>Banner Ads Only</option>
+                        <option value="2" <?php echo $this->formValues['desired_types']==2 ? 'selected' : '' ?>>Video Ads Only</option>
+                        <option value="3" <?php echo $this->formValues['desired_types']==3 ? 'selected' : '' ?>>Banner & Video Ads</option>
+                    </select></p>
+                <?php if($this->formErrors['desired_types']): ?>
+                    <ul class="error">
+                        <?php foreach($this->formErrors['desired_types'] as $errors): ?>
+                            <li><?php echo $errors ?></li>
+                        <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>
+
+                <p><label style="width: 135px;">Category: </label>
+                    <select name="category">
+                        <option>Please Select...</option>
+                        <?php foreach($this->category as $item): ?>
+                        <option value="<?php echo $item['key'] ?>" <?php echo $item['key']==$this->formValues['category'] ? 'selected' : '' ?> ><?php echo $item['value'] ?></option>
+                        <?php endforeach; ?>
+                    </select></p>
+                <?php if($this->formErrors['category']): ?>
+                    <ul class="error">
+                        <li><?php echo "Fileld is required"; ?></li>
+                    </ul>
+                <?php endif; ?>
+
+        
+                <p id="privacyPolicyField" style="display: <?php echo $this->formValues['type']==3 ? 'none' : 'block' ?>;"><label style="width: 135px;">Privacy Policy: </label>
+                    <label class="checkBox" style="width: 50px;"><input type="radio" name="privacy" class="checkBoxInp" value="0" <?php echo $this->formValues['privacy']==0 ? 'checked' : '' ?> />No</label>
+                    <label class="checkBox"><input type="radio" name="privacy" class="checkBoxInp" value="1" <?php echo $this->formValues['privacy']==1 ? 'checked' : '' ?> />Yes</label>
+                
+                <?php if($this->formErrors['privacy']): ?>
+                    <ul class="error">
+                    <?php foreach($this->formErrors['privacy'] as $errors): ?>
+                        <li><?php echo $errors ?></li>
+                    <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>   
+                </p> 
+                                                                                                                                                   
+                <p id="dailyVisitsField" style="display: <?php echo $this->formValues['type']==3 ? 'none' : 'block' ?>;"><label style="width: 135px;">Daily Visits: </label><input type="text" name="daily" value="<?php echo $this->formValues['daily'] ?>" />
+                <?php if($this->formErrors['daily']): ?>
+                    <ul class="error">
+                    <?php foreach($this->formErrors['daily'] as $errors): ?>
+                        <li><?php echo $errors ?></li>
+                    <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>                   
+                </p>
+                
+                <p id="followersField" style="display: <?php echo $this->formValues['type']==3 ? 'block' : 'none' ?>;"><label>Followers: </label><input type="text" name="followers" value="<?php echo $this->formValues['followers'] ?>" />
+                <?php if($this->formErrors['followers']): ?>
+                    <ul class="error">
+                    <?php foreach($this->formErrors['followers'] as $errors): ?>
+                        <li><?php echo $errors ?></li>
+                    <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>                   
+                </p>
+
+                <?php if($this->auth->id==3578): ?>
+                    <p>
+                        <label style="width: 180px">Rubicon IO: </label>
+                        <input type="checkbox" id="io" name="io" value="1" <?php echo $this->formValues['rub_io'] ? 'checked="checked"' : '' ?> style="width: 20px;" />  
+                    </p>    
+                    <p style="display:none" id="rub_io">
+                        <label style="width: 180px">IO #: </label> 
+                        <input type="text" name="rub_io" value="<?php echo $this->formValues['rub_io']  ?>"/>
+                    </p>                
+                <?php endif; ?>
+                
+            <br />
+                        <a href="#" title="" class="sendMasBtn">Submit Site</a>
+
+            </div>
+     <input type="submit" id="subForm" style="display: none;" />
+            </form>
+<?php endif; ?>
+<div id="mask"></div>
+<div id="loading"><span>processing...</span></div>
+
+<script type="text/javascript" src="/font/cufon-yui.js"></script>
+<script type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#topMenu a', {hover: true});	
+		Cufon.replace('#topMenu a');
+        Cufon.replace('.error', {color: 'red'});
+</script>
+<script type="text/javascript" src="/font/Headline_Two_400.font.js"></script>
+<script type="text/javascript">
+	Cufon.replace('.footerBann h5');		
+	Cufon.replace('.footerBann p');	
+	Cufon.replace('.footerBann a', {hover: true});	
+	Cufon.replace('.contactUs h1');		
+    Cufon.replace('h1');
+				
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Lt_300.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#footCopyr');	
+		Cufon.replace('.fMenu a');		
+		Cufon.replace('.contactUs p');	
+		Cufon.replace('.contUsL label');		
+		Cufon.replace('.contBtn p');			
+		Cufon.replace('.sendMasBtn',{textShadow: '-1px -1px #5F5F5F'});		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Rg_700.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('.fMenu h4');
+</script>

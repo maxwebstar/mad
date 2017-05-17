@@ -1,0 +1,326 @@
+
+<style type="text/css"> 
+    
+    #mask{
+        position: fixed;
+        height: 100%;
+        width: 100%;
+        display: none;
+        opacity: 0.3;
+        filter: alpha(opacity=30);
+        background-color: #000000;
+        z-index: 9000;
+        left:0;
+        top:0;
+    }
+    
+    #main #mySubmit{ display: block; float: left; height: 28px; width: 129px; font-size: 16px; background-color: #8E8E8E; color: #FFFFFF; cursor: pointer; margin-top: 7px; margin-left: 347px; }
+    #main #mySubmit:hover{ background-color: #DC2323; }
+    #main #mySubmit span{ float: left; margin: 4px 0px 0px 50px; } 
+    
+    .myButton{ display: block; float: left; height: 28px; padding-left: 30px; padding-right: 30px;  font-size: 16px; background-color: #8E8E8E; color: #FFFFFF; cursor: pointer; margin-top: 7px; margin-left: 0px; }
+    .myButton:hover{ background-color: #DC2323; }
+    .myButton span{ float: left; margin: 4px 0px 0px 0px; }
+    
+    .error{ color: #CF2B2B; font-weight: 600; font-size: 16px; display: block; }
+    
+    #avgCPM{ width: 180px; }
+    #impression{ width: 350px; }
+    #network{ width: 350px; }
+    #unit{ width: 350px; }
+    
+    #selOpportunity{ width: 345px; }
+    
+    #lost-block{ width: 98%; 
+                 height: 20px; 
+                 position: absolute;
+                 bottom: 0px;
+                 text-align: right;
+                 padding-top: 5px;
+                 color: #8E8E8E;
+                 border-top: 2px solid #8E8E8E; }
+    
+    #lost-block span{ cursor: pointer; }
+    
+    #blockOpportunity{
+        position: fixed;
+        display: none;
+        height: 232px;
+        width: 385px;
+        z-index: 10000;
+        border: 1px solid #B7B7B7;
+        border-radius: 4px;
+        background-color: #F4F4F4;
+        left: 50%;
+        top: 50%;
+        margin-left: -192px;
+        margin-top: -116px;
+    }
+    .noteOpportunity{
+        width: 345px; 
+        height: 100px; 
+        padding: 3px 5px; 
+        display: none;
+
+    }
+    
+</style>
+
+<script type="text/javascript" src="/js/jquery-1.6.2.min.js"></script>
+<script type="text/javascript" src="/fancybox/jquery.fancybox-1.3.4.js"></script>
+
+<script type="text/javascript">
+
+  var data = <?php echo json_encode($this->data) ?>;
+
+  $(document).ready(function(){
+  
+      <?php if($this->close):?>
+          parent.jQuery.fancybox.close();
+      <?php endif;?>    
+          
+      $('#selOpportunity').change(function(){
+          
+          if(parseInt($('#selOpportunity').val()) == 8){
+              
+              $('.noteOpportunity').css('display', 'block');       
+              
+          } else {
+                 
+              $('.noteOpportunity').css('display', 'none');
+              $('.noteOpportunity').val('');
+          }          
+      });    
+  });
+  
+  function validation()
+  {
+      var valid = true;
+      
+      $('.error').replaceWith('');
+      
+      switch(parseInt(data.opportunity)){
+          
+          case 0 : valid = true; 
+                     break;
+          case 1 : 
+              
+                  if(!$('#avgCPM').val().length){ $("<div class='error'>Field is required</div>").insertAfter("#avgCPM"); valid = false; }              
+                  if(!$('#impression').val().length){ $("<div class='error'>Field is required</div>").insertAfter("#impression"); valid = false; }  
+                  if(!$('#network').val().length){ $("<div class='error'>Field is required</div>").insertAfter("#network"); valid = false; }  
+                  if(!$('#unit').val().length){ $("<div class='error'>Field is required</div>").insertAfter("#unit"); valid = false; }    
+              
+                     break;
+          case 2 : valid = true;               
+                     break;
+          case 3 : valid = true;  
+                     break;
+          case 4 : valid = true;
+                     break;    
+          default  : valid = false; 
+                     break;
+      }    
+      
+      return valid;
+  }
+  
+  function registred(status)
+  {
+      $('#registred').val(status);
+      
+      if(parseInt(data.opportunity_not_reg) >= 2 && status == 0){
+          
+          if(confirm('Would you like to close this opportunity ?')){
+          
+             showOpportunity(); 
+          }
+          
+      } else { mySubmit(); }            
+  }
+  
+  function mySubmit()
+  {
+      if(validation()){ $('#main form').submit(); }
+  }
+  
+  function selOpportunity()
+  {
+      var action = $('#selOpportunity').val();
+      var note = $('.noteOpportunity').val();
+      
+      saveOpportunity(action, note);
+  }
+  
+  function lostOpportunity()
+  {
+      var note = $('#note_opportunity').val();
+      
+      saveOpportunity(8, note)
+  }
+ 
+  function showOpportunity()
+  {
+      $('#blockOpportunity').css('display', 'block');
+      display('block');
+  }
+  
+  function hideOpportunity()
+  {
+      $('#blockOpportunity').css('display', 'none');
+      display('none');
+  }
+  
+  function saveOpportunity(action, note)
+  {            
+      $.ajax({
+                'url'	:  '/administrator/recruiting/update-opportunity/',
+                'data'	:  { id : data.id, action : action, note : note },  
+                'type'	:  'POST',
+                'dataType' :  'json',
+                'success'  :   function(response){
+                    
+                        if(response.error){
+
+                                alert(response.error);
+                                hideOpportunity();
+
+                        }else if(response.status=='OK'){
+
+                                hideOpportunity();
+                                parent.jQuery.fancybox.close();
+                        }else{
+                                alert("Application ERROR!!!");
+                        }
+                 }
+        });
+  }
+ 
+  function display(status)
+  {
+      $('#mask').css('display', status);      
+  }
+
+</script>
+
+<div id="main">    
+    <form method="post" action="">
+        <?php switch($this->data['opportunity']): case 0 :?>
+
+            <p><b><?php echo $this->data['website'] ?></b> will be set as an opportunity with the stage "<b>1. Qualify</b>".</p>
+            <p><b>You must now ask the following questions:</b></p>
+            <p>1. What is your average CPM?</p>
+            <p>2. How many impressions are you serving daily?</p>
+            <p>3. Which other ad networks are you currently displaying?</p>
+            <a id="mySubmit" onClick="mySubmit()"><span>Save</span></a>
+
+         <?php break; case 1 : ?>
+
+            <p><b><?php echo $this->data['website'] ?></b> will be moved to stage "<b>2.  CPM Goals &amp; Available Impressions</b>".</p>
+            <p>Ask: What is the publisher's current average CPM?:<br />
+                <select name="avgCPM" id="avgCPM">
+                  <option value="" selected>Choose a CPM Range</option>
+                  <option value="$.01-.05">$.01-.05</option>
+                  <option value="$.06-.10">$.06-.10</option>
+                  <option value="$.10-.15">$.10-.15</option>
+                  <option value="$.16-.20">$.16-.20</option>
+                  <option value="$.21-.25">$.21-.25</option>
+                  <option value="$.26-.30">$.26-.30</option>
+                  <option value="$.31-.40">$.31-.40</option>
+                  <option value="$.41-.50">$.40-.50</option>
+                  <option value="$.50-.75">$.50-.75</option>
+                  <option value="$.76-1.00">$.76-1.00</option>
+                  <option value="$1.00-1.50">$1.00-1.50</option>
+                  <option value="$1.50-2.00">$1.50-2.00</option>
+                  <option value="$2.00+">$2.00+</option>
+                </select>
+            </p>
+            <p>
+                Ask: Average daily impressions served?:<br />
+                <input type="text" name="impression" id="impression" value="" />
+            </p>
+            <p>
+                Ask: Other ad networks currently being displayed?:<br />
+                <input type="text" name="network" id="network" value="" />
+            </p>
+            <p>
+                Check: How many ad units currently displayed?<br />
+                <input type="text" name="unit" id="unit" value="" />
+            </p>
+            <a id="mySubmit" onClick="mySubmit()"><span>Save</span></a>
+
+         <?php break; case 2 :
+                      case 3 : ?>            
+
+            <p><b>Stage updated!</b></p>
+            <p>Based on the average CPM of <b><?php echo $this->data['opportunity_avgCPM']?></b>, the following is recommended:</p>
+            <br />
+
+            <?php if($this->data['opportunity_avgCPM'] == '$.41-.50' || 
+                     $this->data['opportunity_avgCPM'] == '$.50-.75' || 
+                     $this->data['opportunity_avgCPM'] == '$.76-1.00' || 
+                     $this->data['opportunity_avgCPM'] == '$1.00-1.50' || 
+                     $this->data['opportunity_avgCPM'] == '$1.50-2.00' || 
+                     $this->data['opportunity_avgCPM'] == '$2.00+'): ?>
+
+                <p><b style="font-size:16px;"><u>Floor tags</u></b></p>
+                <p>This suggestion is based on their average CPM.  If they plan on running us as an additional ad unit, a floor is not required.</p>
+
+            <?php else:?>
+
+                <p><b style="font-size:16px;"><u>Max Fill or 100% Fill</u></b></p>
+                <p>This suggestion is based on their average CPM.  You should let the website know that we should be competitive with their existing rates.</p>
+
+            <?php endif;?>
+
+            <br />
+            <br />
+            <p>
+                <input type="checkbox" name="emailed" id="emailed" value="1"/> I've emailed the website my proposal.<br />
+                *This will move <?php echo $this->data['website'] ?> to stage "<b>4. Regstration</b>".
+            </p> 
+            <a id="mySubmit" onClick="mySubmit()"><span>Save</span></a>             
+            
+         <?php break; case 4 : ?>
+            
+            <p><b><?php echo $this->data['website'] ?></b> will be moved to stage "<b>5. Awaiting ADX Review</b>" if the website registered.</p>
+            <input type="hidden" name="registred" id="registred" value="0"/>
+            <br /><br />            
+            <a class="myButton" onClick="registred(1)" style="margin-right: 20px;"><span>Site Registered </span></a>
+            <a class="myButton" onClick="registred(0)"><span>Site <b>DID NOT</b> Register</span></a>
+                        
+         <?php break; case 5 :
+                      case 6 :
+                      case 7 : 
+                      case 8 : ?>    
+            
+            <p>
+                <select name="selOpportunity" id="selOpportunity">                  
+                  <option value="5">5. Awaiting ADX Review</option>
+                  <option value="6">6. Tags Ready But Not Live</option>                                
+                  <option value="7">7. Won Opportunity Tags Live</option>
+                  <option value="8">8. Lost Opportunity</option>
+                </select>                
+            </p>
+            <p>
+                <textarea name="note" class="noteOpportunity" placeholder="Notes"></textarea>
+            </p>
+            <a id="mySubmit" onClick="selOpportunity()"><span>Save</span></a>
+
+        <?php break; endswitch; ?>
+        <div id="lost-block"><span onClick="showOpportunity()">Lost Opportunity</span></div>
+    </form>
+</div>
+
+<?php if(!empty($this->message)):?>
+<?php echo $this->message;?>
+<?php endif; ?>
+
+<div id="blockOpportunity">
+    <p style="margin-left: 20px;">Opportunity has been marked as lost.<br />Please provide a reason below:</p>
+    <p>
+         <textarea name="note_opportunity" id="note_opportunity" style="width: 345px; height: 100px; padding: 3px 5px; margin-left: 20px;" placeholder="Notes"></textarea>
+    </p>
+    <a class="myButton" onClick="lostOpportunity()" style="margin-right: 20px; margin-top: 0px; float: right;"><span>Yes</span></a>
+    <a class="myButton" onClick="hideOpportunity()" style="margin-right: 20px; margin-top: 0px; float: right;"><span>No</span></a>
+</div>
+<div id="mask"></div>

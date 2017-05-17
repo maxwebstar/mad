@@ -1,0 +1,81 @@
+<link rel="stylesheet" type="text/css" href="/styles/jquery-ui-1.9.2.custom.min.css" media="screen" />
+<style type="text/css"> 
+    
+    form{ display: block; height: 330px; margin-bottom: 7px; } 
+    
+    .sendMasBtn{
+        background-color: #8e8e8e;
+        border: 1px solid #797979;
+        color: #ffffff;
+        float: right;
+        font-size: 16px;
+        height: 28px;
+        line-height: 28px;
+        margin: 255px 26px 0 0;
+        text-align: center;
+        width: 129px;     
+        cursor: pointer;
+    }
+    .sendMasBtn:hover{ background-color: #dc2323; border: 0px; }
+    .sendClearBtn{
+        background-color: #8e8e8e;
+        border: 1px solid #797979;
+        color: #ffffff;
+        float: left;
+        font-size: 16px;
+        height: 28px;
+        line-height: 28px;
+        margin: 255px 0 0 0px;
+        text-align: center;
+        width: 129px;     
+        cursor: pointer;
+        text-decoration: none;
+    }
+    .sendClearBtn:hover{ background-color: #dc2323; border: 0px; }
+    
+    .error{ color: #CF2B2B; font-weight: 600; font-size: 16px; }
+    .message{ font-weight: 600; font-size: 16px; }
+    
+</style>
+
+<script type="text/javascript" src="/js/jquery-1.9.1.js"></script>
+<script type="text/javascript" src="/js/jquery-ui-1.9.2.custom.min.js"></script>
+<script type="text/javascript"> 
+
+  var dataRecruiting = <?php echo json_encode($this->data)?>;
+
+  $(document).ready(function(){
+    
+          $('#mySubmit').click(function(){   
+               
+               $('form').submit();           
+          });
+          
+          $('#date').datepicker({
+              changeYear: 'true',
+              changeMonth: 'true',
+              dateFormat: 'yy-mm-dd'                          
+          });
+                   
+          if(dataRecruiting.date_follow_up_manual){ $('#date').datepicker('setDate', dataRecruiting.date_follow_up_manual); }
+           
+          $('#date').datepicker("show");            
+  });
+
+</script>
+
+        <form action="" method="post">                     
+
+                <input type="text" id="date" name="date" value="" />                    
+
+                <br /><br />
+                <?php if($this->data['date_follow_up_manual']):?>
+                <a class="sendClearBtn" onClick="return confirm('Are you sure ?')" href="/administrator/recruiting/follow-up-manual/id/<?php echo $this->data['id']?>/clear/1">Clear date</a>
+                <?php endif;?>
+                <a class="sendMasBtn" id="mySubmit">Save</a>
+
+        </form>
+
+<?php if(!empty($this->message)):?>
+<?php echo $this->message;?>
+<?php endif; ?>

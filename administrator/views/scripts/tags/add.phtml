@@ -1,0 +1,334 @@
+<h2 class="text-center">Generated tags for <?php echo $this->dataSite['SiteName'] ?></h2>
+<?php if(count($this->formErrors)): ?>
+    <div class="alert alert-danger" role="alert">
+        <ul>
+            <?php foreach($this->formErrors as $error): ?>
+                <?php foreach($error as $item): ?>
+                    <li><?php echo $item; ?></li>
+                <?php endforeach; ?>
+            <?php endforeach; ?>
+        </ul>
+    </div>
+<?php endif; ?>
+<form  method="post" class="form-horizontal">
+<input type="hidden" id="activeNetwork" name="activeNetwork" value="<?php echo $this->formValues['activeNetwork'] ?>">
+    <?php if($this->dataNetworks): ?>
+        <?php foreach($this->dataNetworks as $network): ?>
+            <div class="checkbox <?php if(isset($this->formErrors['networks'])) echo "has-error" ?>">
+                <label>
+                    <input class="networks-cheks" data-network="<?php echo $network['name'] ?>" type="checkbox" name="networks[]"
+                        <?php echo array_search($network['id'], $this->formValues['networks'])===false ||
+                                    array_search($network['id'], $this->formValues['networks'])===null ? "" : "checked" ?>
+                       value="<?php echo $network['id'] ?>">
+                    <?php echo $network['name'] ?>
+                </label>
+                <?php if($this->formValues['activeNetwork']==$network['id']): ?>
+                    <button type="button"
+                            network-id="<?php echo $network['id'] ?>"
+                            data-network="<?php echo $network['name'] ?>"
+                            id="button-<?php echo $network['id'] ?>"
+                            class="btn btn-success btn-xs btn-networks
+                            <?php echo array_search($network['id'], $this->formValues['networks'])===false ||
+                            array_search($network['id'], $this->formValues['networks'])===null ? "hidden" : "" ?>">
+                        Currently Primary
+                    </button>
+                <?php else: ?>
+                    <button type="button"
+                            network-id="<?php echo $network['id'] ?>"
+                            data-network="<?php echo $network['name'] ?>"
+                            id="button-<?php echo $network['id'] ?>"
+                            class="btn btn-info btn-xs btn-networks
+                            <?php echo array_search($network['id'], $this->formValues['networks'])===false ||
+                            array_search($network['id'], $this->formValues['networks'])===null ? "hidden" : "" ?>">
+                        Make Primary
+                    </button>
+                <?php endif; ?>
+            </div>
+        <?php endforeach; ?>
+        <hr>
+        <div>
+            <!-- Nav tabs -->
+            <ul class="nav nav-tabs" role="tablist" id="tabs-networks">
+                <?php foreach($this->dataNetworks as $network): ?>
+                    <li role="presentation" class="<?php echo array_search($network['id'], $this->formValues['networks'])===false ||
+                    array_search($network['id'], $this->formValues['networks'])===null ? "disabled" : "" ?>
+                    <?php echo $this->formValues['activeNetwork']==$network['id'] ? 'active' : "" ?>"
+                        <?php echo $this->formValues['activeNetwork']==$network['id'] ? 'aria-expanded="true"' : "" ?>>
+                        <a href="#<?php echo $network['name'] ?>"
+                           data-toggle="<?php echo array_search($network['id'], $this->formValues['networks'])===false ||
+                           array_search($network['id'], $this->formValues['networks'])===null ? "" : "tab" ?>"
+                           aria-controls="<?php echo $network['name'] ?>"
+                           role="tab">
+                            <?php echo $network['name'] ?>
+                        </a>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+
+            <!-- Tab panes -->
+            <div class="tab-content">
+                <?php foreach($this->dataNetworks as $network): ?>
+                    <div role="tabpanel" class="tab-pane fade <?php echo $this->formValues['activeNetwork']==$network['id'] ? 'active' : "" ?> in" id="<?php echo $network['name'] ?>">
+                        <?php
+                            switch($network['id']){
+                                case 5:
+                                    echo $this->render('tags/networks-forms/rubicon.phtml');
+                                    break;
+                                case 8:
+                                    echo $this->render('tags/networks-forms/pubmatic.phtml');
+                                    break;
+                                case 9:
+                                    echo $this->render('tags/networks-forms/amazon.phtml');
+                                    break;
+                                case 10:
+                                    echo $this->render('tags/networks-forms/pulsepoint.phtml');
+                                    break;
+                                case 16:
+                                    echo $this->render('tags/networks-forms/pop-ads.phtml');
+                                    break;
+                                case 17:
+                                    echo $this->render('tags/networks-forms/pop-cash.phtml');
+                                    break;
+                                case 18:
+                                    echo $this->render('tags/networks-forms/sekindo.phtml');
+                                    break;
+                                case 19:
+                                    echo $this->render('tags/networks-forms/aol.phtml');
+                                    break;
+                                case 20:
+                                    echo $this->render('tags/networks-forms/aol-outstream.phtml');
+                                    break;
+                                case 21:
+                                    echo $this->render('tags/networks-forms/b-real-time.phtml');
+                                    break;
+                            }
+                        ?>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    <?php endif; ?>
+    <hr>
+    <div class="form-group">
+        <button type="submit" class="btn btn-success">Save</button>
+        <a class="btn btn-danger" href="/administrator/tags" role="button">Cancel</a>
+    </div>
+</form>
+
+<script>
+    $(document).ready(function(){
+        $(".networks-cheks").change(function(){
+            if($(this).is(":checked")){
+                $("#button-"+$(this).val()).removeClass('hidden');
+                $('#tabs-networks a[href="#'+$(this).attr('data-network')+'"]')
+                    .attr('data-toggle', 'tab')
+                    .parent()
+                    .removeClass('disabled');
+            }else{
+                $('#tabs-networks a[href="#'+$(this).attr('data-network')+'"]')
+                    .attr('data-toggle', '')
+                    .removeAttr('aria-expanded')
+                    .parent()
+                    .removeClass('active')
+                    .addClass('disabled');
+                $("#"+$(this).attr('data-network')).removeClass('active');
+
+                $("#button-"+$(this).val())
+                    .addClass('hidden')
+                    .removeClass('btn-success')
+                    .addClass('btn-info')
+                    .html('Make Primary');
+
+                $('#activeNetwork').val('');
+            }
+        });
+
+        $(".btn-networks").on('click', function(){
+            if($(this).hasClass('btn-info')){
+                $(".btn-networks").removeClass('btn-success')
+                    .addClass('btn-info')
+                    .html('Make Primary');
+                $('#activeNetwork').val('');
+                $(this).removeClass('btn-info')
+                    .addClass('btn-success')
+                    .html('Currently Primary');
+                $('#activeNetwork').val($(this).attr('network-id'));
+                $('#tabs-networks a[href="#'+$(this).attr('data-network')+'"]').tab('show');
+            }else{
+                $(this).removeClass('btn-success')
+                    .addClass('btn-info')
+                    .html('Make Primary');
+                $('#activeNetwork').val('');
+                //$('#tabs-networks a[href="#'+$(this).attr('data-network')+'"]').tab('hide');
+                $('#tabs-networks a[href="#'+$(this).attr('data-network')+'"]')
+                    .attr('aria-expanded', 'false')
+                    .parent()
+                    .removeClass('active')
+                $("#"+$(this).attr('data-network')).removeClass('active');
+            }
+        });
+
+        //rubicon
+        $('.rubicon-sizes').on('click', function(){
+            if($(this).is(":checked")){
+                $('.rubicon-form-'+$(this).attr('data-size')).removeClass('hidden');
+                $('#rubicon_site_name_'+$(this).attr('data-size')).attr('name', 'rubicon_site_name['+$(this).attr('data-size')+']');
+
+                $('#rp_site_'+$(this).attr('data-size')).attr('name', 'rp_site['+$(this).attr('data-size')+']');
+                $('#rp_zonesize_'+$(this).attr('data-size')).attr('name', 'rp_zonesize['+$(this).attr('data-size')+']');
+                $('#rp_account_'+$(this).attr('data-size')).attr('name', 'rp_account['+$(this).attr('data-size')+']');
+                $('#use_id_'+$(this).attr('data-size')).attr('name', 'use_id['+$(this).attr('data-size')+']');
+            }else{
+                $('.rubicon-form-'+$(this).attr('data-size')).addClass('hidden');
+                $('#rubicon_site_name_'+$(this).attr('data-size')).attr('name', '');
+
+                $('#rp_site_'+$(this).attr('data-size')).attr('name', '');
+                $('#rp_zonesize_'+$(this).attr('data-size')).attr('name', '');
+                $('#rp_account_'+$(this).attr('data-size')).attr('name', '');
+                $('#use_id_'+$(this).attr('data-size')).attr('name', '');
+            }
+        });
+
+        $('.use_id').on('click', function(){
+           if($(this).is(":checked")){
+               $('.ids_'+$(this).attr('data-size')).attr('readonly', false);
+               $('#rp_site_'+$(this).attr('data-size')).attr('name', 'rp_site['+$(this).attr('data-size')+']');
+               $('#rp_zonesize_'+$(this).attr('data-size')).attr('name', 'rp_zonesize['+$(this).attr('data-size')+']');
+               $('#rp_account_'+$(this).attr('data-size')).attr('name', 'rp_account['+$(this).attr('data-size')+']');
+               $('#use_id_'+$(this).attr('data-size')).attr('name', 'use_id['+$(this).attr('data-size')+']');
+           }else{
+               $('.ids_'+$(this).attr('data-size')).attr('readonly', true);
+               $('#rp_site_'+$(this).attr('data-size')).attr('name', '');
+               $('#rp_zonesize_'+$(this).attr('data-size')).attr('name', '');
+               $('#rp_account_'+$(this).attr('data-size')).attr('name', '');
+               $('#use_id_'+$(this).attr('data-size')).attr('name', '');
+           }
+        });
+
+        //pubmatic
+        $('.pubmatic-sizes').on('click', function(){
+            if($(this).is(":checked")){
+                $('#pubmatic-form-'+$(this).attr('data-size')).removeClass('hidden');
+                $('#kPubID_'+$(this).attr('data-size')).attr('name', 'kPubID['+$(this).attr('data-size')+']');
+                $('#kSiteID_'+$(this).attr('data-size')).attr('name', 'kSiteID['+$(this).attr('data-size')+']');
+                $('#kadID_'+$(this).attr('data-size')).attr('name', 'kadID['+$(this).attr('data-size')+']');
+                $('#kadWidth_'+$(this).attr('data-size')).attr('name', 'kadWidth['+$(this).attr('data-size')+']');
+                $('#kadHeight_'+$(this).attr('data-size')).attr('name', 'kadHeight['+$(this).attr('data-size')+']');
+                $('#kadType_'+$(this).attr('data-size')).attr('name', 'kadType['+$(this).attr('data-size')+']');
+                $('#kadPageUrl_'+$(this).attr('data-size')).attr('name', 'kadPageUrl['+$(this).attr('data-size')+']');
+            }else{
+                $('#pubmatic-form-'+$(this).attr('data-size')).addClass('hidden');
+                $('#kPubID_'+$(this).attr('data-size')).attr('name', '');
+                $('#kSiteID_'+$(this).attr('data-size')).attr('name', '');
+                $('#kadID_'+$(this).attr('data-size')).attr('name', '');
+                $('#kadWidth_'+$(this).attr('data-size')).attr('name', '');
+                $('#kadHeight_'+$(this).attr('data-size')).attr('name', '');
+                $('#kadType_'+$(this).attr('data-size')).attr('name', '');
+                $('#kadPageUrl_'+$(this).attr('data-size')).attr('name', '');
+            }
+        });
+
+        //amazon
+        $('.amazon-sizes').on('click', function(){
+            if($(this).is(":checked")){
+                $('#amazon-form-'+$(this).attr('data-size')).removeClass('hidden');
+                $('#slot_uuid_'+$(this).attr('data-size')).attr('name', 'slot_uuid['+$(this).attr('data-size')+']');
+            }else{
+                $('#amazon-form-'+$(this).attr('data-size')).addClass('hidden');
+                $('#slot_uuid_'+$(this).attr('data-size')).attr('name', '');
+            }
+        });
+
+        //pulsePoint
+        $('.pulse-sizes').on('click', function(){
+            if($(this).is(":checked")){
+                $('#pulse-form-'+$(this).attr('data-size')).removeClass('hidden');
+                $('#PulsePubID_'+$(this).attr('data-size')).attr('name', 'PulsePubID['+$(this).attr('data-size')+']');
+                $('#PulseTagID_'+$(this).attr('data-size')).attr('name', 'PulseTagID['+$(this).attr('data-size')+']');
+            }else{
+                $('#pulse-form-'+$(this).attr('data-size')).addClass('hidden');
+                $('#PulsePubID_'+$(this).attr('data-size')).attr('name', '');
+                $('#PulseTagID_'+$(this).attr('data-size')).attr('name', '');
+            }
+        });
+
+        //popAds
+        $('.pop-ads-sizes').on('click', function(){
+            if($(this).is(":checked")){
+                $('#pop-ads-form-'+$(this).attr('data-size')).removeClass('hidden');
+                $('#popSiteID_'+$(this).attr('data-size')).attr('name', 'popSiteID['+$(this).attr('data-size')+']');
+                $('#popVisitor_'+$(this).attr('data-size')).attr('name', 'popVisitor['+$(this).attr('data-size')+']');
+            }else{
+                $('#pop-ads-form-'+$(this).attr('data-size')).addClass('hidden');
+                $('#popSiteID_'+$(this).attr('data-size')).attr('name', '');
+                $('#popVisitor_'+$(this).attr('data-size')).attr('name', '');
+            }
+        });
+
+        //popCash
+        $('.pop-cash-sizes').on('click', function(){
+            if($(this).is(":checked")){
+                $('#pop-cash-form-'+$(this).attr('data-size')).removeClass('hidden');
+                $('#wid_'+$(this).attr('data-size')).attr('name', 'wid['+$(this).attr('data-size')+']');
+            }else{
+                $('#pop-cash-form-'+$(this).attr('data-size')).addClass('hidden');
+                $('#wid_'+$(this).attr('data-size')).attr('name', '');
+            }
+        });
+
+        //Sekindo
+        $('.sekindo-sizes').on('click', function(){
+            if($(this).is(":checked")){
+                $('#sekindo-form-'+$(this).attr('data-size')).removeClass('hidden');
+                $('#spaceId_'+$(this).attr('data-size')).attr('name', 'spaceId['+$(this).attr('data-size')+']');
+            }else{
+                $('#sekindo-form-'+$(this).attr('data-size')).addClass('hidden');
+                $('#spaceId_'+$(this).attr('data-size')).attr('name', '');
+            }
+        });
+        
+        //AOL
+        $('.aol-sizes').on('click', function(){
+            if($(this).is(":checked")){
+                $('#aol-form-'+$(this).attr('data-size')).removeClass('hidden');
+                $('#aol_placementId_'+$(this).attr('data-size')).attr('name', 'aol_placementId['+$(this).attr('data-size')+']');
+                $('#aol_network_'+$(this).attr('data-size')).attr('name', 'aol_network['+$(this).attr('data-size')+']');
+            }else{
+                $('#aol-form-'+$(this).attr('data-size')).addClass('hidden');
+                $('#aol_placementId_'+$(this).attr('data-size')).attr('name', '');
+                $('#aol_network_'+$(this).attr('data-size')).attr('name', '');
+            }
+        });
+        
+        //AOL Outstream
+        $('.aol-outstream-sizes').on('click', function(){
+            if($(this).is(":checked")){
+                $('#aol-outstream-form-'+$(this).attr('data-size')).removeClass('hidden');
+                $('#aol_o_PlacementName_'+$(this).attr('data-size')).attr('name', 'aol_o_PlacementName['+$(this).attr('data-size')+']');
+                $('#aol_o_AccountID_'+$(this).attr('data-size')).attr('name', 'aol_o_AccountID['+$(this).attr('data-size')+']');
+                $('#aol_o_PlayerID_'+$(this).attr('data-size')).attr('name', 'aol_o_PlayerID['+$(this).attr('data-size')+']');
+                $('#aol_o_DivID_'+$(this).attr('data-size')).attr('name', 'aol_o_DivID['+$(this).attr('data-size')+']');
+                $('#aol_o_ScriptID_'+$(this).attr('data-size')).attr('name', 'aol_o_ScriptID['+$(this).attr('data-size')+']');
+            }else{
+                $('#aol-outstream-form-'+$(this).attr('data-size')).addClass('hidden');
+                $('#aol_o_PlacementName_'+$(this).attr('data-size')).attr('name', '');
+                $('#aol_o_AccountID_'+$(this).attr('data-size')).attr('name', '');
+                $('#aol_o_PlayerID_'+$(this).attr('data-size')).attr('name', '');
+                $('#aol_o_DivID_'+$(this).attr('data-size')).attr('name', '');
+                $('#aol_o_ScriptID_'+$(this).attr('data-size')).attr('name', '');
+            }
+        });
+        
+        //bRealTime
+        $('.brt-sizes').on('click', function(){
+            if($(this).is(":checked")){
+                $('#brt-form-'+$(this).attr('data-size')).removeClass('hidden');
+                $('#brt_placementId_'+$(this).attr('data-size')).attr('name', 'brt_placementId['+$(this).attr('data-size')+']');                
+            }else{
+                $('#brt-form-'+$(this).attr('data-size')).addClass('hidden');
+                $('#brt_placementId_'+$(this).attr('data-size')).attr('name', '');                
+            }
+        });
+
+    });
+</script>

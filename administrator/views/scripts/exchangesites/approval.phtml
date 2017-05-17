@@ -1,0 +1,136 @@
+<script type="text/javascript" src="/font/cufon-yui.js"></script>
+<script type="text/javascript" src="/font/Bebas_400.font.js"></script>
+
+<script type="text/javascript">
+	$(function(){
+
+		function approvalAction(approve,deny){
+
+			var href = "/administrator/exchangesites/"+((approve) ? "approve" : "deny")+"/id/<?=$this->data['id']?>";
+			
+			$.get(href,function(res){
+
+				if (!res.error){
+					if (typeof console == "object")
+						console.log(res.data)
+
+				}
+				else {
+					if (typeof console == "object")
+						console.log(res.data)
+				}
+
+				window.parent.redrawTables();
+				$("#message").html(res.data).show();
+			});
+		}
+
+		$("#approveButton").click(function(e){
+			e.preventDefault();
+			approvalAction(true,false);
+		});
+
+		$("#denyButton").click(function(e){
+			e.preventDefault();
+			approvalAction(false,true);
+		});
+
+		$("#closeButton").click(function(e){
+			e.preventDefault();
+			window.parent.closeFancybox();
+		});		
+
+		Cufon.replace('.sendMasBtn',{textShadow: '-1px -1px #5F5F5F'});	
+		Cufon.replace('h2',{textShadow: '-1px -1px #5F5F5F', fontSize : '16px'});	
+		
+		
+	});
+
+</script>
+<style>
+
+	.siteContainer {
+		padding: 15px;
+		overflow:hidden;
+	}
+
+	h2 {
+		padding: 0 0 12px 0;
+	}
+
+	ul {
+		list-style-type:none;
+		clear:both;
+	}
+	
+	li {
+		float:left;
+	}
+	
+	.siteData {
+		padding: 0 0 12px 0;
+	}
+	
+	.checkSearchlinks {
+		clear:both;
+		width:100%;]
+		height:100%;
+		display:block;
+		padding: 0 0 24px 0;
+	}
+	
+	
+	.checkSearchlinks a {
+		padding: 0 9px 0 0;
+		text-decoration: underline;
+	}	
+	
+	#message {
+		display:none;
+		padding: 0 0 12px 0;
+	}
+	
+	.buttons {
+		width:100%;
+		height:30px;
+	}
+
+</style>
+
+<div class="siteContainer">
+	<h2><?=$this->data['site']?></h2>
+	
+	<div id="message">
+	</div>	
+	
+	<div class="siteData">
+		<p>Site Url: <a href="<?=$this->data['site_url']?>" target="_blank"><?=$this->data['site_url']?></a></p>
+		<p>Category: <?=$this->data['category']?></p>
+		<p>Alexa Rank: <?=number_format($this->data['alexa_rank'])?></p>
+			
+	</div>
+	
+	<div class="checkSearchlinks">
+	
+		<p>Please check the following:</p>
+		
+		<p>Clickstream: <a href="http://www.alexa.com/siteinfo/<?=$this->data['domain']?>%2FAlexaWebInfoService%2Flatest#clickstream" target="_blank">View</a>:</p>
+		
+		<p>Google Searches:
+			<a href="https://www.google.com/search?q=site:<?=$this->data['domain'] ?>+nude&hl=en&tbo=d&tbm=isch" target="_blank">Nude</a>
+			<a href="https://www.google.com/search?q=site:<?=$this->data['domain'] ?>+porn&hl=en&tbo=d&tbm=isch" target="_blank">Porn</a>
+			<a href="https://www.google.com/search?q=site:<?=$this->data['domain'] ?>+sex&hl=en&tbo=d&tbm=isch" target="_blank">Sex</a>
+			<a href="https://www.google.com/search?q=site:<?=$this->data['domain'] ?>+nsfw&hl=en&tbo=d&tbm=isch" target="_blank">NSFW</a>
+			<a href="https://www.google.com/search?q=site:<?=$this->data['domain'] ?>+fuck&hl=en&tbo=d&tbm=isch" target="_blank">Fuck</a>
+		</p>
+	</div>
+	
+	<div class="buttons">
+		<a href="#" id="closeButton" title="Close Window" class="sendMasBtn">Close</a>
+		<a href="#" id="denyButton" title="Deny this Site" class="sendMasBtn">Deny</a>
+		<a href="#" id="approveButton" title="Approve this Site" class="sendMasBtn">Approve</a>
+	</div>
+
+</div>
+
+

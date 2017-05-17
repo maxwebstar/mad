@@ -1,0 +1,104 @@
+<style>
+    
+#title-page{
+    color: #414141;
+    font-size: 52px;
+    line-height: 52px;
+    text-align: center;
+    font-family: Arial,Helvetica,sans-serif;
+    font-weight: normal;
+}
+
+#sub-table_filter input{ border-right: 1px solid #DADADA; }
+    
+</style>
+<link href="/styles/table.css" media="screen" rel="stylesheet" type="text/css" />
+<link href="/styles/style.css" media="screen" rel="stylesheet" type="text/css" />
+<link href="/styles/reset.css" media="screen" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="/js/jquery-1.8.2.min.js"></script>
+<script type="text/javascript" src="/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" charset="utf-8">
+        
+   $(document).ready(function(){           
+
+           var oTable = $('#sub-table').dataTable({
+                    "bProcessing": true,
+                    "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+                    "iDisplayLength": -1                 
+           });            	
+
+   });
+        
+</script>
+
+
+
+<div id="title-page">Manage SubID</div>
+<div class="contUsL" style="width: 750px;">
+<p>
+    <a href="/administrator/sub/add">Add New SubID</a>
+</p>    
+<table width="740px" cellpadding="0" cellspacing="0" border="0" class="display" id="sub-table">
+	<thead>
+		<tr>	
+                    <th width="25%">Name</th>
+                    <th width="10%">Author</th>
+                    <th width="10%">Created</th>                    
+                    <th width="10%">Edit</th>
+		</tr>
+	</thead>
+	<tbody>
+
+        <?php foreach($this->data as $iter):?>	
+    
+            <tr>
+                <td><?php echo $iter['name'] ?></td>
+                <td><?php echo $iter['created_by']; ?></td>
+                <td><?php echo date('m/d/y', strtotime($iter['created'])); ?></td>
+                <td><a href="/administrator/sub/edit/id/<?php echo $iter['id'];?>">edit</a></td>
+            </tr>  
+        
+        <?php endforeach;?>
+        
+	</tbody>
+	<tfoot>
+		<tr>
+                    <th>Name</th>
+                    <th>Author</th>
+                    <th>Created</th>
+                    <th>Edit</th>
+		</tr>
+	</tfoot>
+</table>
+</div>
+
+
+<script type="text/javascript" src="/font/cufon-yui.js"></script>
+<script type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#topMenu a', {hover: true});	
+		Cufon.replace('#topMenu a');
+</script>
+<script type="text/javascript" src="/font/Headline_Two_400.font.js"></script>
+<script type="text/javascript">
+	Cufon.replace('.contInf h3', {hover: true});	
+	Cufon.replace('.contInf h3');
+	Cufon.replace('.contInf h3.white', {color: '#FFF'});	
+	Cufon.replace('.footerBann h5');		
+	Cufon.replace('.footerBann p');	
+	Cufon.replace('.footerBann a', {hover: true});		
+    Cufon.replace('h1');		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Lt_300.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#footCopyr');	
+		Cufon.replace('.contInf p', {hover: true});		
+		Cufon.replace('.contInf p', {color: '#333333'});	
+		Cufon.replace('.contInf p.white', {color: '#FFF'});	
+		Cufon.replace('.fMenu a', {textDecoration: 'underline'});		
+		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Rg_700.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('.fMenu h4');
+</script>

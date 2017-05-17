@@ -1,0 +1,449 @@
+<link type="text/css" rel="stylesheet" media="screen" href="/styles/table.css"></link>
+<style type="text/css">
+    
+    .reportTop .dateLink{ cursor: pointer; }
+    .subDate { width: 307px; }
+    
+</style>
+<script src="/js/jquery.dataTables.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+    
+    
+jQuery.fn.dataTableExt.oSort['numeric-comma-asc']  = function(a,b) {
+   
+    var x = a.replace( /,/g, '' );
+    var y = b.replace( /,/g, '' );
+
+    x = parseFloat( x );
+    y = parseFloat( y );
+    
+    return ((x < y) ? -1 : ((x > y) ?  1 : 0));
+
+};
+ 
+jQuery.fn.dataTableExt.oSort['numeric-comma-desc'] = function(a,b) {
+
+    var x = a.replace( /,/g, '' );
+    var y = b.replace( /,/g, '' );
+
+    x = parseFloat( x );
+    y = parseFloat( y );
+    
+    return ((x < y) ?  1 : ((x > y) ? -1 : 0));
+    
+};
+
+jQuery.fn.dataTableExt.oSort['num-html-asc']  = function(a,b) {
+   
+    var x = a.replace( '$', '' );
+    var y = b.replace( '$', '' );
+    
+    if(x.indexOf('Pending') != -1 || y.indexOf('Pending') != -1){
+    
+        x = x.replace( /<.*?>/g, '' );
+        y = y.replace( /<.*?>/g, '' );
+
+        x = x.replace( 'Pending', '0' );
+        y = y.replace( 'Pending', '0' );
+    
+    } else {
+    
+        if(x.indexOf('-') && x.length == 1) x = x.replace( '-', '0' );
+        if(y.indexOf('-') && y.length == 1) y = y.replace( '-', '0' );
+    
+    }
+  
+    x = parseFloat( x );
+    y = parseFloat( y );
+    
+    return ((x < y) ? -1 : ((x > y) ?  1 : 0));
+
+};
+ 
+jQuery.fn.dataTableExt.oSort['num-html-desc'] = function(a,b) {
+
+    var x = a.replace( '$', '' );
+    var y = b.replace( '$', '' );
+    
+    if(x.indexOf('Pending') != -1 || y.indexOf('Pending') != -1){
+    
+        x = x.replace( /<.*?>/g, '' );
+        y = y.replace( /<.*?>/g, '' );
+
+        x = x.replace( 'Pending', '0' );
+        y = y.replace( 'Pending', '0' );
+    
+    } else {
+        
+        if(x.indexOf('-') && x.length == 1) x = x.replace( '-', '0' );
+        if(y.indexOf('-') && y.length == 1) y = y.replace( '-', '0' );
+        
+    }
+  
+    x = parseFloat( x );
+    y = parseFloat( y );
+    
+    return ((x < y) ?  1 : ((x > y) ? -1 : 0));
+    
+};
+    
+    
+    $(document).ready(function() {
+
+            $("#search-date").datepicker({
+                            dateFormat: 'M d, yy',
+                            changeYear: true,
+                            changeMonth: true
+            });
+    
+    
+            $("#search-date").change(function(){
+                    $("#showBox").html($.datepicker.formatDate('M d, yy', new Date($("#search-date").val()))); 
+            }); 
+            
+    
+            $("#showBox").click(function(){
+
+                    $('.subDate').toggle(220);
+                    $('.dateBoxInn').toggleClass('curDate');
+            });
+            $(".dCancelBtn").click(function(){
+
+                    $('.subDate').fadeOut(600);
+                    $('.dateBoxInn').removeClass('curDate');
+            });
+            $("#update").click(function(){
+                    $("#formDate").submit();       
+            })
+            
+            <?php if($this->floor_pricing):?>
+            
+            var oTable1 = $('#reportTbl').dataTable( {
+                        "bFilter": false,
+                        "bProcessing": true,
+                        "bLengthChange": false,
+                        "bPaginate": false,
+                        "aoColumns": [
+                            { 
+                              "sTitle": "Sites",
+                              "bSortable": false 
+                            }, 
+                            { 
+                              "sTitle": "Impressions",
+                              "sType": "numeric-comma" 
+                            }, 
+                            { 
+                              "sTitle": "Paid Impressions",
+                              "sType": "numeric-comma" 
+                            }, 
+                            { 
+                              "sTitle": "eCPM",
+                              "sType": "num-html" 
+                            },
+                            { 
+                              "sTitle": "Revenue",
+                              "sType": "num-html" 
+                            }
+                        ],                                                
+                        "aaSorting": [[ 0, "desc" ]]
+            });
+            
+            <?php else:?>
+            
+            var oTable2 = $('#reportTbl').dataTable( {
+                        "bFilter": false,
+                        "bProcessing": true,
+                        "bLengthChange": false,
+                        "bPaginate": false,
+                        "aoColumns": [
+                            { 
+                              "sTitle": "Sites",
+                              "bSortable": false 
+                            }, 
+                            { 
+                              "sTitle": "Impressions",
+                              "sType": "numeric-comma" 
+                            }, 
+                            { 
+                              "sTitle": "eCPM",
+                              "sType": "num-html" 
+                            },
+                            { 
+                              "sTitle": "Revenue",
+                              "sType": "num-html" 
+                            }
+                        ],                                                
+                        "aaSorting": [[ 0, "desc" ]]
+            });
+            
+            <?php endif;?>
+            
+     });
+    
+</script>
+<?php 
+      $asterics = '';
+      $countEstim = 0;
+      $total = array('impressions' => 0, 'paid_impressions' => 0, 'ecpm' => 0, 'revenue' => 0);
+      
+      $fileOpen = fopen('csv/my-report/by-date/'.$this->file, 'w');
+?>
+
+
+<form name="size" method="get" id="formDate" action="/default/users/report-date/">	
+
+      <div class="reportTop">
+
+          <h5>Earnings</h5>              
+          <div class="dateBox">
+              <p class="dateBoxInn">
+                  <a title="" class="dateLink" id="showBox"><?php echo date("M j, Y", strtotime($this->curent["date"])); ?></a>
+              </p>
+              <div class="subDate">
+                 <div class="dateRanch">
+                    <h5>Date</h5> 
+                    <input type="text" value="<?php echo date("M j, Y", strtotime($this->curent["date"])); ?>" name="date" id="search-date" onfocus="this.value=''" onblur="if (this.value==''){this.value=''}" class="datepicker" />
+                    <p>
+                        <a href="#" title="" class="dCancelBtn" id="cancel" txt="<?php echo htmlentities(date("M j, Y", strtotime($this->report_params["start_date"]))); ?> – <?php echo htmlentities(date("M j, Y", strtotime($this->report_params["end_date"]))); ?>">Cancel</a>
+                        <a href="#" title="" class="dUpdlBtn" id="update">Update</a>                            
+                    </p>
+                 </div>
+              </div>
+          </div>
+          <p class="sizeSel"><b>Size</b>
+              	<select onchange="this.form.submit();" name="ad_size">
+                    	<option value="">All Media Types</option>
+                    <?php foreach($this->ad_sizes as $key => $name) { ?>
+                        <option value="<?php echo $key ?>"<?php if ($this->curent["ad_size"] == $key) { echo ' selected'; } ?>><?php echo $name ?></option>
+                    <?php } ?>
+                </select>
+          </p>
+          <p class="sizeSel">
+              <a href="<?php echo '/csv/my-report/by-date/'.$this->file;?>">
+                  <img src="/images/csv-24.gif"/>
+              </a>
+          </p>
+          
+       </div>
+</form>
+
+
+<br /><br />   
+
+<?php if($this->floor_pricing):?>
+
+    <?php fputcsv($fileOpen, array('Date', 'SiteName', 'Impressions', 'Paid Impressions', 'CPM', 'Revenue')); ?>
+
+    <div style="display: block; float: left;">
+    <table cellpadding="0" cellspacing="0" width="741px" class="display" id="reportTbl">	
+
+            <thead>       
+                <tr>			
+                    <th>Sites</th>			
+                    <th>Impressions</th>
+                    <th>Paid Impressions</th>	
+                    <th>eCPM</th>			
+                    <th class="lastTh">Revenue</th>		
+                </tr>
+            </thead>
+            <tbody>
+            
+            <?php foreach($this->data as $key => $iter):?>
+            <?php            
+                  $ecpm = 0;
+            
+                  if($iter['paid_impressions']){	
+                                       
+                      if($iter['revenue']!=0) $ecpm = $iter['revenue']*1000/$iter['paid_impressions'];
+                      
+                  } else $ecpm = 0;
+
+                  
+                  if($iter['estimated']==1){
+                      
+                            $asterics = '*';
+					
+                            if($this->absEcpm>0 && $iter['paid_impressions']>0 && $iter['revenue']==0){
+                                
+                                    $ecpm = $this->absEcpm;
+                                    $iter['revenue'] = $this->absEcpm*$iter['paid_impressions']/1000;
+                            }
+                            
+                  } else $asterics = '';
+                                
+            
+                  $total['impressions'] += $iter['impressions']; 
+                  $total['paid_impressions'] += $iter['paid_impressions']; 
+                  $total['revenue'] += $iter['revenue'];
+                  
+                  $curent['impressions'] = number_format($iter['impressions']).$asterics;
+                  $curent['paid_impressions'] = number_format($iter['paid_impressions']).$asterics;
+                  $curent['ecpm'] = $ecpm==0 ? $this->absEcpm==0 ? '<span class="gtip">Pending</span>' : '-'.$asterics : "$".number_format($ecpm,2).$asterics;
+                  $curent['revenue'] = $ecpm==0 ? $this->absEcpm==0 ? '<span class="gtip">Pending</span>' : '-'.$asterics : "$".number_format($iter['revenue'],2).$asterics;
+                  
+                  fputcsv($fileOpen, array($this->curent["date"], $iter['site_name'], $curent['impressions'], $curent['paid_impressions'], strip_tags($curent['ecpm']), strip_tags($curent['revenue'])));
+            ?>
+            
+            
+                <tr>
+                    <td><?php echo $iter['site_name']?></td>
+                    <td><?php echo $curent['impressions']?></td>
+                    <td><?php echo $curent['paid_impressions']?></td>
+                    <td><?php echo $curent['ecpm']?></td>
+                    <td><?php echo $curent['revenue']?></td>
+                </tr>   
+            
+            <?php endforeach;?>
+            </tbody>
+                
+            <?php 
+                  if($total['paid_impressions'] > 0) $total['ecpm'] = $total['revenue'] / ($total['paid_impressions']/1000);
+		  else  			     $total['ecpm'] = "0.00";
+                  
+                  fclose($fileOpen);
+	    ?>
+            
+            <tfoot>
+                <tr>
+                    <td class="total">Total</td>
+                    <td class="total"><?php echo number_format($total['impressions']).$asterics;?></td>
+                    <td class="total"><?php echo number_format($total['paid_impressions']).$asterics;?></td>
+                    <td class="total"><?php echo '$'.number_format($total['ecpm'], 2).$asterics;?></td>
+                    <td class="total lastTd"><?php echo '$'.number_format($total['revenue'], 2).$asterics;?></td>
+                </tr>  
+            </tfoot>
+
+    </table>   
+    </div>
+
+<?php else:?>
+
+    <?php fputcsv($fileOpen, array('Date', 'SiteName', 'Impressions', 'CPM', 'Revenue')); ?>
+
+    <div style="display: block; float: left;">
+    <table cellpadding="0" cellspacing="0" width="741px" class="display" id="reportTbl">	
+
+            <thead>
+                <tr>			
+                    <th>Sites</th>			
+                    <th>Impressions</th>
+                    <th>eCPM</th>			
+                    <th class="lastTh">Revenue</th>		
+                </tr>
+            </thead>
+            <tbody>
+
+            <?php foreach($this->data as $key => $iter):?>
+            
+            <?php
+                  $ecpm = 0;
+                  $nodataImpres=false;
+
+                  if($iter['paid_impressions']) $iter['impressions']=$iter['paid_impressions'];
+                    
+
+                  if($iter['impressions']){
+                        
+                          if($iter['estimated']==1 && $this->previosAllocted && $this->previosImpressoin) $iter['impressions'] = ($this->previosAllocted/$this->previosImpressoin)*$iter['impressions'];
+                            
+                          if($iter['revenue']!=0) $ecpm = $iter['revenue']*1000/$iter['impressions'];
+                            
+                  } else $ecpm = 0;
+                    		
+
+                  if ($iter['estimated']==1 && $countEstim!=-1) {
+                        
+                          $countEstim++;
+                          $asterics = '*';
+                            
+                          if($this->absEcpm>0 && $iter['impressions']>0 && $iter['revenue']==0){
+                                
+                                  $ecpm = $this->absEcpm;
+                                  $iter['revenue'] = $this->absEcpm*$iter['impressions']/1000;
+                          }
+                            
+                  } else {
+                      
+                          $asterics = '';
+                          $countEstim=-1;
+                  }
+
+                  if($countEstim==-1 && number_format($iter['revenue'],2)==0){
+                      
+                          $ecpm = 0;
+                          $nodataImpres=true; 
+                          $iter['revenue'] = 0;
+                                              
+                          if($iter['impressions']) $total['impressions'] = $total['impressions'] - $iter['impressions'];
+                  }
+
+                    
+                  $total['impressions'] += $iter['impressions']; 
+                  $total['revenue'] += $iter['revenue'];
+                  
+                  $curent['impressions'] = number_format($iter['impressions']).$asterics;
+                  $curent['ecpm'] = $ecpm==0 ? $this->absEcpm==0 ? '<span class="gtip">Pending</span>' : '-'.$asterics : "$".number_format($ecpm,2).$asterics;
+                  $curent['revenue'] = $ecpm==0 ? $this->absEcpm==0 ? '<span class="gtip">Pending</span>' : '-'.$asterics : "$".number_format($iter['revenue'],2).$asterics;
+                  
+                  fputcsv($fileOpen, array($this->curent["date"], $iter['site_name'], $curent['impressions'], strip_tags($curent['ecpm']), strip_tags($curent['revenue'])));
+                        
+            ?>
+
+            <tr>
+                <td><?php echo $iter['site_name']?></td>
+                <td><?php echo $curent['impressions']?></td>
+                <td><?php echo $curent['ecpm']?></td>
+                <td><?php echo $curent['revenue']?></td>
+            </tr>    
+
+            <?php endforeach;?>
+            
+            </tbody>
+                       
+            <?php 
+                  if($total['impressions'] > 0) $total['ecpm'] = $total['revenue'] / ($total['impressions']/1000);
+		  else                          $total['ecpm'] = "0.00";
+                  
+                  fclose($fileOpen);
+	    ?>
+            
+            <tfoot>
+                <tr>
+                    <td class="total">Totals </td>
+                    <td class="total"><?php echo number_format($total['impressions']).$asterics ?></td>
+                    <td class="total">$<?php echo number_format($total['ecpm'], 2).$asterics ?></td>
+                    <td class="total lastTd">$<?php echo number_format($total['revenue'], 2).$asterics ?></td>                                                            
+                </tr>
+            </tfoot>
+
+    </table>   
+    </div>    
+
+<?php endif;?>
+
+<div class="estimate">
+    <h5>*Estimates Only. Numbers can take up to 2 days to finalize.</h5>
+</div>
+
+<script	type="text/javascript" src="/font/cufon-yui.js"></script>
+<script	type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#topMenu a', {hover: true});	
+		Cufon.replace('#topMenu a');
+</script><script	type="text/javascript" src="/font/Headline_Two_400.font.js"></script><script type="text/javascript">
+	Cufon.replace('.footerBann h5');		
+	Cufon.replace('.footerBann p');	
+	Cufon.replace('.footerBann a', {hover: true});	
+</script><script	type="text/javascript" src="/font/Proxima_Nova_Lt_300.font.js"></script><script type="text/javascript">
+		Cufon.replace('#footCopyr');	
+		Cufon.replace('.fMenu a', {textDecoration: 'underline'});		
+		Cufon.replace('.publisher h4');	
+		Cufon.replace('.publisher h4 span');	
+		Cufon.replace('.publMail a');	
+		Cufon.replace('.logOut span');					
+</script><script	type="text/javascript" src="/font/Proxima_Nova_Rg_700.font.js"></script><script type="text/javascript">
+		Cufon.replace('.fMenu h4');
+		Cufon.replace('.reportTop h5');		
+		Cufon.replace('.estimate h5');			
+</script>
+

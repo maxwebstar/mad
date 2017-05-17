@@ -1,0 +1,28 @@
+<script>
+$(document).ready(function()
+{
+	 var icons = 
+	 {
+	 	header: "ui-icon-circle-arrow-e",
+	 	activeHeader: "ui-icon-circle-arrow-s"
+	 };
+	$("#accordion").accordion({icons: icons});
+	$( "#accordion" ).accordion( "option", "icons", null );
+	$("h3").live("click",function()
+	{
+		$(this).addClass("ui-state-active");
+	});
+});
+</script>
+<?php if(count($this->news)):?>
+<div id="accordion">
+	<?php foreach($this->news as $news_item):?>
+	<h3><?php echo $news_item['title'];?> - (<?php echo date('m/d/Y',strtotime($news_item['date']));?>)</h3>
+	<div>
+		<?php echo $news_item['text'];?>
+	</div>
+	<?php endforeach;?>
+</div>
+<?php else:?>
+	<center>Empty</center>
+<?php endif;?>

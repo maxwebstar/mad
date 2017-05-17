@@ -1,0 +1,286 @@
+
+<style type="text/css"> 
+    
+    #mask{
+        position: fixed;
+        height: 100%;
+        width: 100%;
+        display: none;
+        opacity: 0.3;
+        filter: alpha(opacity=30);
+        background-color: #000000;
+        z-index: 9000;
+        left:0;
+        top:0;
+    }
+    
+    #main{ display: block; width: 1300px; float: left; padding: 10px; }
+    
+    #main #left{ display: block; float: left; width: 700px; }
+    #main #right{ display: block; float: left; width: 530px; margin-left: 15px; overflow: scroll; height: 549px; overflow-x: hidden; border: 1px solid #D3D3D3; padding-top: 4px; padding-left: 4px; }
+    
+    #right .itemMail{ display: block; float: left; width: 510px; }
+    .itemMail .itemHead{ float: left; background: #D3D3D3; padding: 1px 5px 2px; width: 500px; }
+    .itemMail .itemDate{ display: block; float: right; width: 150px; text-align: right; }
+    .itemMail .itemAuthor{ display: block; float: left; width: 320px; }
+    .itemMail .itemSubject{ display: block; float: left; width: 500px; padding: 0px 4px 0px 4px; border: 1px solid #D3D3D3; margin: 0px 0px 2px 0px; }
+    .itemMail .itemText{ display: block; float: left; width: 500px; padding: 0px 4px 0px 4px; border: 1px solid #D3D3D3; margin: 2px 0px 7px 0px; }    
+
+    #main #label-subject{ float: left; width: 100px; }
+    #main #subject { float: left; width: 696px; margin-bottom: 2px; padding-left: 5px; }
+    
+    #main #label-text{ float: left; width: 100px; margin-top: 7px; }
+    #main #text { float: left; width: 600px; height: 300px; margin-top: 7px; }
+    
+
+    #main #setStatus {
+        background-color: #8e8e8e;
+        color: #ffffff;
+        cursor: pointer;
+        display: block;
+        float: left;
+        font-size: 16px;
+        height: 28px;
+        margin-left: 167px;
+        position: relative;
+        top: 7px;
+        width: 329px;
+    }	
+    #main #setStatus:hover{ background-color: #DC2323; }
+    #main #setStatus span{ float: left; margin: 4px 0px 0px 46px; } 
+
+    #main #mySubmit{ display: block; float: right; height: 28px; width: 129px; font-size: 16px; background-color: #8E8E8E; color: #FFFFFF; cursor: pointer; margin-top: 7px; margin-right: 5px; position: relative; }
+    #main #mySubmit:hover{ background-color: #DC2323; }
+    #main #mySubmit span{ float: left; margin: 4px 0px 0px 46px; } 
+    
+    #radioStatus{ display: block; margin-left: 100px; margin-bottom: 5px; border: 1px solid #DBDFE6; padding-bottom: 2px; padding-top: 2px; }
+    #radioStatus span{ margin-right: 10px; } 
+    
+    #messageActiveUser{ display: block; font-weight: 600; font-size: 16px;  margin-bottom: 20px; margin-left: 100px; }
+    #cke_text{ margin-left: 0px; margin-top: 5px; }
+    
+    .error{ color: #CF2B2B; font-weight: 600; font-size: 16px; display: block; }
+    
+    .selectTaplate{ margin-bottom: 5px; margin-left: 5px; }
+    #template{ width: 200px; }
+    
+    .selectSub{ padding-bottom: 5px; padding-left: 5px; }
+    #sub{ margin-left: 18px; width: 200px; }
+    .selectStaff{ padding-bottom: 5px; padding-left: 5px; }
+    
+</style>
+
+<script type="text/javascript" src="/js/jquery-1.6.2.min.js"></script>
+<script type="text/javascript" src="/js/ckeditor/ckeditor.js"></script>
+<script type="text/javascript" src="/js/ckeditor/adapters/jquery.js"></script>
+
+<script type="text/javascript">
+
+  var dataRecruiting = <?php echo json_encode($this->recruiting) ?>;
+  var arrTemplate = <?php echo json_encode($this->template) ?>;
+  var order = <?php echo $this->order ?>; 
+  
+  var objButton = new Object();
+      objButton[1] = 'Mark as "Initial" & Don\'t Email';
+      objButton[2] = 'Mark as "Followed Up" & Don\'t Email';
+      objButton[3] = 'Mark as "Final" & Don\'t Email';
+      objButton[4] = 'Mark as "24 Hour" & Don\'t Email';
+
+  $(document).ready(function(){
+    
+      $('#mySubmit').click(function(){
+	  $("#mark_only").val(0);
+          if(validation()){ $('#main form').submit(); }
+      });
+
+      $('#setStatus').click(function(){
+    	  $("#mark_only").val(1);
+          $('#main form').submit();
+      });
+      
+      $('#text').ckeditor(function() {}, { 
+                toolbar : [   [ 'Source','-','Save','NewPage','DocProps','Preview','Print','-','Templates' ],
+                              [ 'Cut','Copy','Paste','PasteText','PasteFromWord','-','Undo','Redo' ],
+                              [ 'Find','Replace','-','SelectAll','-','SpellChecker', 'Scayt' ],
+                              [ 'Form', 'Checkbox', 'Radio', 'TextField', 'Textarea', 'Select', 'Button', 'ImageButton', 'HiddenField' ],
+                              [ 'Bold','Italic','Underline','Strike','Subscript','Superscript','-','RemoveFormat','-','Blockquote','CreateDiv','-','BidiLtr','BidiRtl','-','Link','Unlink','Anchor' ],
+                              [ 'NumberedList','BulletedList','-','Outdent','Indent','-','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock', 'Styles','Format','Font','FontSize','-','TextColor','BGColor' ],
+                              [ 'Image','Flash','Table','HorizontalRule','Smiley','SpecialChar','PageBreak','Iframe' ]],
+                width : '685px',
+                height : '300px',
+                language : 'en',
+                enterMode : CKEDITOR.ENTER_BR,
+                filebrowserBrowseUrl : '/js/ckfinder/ckfinder.html',
+                filebrowserImageBrowseUrl : '/js/ckfinder/ckfinder.html?type=Images',
+                filebrowserFlashBrowseUrl : '/js/ckfinder/ckfinder.html?type=Flash',
+                filebrowserUploadUrl : '/js/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Files',
+                filebrowserImageUploadUrl : '/js/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Images',
+                filebrowserFlashUploadUrl : '/js/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Flash'
+      });
+
+      if(checkStatus()){
+          
+          $('#setStatus span').html(objButton[order]);          
+          initTemplate(); 
+      
+      } else { 
+          
+          $('#setStatus').css('display', 'none');
+          $('.selectTaplate').css('display', 'none'); 
+      }
+
+      $('#template').change(function(){
+
+          var keyTemplate =  $('#template option:selected').attr('data-key');
+          
+          setText(keyTemplate); 
+          
+      });
+      
+      if(parseInt(dataRecruiting.staff_id)){ $('#staff').val(dataRecruiting.staff_id); }
+      if(parseInt(dataRecruiting.sub_id)){ $('#sub').val(dataRecruiting.sub_id); }
+            
+  });
+  
+  function validation()
+  {
+      var valid = true;
+      
+      $('.error').replaceWith('');
+      
+      if(!$('#subject').val()){ $("<div class='error'>Field is required</div>").insertAfter("#subject"); valid = false; }
+      
+      var textEditor = $('#text').ckeditorGet(); 
+      if(!textEditor.getData()){ $("<div class='error'>Field is required</div>").insertAfter("#cke_text"); valid = false; }   
+      
+      return valid;
+  }
+  
+  function initTemplate()
+  {
+      var html = '';
+      
+      $.each(arrTemplate, function(key, iter){
+          
+          html += '<option value="'+iter.id+'" data-key="'+key+'">'+iter.name_label+'</option>';          
+      }); 
+
+      $('#template').html(html);
+      
+      setText(0);
+  }
+  
+  function setText(key)
+  {       
+      $('#subject').val(arrTemplate[key].name);
+
+      var editor = $('#text').ckeditorGet();      
+          editor.setData(arrTemplate[key].content);    
+  }
+  
+  function checkStatus()
+  {      
+      switch(order){          
+           case 1 : return checkTerm(0,0,0,0); break;
+           case 2 : return checkTerm(1,0,0,0); break;
+           case 3 : if(!checkTerm(1,1,0,0) && !parseInt(dataRecruiting.final))
+                      { alert('First status, must be set "Followed UP"'); display('block'); return 0; }
+                    else return checkTerm(1,1,0,0);
+                                               break;
+           case 4 : return checkTerm24Hour();       break;  
+          default : alert('Invlid ORDER');     break;           
+      }
+  }
+  
+  function checkTerm(pending, followed_up, fina, responded)
+  {
+     return (parseInt(dataRecruiting.pending) == pending && 
+             parseInt(dataRecruiting.followed_up) == followed_up && 
+             parseInt(dataRecruiting.final) == fina && 
+             parseInt(dataRecruiting.responded) == responded) ? 1 : 0;
+  }
+  
+  function checkTerm24Hour()
+  {
+     return !dataRecruiting.date_24h_mail || dataRecruiting.date_24h_mail == '0000-00-00 00:00:00' ? 1 : 0;
+  }
+  
+  function display(status)
+  {
+      $('#mask').css('display', status);      
+  }
+
+</script>
+
+<div id="main">    
+    <div id="left">
+
+        <form method="post" action="" enctype="multipart/form-data">            
+           
+            <div id="form-field">
+                
+                <div class="selectStaff">
+                    <label>From (Account Manager):</label>
+                    <select name="staff" id="staff">
+                        <?php foreach($this->staff as $iter):?>                    
+                            <option value="<?php echo $iter['staff_id']?>"><?php echo $iter['name']?></option>                    
+                        <?php endforeach;?>  
+                    </select>
+                </div>
+                
+                <div class="selectTaplate">
+                    <label>Template:</label>
+                    <select name="template" id="template">
+                        <option value="" data-key="">Please select...</option>
+                    </select>
+                </div>
+                
+                <div class="selectSub">
+                    <label>SubID:</label>
+                    <select name="sub" id="sub">
+                        <option value="">Please select...</option>
+                        <?php foreach($this->sub as $iter):?>                    
+                            <option value="<?php echo $iter['id']?>"><?php echo $iter['name']?></option>                    
+                        <?php endforeach;?>
+                    </select>
+                </div>
+                
+                <input type="text" name="subject" id="subject" value="" placeholder="Enter Subject"/>
+                <div style="clear: both"></div>            
+
+                <textarea name="text" id="text"></textarea>            
+            </div>
+                     
+            <input type="hidden" id="mark_only" name="mark_only" value="0"/>
+            <div style="clear: both"></div>
+            <a id="setStatus"><span>Mark & Don't Email</span></a>
+            <a id="mySubmit"><span>Submit</span></a>
+
+        </form>
+        <?php if(!empty($this->message)):?>
+            <div style="clear: both"></div>
+            <?php echo $this->message;?>
+        <?php endif; ?>
+        
+    </div>
+    <div id="right">
+        
+        <?php foreach($this->data as $iter):?>
+        
+        <div class="itemMail">   
+            <div class="itemHead">
+                <div class="itemAuthor">sent by: <?php echo $iter['staff_email']; ?></div>
+                <div class="itemDate"><?php echo date('M j, Y', strtotime($iter['created'])); ?></div>
+            </div>
+            <?php if(strlen($iter['subject'])):?>            
+            	<div class="itemSubject"><?php echo $iter['subject']; ?></div>
+            <?php endif;?>
+            <div class="itemText"><?php echo $iter['text']; ?></div>            
+        </div>
+        
+        <?php endforeach;?>
+        
+    </div>    
+</div>
+
+<div id="mask"></div>

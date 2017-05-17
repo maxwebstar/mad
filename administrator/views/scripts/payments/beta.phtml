@@ -1,0 +1,237 @@
+<h2 class="text-center">Payments Due</h2>
+<div class="form-inline">
+    <div class="form-group">
+        <label class="control-label" for="width_zero">Show Users With $0 Due: </label>
+        <input type="checkbox" name="width_zero" id="width_zero">
+    </div>
+</div>
+<br>
+<div class="form-inline">
+    <div class="form-group">
+        <label class="control-label" for="year">Year: </label>
+        <select class="form-control" name="year" id="year">
+            <?php for($i=2011; $i<=date("Y"); $i++): ?>
+                <option value="<?php echo $i ?>" <?php echo date("Y")==$i ? 'selected' : '' ?>><?php echo $i ?></option>
+            <?php endfor; ?>
+        </select>
+    </div>
+    <div class="form-group">
+        <label class="control-label" for="month">Month: </label>
+        <select class="form-control" name="month" id="month">
+            <?php for($i=1; $i<=12; $i++): ?>
+                <option value="<?php echo $i ?>" <?php echo date("n")==$i ? 'selected' : '' ?>><?php echo $i ?></option>
+            <?php endfor; ?>
+        </select>
+    </div>
+</div>
+<br>
+<div class="form-inline">
+    <div class="form-group">
+        <label class="control-label" for="pay_type">Payment Type: </label>
+        <select class="form-control" name="pay_type" id="pay_type">
+            <option value="0">All</option>
+            <option value="1">Check</option>
+            <option value="2">Paypal</option>
+            <option value="3">ACH</option>
+            <option value="4">Wire Transfer</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label class="control-label" for="status">Status: </label>
+        <select class="form-control" name="status" id="status">
+            <option value="0">All</option>
+            <option value="1">Paid</option>
+            <option value="2">Unpaid</option>
+            <option value="3">Under Minimum</option>
+            <option value="4">Unpaid (Minimum Met)</option>
+        </select>
+    </div>
+</div>
+<br>
+<div class="form-inline">
+    <a href="#" class="btn btn-success disabled" id="filter" role="button"><i class="fa fa-spinner fa-pulse"></i> Filter</a>
+</div>
+<br>
+<table class="table table-striped table-bordered table-condensed table-responsive" id="tablePayments" cellspacing="0" width="100%">
+    <thead>
+    <tr>
+        <td>Actions</td>
+        <td>PubID</td>
+        <td>Publisher</td>
+        <td>Email</td>
+        <td>Revenue</td>
+        <td>Payment Profile</td>
+        <td>Payment type</td>
+        <td>Minimum payment</td>
+        <td>$ Carried Over</td>
+        <td>Total Due</td>
+        <td></td>
+        <td>Note</td>
+    </tr>
+    </thead>
+    <tfoot>
+    <tr>
+        <td>Actions</td>
+        <td>PubID</td>
+        <td>Publisher</td>
+        <td>Email</td>
+        <td>Revenue</td>
+        <td>Payment Profile</td>
+        <td>Payment type</td>
+        <td>Minimum payment</td>
+        <td>$ Carried Over</td>
+        <td>Total Due</td>
+        <td></td>
+        <td>Note</td>
+    </tr>
+    </tfoot>
+    <tbody></tbody>
+</table>
+
+<script>
+    var year = $('#year').val();
+    var month = $('#month').val();
+    var width_zero = $('#width_zero').prop('checked');
+    var pay_type = $('#pay_type').val();
+    var status = $('#status').val();
+
+    $(document).ready(function() {
+
+        var tablePayments = $('#tablePayments').DataTable( {
+            "processing": true,
+            "serverSide": true,
+            "autoWidth" : false,
+            "lengthMenu": [ 10, 25, 50, 75, 100 ],
+            "pageLength": 50,
+            "ajax": {
+                "url" : "/administrator/payments/ajax-get-beta",
+                "type": "POST",
+                "data": {
+                    year: function(){ return window.year; },
+                    month: function(){ return window.month; },
+                    width_zero: function(){ return window.width_zero; },
+                    pay_type: function(){ return window.pay_type; },
+                    status: function(){ return window.status; }
+                }
+            },
+            "order": [[ 4, "desc" ]],
+            "columns": [
+                {
+                    "width": "5%",
+                    "searchable": false,
+                    "orderable" : false,
+                    "className": "text-center",
+                    "data" : "pub_id",
+                    "name" : "ur.pub_id",
+                    "render" : function(data, type, full, meta){
+                        if(full.status==1)
+                            return '<a class="btn btn-success fancybox" data-fancybox-type="iframe" href="/administrator/payments/revert-beta/pub_id/'+data+'/year/'+year+'/month/'+month+'" role="button">Revert</a>';
+                        else
+                            return '<a class="btn btn-danger fancybox" data-fancybox-type="iframe" href="/administrator/payments/paid-beta/pub_id/'+data+'/year/'+year+'/month/'+month+'" role="button">Paid</a>';
+                    }
+                },
+                {
+                    "width": "10%",
+                    "data" : "pub_id",
+                    "name" : "ur.pub_id"
+                },
+                {
+                    "data" : "name",
+                    "name" : "u.name"
+                },
+                {
+                    "data" : "email",
+                    "name" : "u.email"
+                },
+                {
+                    "searchable": false,
+                    "data" : "sum_revenue",
+                    "name" : "sum_revenue"
+                },
+                {
+                    "searchable": false,
+                    "orderable" : false,
+                    "data" : "profile"
+                },
+                {
+                    "searchable": false,
+                    "orderable" : false,
+                    "data" : "paymentBy"
+                },
+                {
+                    "searchable": false,
+                    "orderable" : false,
+                    "data" : "minimum"
+                },
+                {
+                    "searchable": false,
+                    "data" : "sum",
+                    "name" : "sum"
+                },
+                {
+                    "width": "10%",
+                    "searchable": false,
+                    "className": "text-center",
+                    "data" : "total",
+                    "name" : "total",
+                    "render" : function ( data, type, full, meta ){
+                        //return (Number(full.sum)+Number(full.sum_revenue)).toFixed(2);
+                        return data;
+                    }
+                },
+                {
+                    "width": "10%",
+                    "orderable" : false,
+                    "searchable": false,
+                    "className": "text-center",
+                    "data" : "site_id",
+                    "render" : function(data, type, full, meta){
+                        return '';
+                    }
+                },
+                {
+                    "width": "30%",
+                    "searchable": false,
+                    "className": "text-center",
+                    "data" : "site_id",
+                    "orderable" : false,
+                    "render" : function (data, type, full, meta){
+                        return '';
+                    }
+                }
+            ]
+        });
+
+        $("#filter").click(function(){
+            year = $('#year').val();
+            month = $('#month').val();
+            width_zero = $('#width_zero').prop('checked');
+            pay_type = $('#pay_type').val();
+            status = $('#status').val();
+            tablePayments.ajax.reload();
+        });
+
+        $('#tablePayments').on('processing.dt', function ( e, settings, processing ) {
+            if(processing){
+                $("#filter").addClass('disabled');
+                $("#filter i").removeClass('hidden');
+            }else{
+                $("#filter i").addClass('hidden');
+                $("#filter").removeClass('disabled');
+            }
+        }).dataTable();
+
+        $(".fancybox").fancybox({
+            maxWidth	: 800,
+            maxHeight	: 600,
+            fitToView	: false,
+            width		: '70%',
+            height		: '70%',
+            autoSize	: false,
+            closeClick	: false,
+            openEffect	: 'none',
+            closeEffect	: 'none'
+        });
+
+    })
+</script>

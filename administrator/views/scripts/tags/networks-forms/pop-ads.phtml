@@ -1,0 +1,42 @@
+<div class="container">
+    <?php if(count($this->dataNetworksSizes)): ?>
+        <?php foreach($this->dataNetworksSizes as $size): ?>
+            <?php if($size['network_id']==16): ?>
+                <div class="checkbox">
+                    <label>
+                        <input class="pop-ads-sizes" data-size="<?php echo $size['id'] ?>" type="checkbox"
+                               name="sizes_16[<?php echo $size['id'] ?>]"
+                            <?php echo isset($this->formValues['sizes_16'][$size['id']]) ? "checked" : "" ?>
+                        >
+                        <?php echo $size['name'] ?>
+                    </label>
+                </div>
+                <div id="pop-ads-form-<?php echo $size['id'] ?>"
+                    class="<?php echo isset($this->formValues['sizes_16'][$size['id']]) ? "" : "hidden" ?>">
+
+                    <div class="form-group <?php if(isset($this->formErrors['popSiteID'])) echo "has-error" ?>">
+                        <label for="popSiteID_<?php echo $size['id'] ?>" class="col-sm-2 control-label">SiteID:</label>
+                        <div class="col-sm-4">
+                            <input type="text" class="form-control" id="popSiteID_<?php echo $size['id'] ?>"
+                                   name="<?php echo isset($this->formValues['sizes_16'][$size['id']]) ? "popSiteID[{$size['id']}]" : "" ?>" placeholder="SiteID"
+                                   value="<?php echo !isset($this->formValues['popSiteID'][$size['id']]) ? $this->dataSite['SiteID'] : $this->formValues['popSiteID'][$size['id']] ?>"
+                            >
+                        </div>
+                    </div>
+
+                    <div class="form-group <?php if(isset($this->formErrors['popVisitor'])) echo "has-error" ?>">
+                        <label for="popVisitor_<?php echo $size['id'] ?>" class="col-sm-2 control-label">Pop Unders Per Visitor:</label>
+                        <div class="col-sm-4">
+                            <select class="form-control" id="popVisitor_<?php echo $size['id'] ?>" name="<?php echo isset($this->formValues['sizes_16'][$size['id']]) ? "popVisitor[{$size['id']}]" : "" ?>">
+                                <?php for($i=0; $i<=5; $i++): ?>
+                                    <option value="<?php echo $i ?>" <?php echo isset($this->formValues['popVisitor'][$size['id']]) && $this->formValues['popVisitor'][$size['id']]==$i ? "selected" : '' ?>><?php echo $i==0 ? "No Limit" : $i ?></option>
+                                <?php endfor;?>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+            <?php endif; ?>
+        <?php endforeach; ?>
+    <?php endif; ?>
+</div>

@@ -1,0 +1,563 @@
+<script type="text/javascript" src="/js/validate.1.9.0.js"></script>
+
+<style type="text/css">
+    
+    h3{ font-weight: bold; font-size: 20px; text-align: center; width: 100%; padding: 20px 0px 20px 0px; }
+    
+    input[type=text]{ border: 1px solid #E2E2E2; height: 27px; padding-left: 5px; }
+    
+    #table-radio { border-collapse: collapse; border: 1px solid silver; margin-bottom: 10px; }
+    #table-radio td { padding: 5px; }
+    
+</style>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        
+        existData();
+                       
+        watchType();  
+        watchSsnEin();
+                       
+        $('#_tax_classification').keyup(function(){
+            
+            var classification = $('#_tax_classification').val();
+            
+            classification =  classification.toUpperCase();
+
+            if(classification == 'S' || classification == 'C' || classification == 'P'){}else $('#_tax_classification').val('');
+            
+        });
+               
+        var error_ssn_or_ein = false;
+        var error_name_or_business = false;
+        
+        $("#w9").validate({
+                    
+               onkeyup : false,
+
+               rules : {  _name : {name_or_business: true},
+                          _business_name : {name_or_business: true},
+                          type : {required: true, Limited_company: true},
+                          _address : {required: true, minlength: 7},
+                          _city_state_zip : {required: true, minlength: 7},
+                          _ssn : { ssn_or_ein : true },
+                          _ein : { ssn_or_ein : true }
+                       },
+
+               messages : { _name : { name_or_business: "ENTER NAME OR BUSINESS NAME"},
+                            _business_name : { name_or_business: "ENTER NAME OR BUSINESS NAME"},
+                            type : { required: "YOU NEED TO SELECT YOUR TAX TYPE", Limited_company:"YOU MUST ENTER THE TAX CLASSIFICATION FOR LIMITED LIABILITY" },
+                            _address : {required: "ENTER ADDRESS", minlength: "ENTER MINIMUM 7 CHARACTERS CHARACTERS"},
+                            _city_state_zip: {required: "ENTER CITY, STATE, AND ZIP CODE", minlength: "ENTER MINIMUM 7 CHARACTERS CHARACTERS"},
+                            _ssn : { ssn_or_ein : "ENTER YOUR SSN OR EIN" },
+                            _ein : { ssn_or_ein : "ENTER YOUR SSN OR EIN" }
+                          },
+
+               errorPlacement: function(error, element) { 
+                        if (element.attr("name") == "_name") error.appendTo($("#error_name_or_business"));
+                        if (element.attr("name") == "_business_name") error.appendTo($("#error_name_or_business"));
+                        if (element.attr("name") == "type") error.appendTo($("#error_type"));
+                        if (element.attr("name") == "_address") error.appendTo($("#error_address"));
+                        if (element.attr("name") == "_city_state_zip") error.appendTo($("#error_city_state_zip"));
+                        if (element.attr("name") == "_ssn") error.appendTo($("#error_ssn_or_ein")); 
+                        if (element.attr("name") == "_ein") error.appendTo($("#error_ssn_or_ein")); 
+               }
+         });  
+         
+         $.validator.addMethod("Limited_company", function(value, element){  
+             
+               var type = $('input[name=type]:checked').attr('id');
+               
+               if(type == '_llc'){
+                   
+                   var classification = $('#_tax_classification').val();
+                          
+                   if(classification.length) return true;
+                   else                      return false; 
+                   
+               } else return true;  
+               
+         });
+          
+         $.validator.addMethod("ssn_or_ein", function(value, element){  
+             
+              var snn = $('#_ssn').val();
+              var ein = $('#_ein').val(); 
+              
+              if(snn.length || ein.length || error_ssn_or_ein){ 
+                  
+                  error_ssn_or_ein = false; 
+                  return true;
+              
+              } else { 
+                  
+                  error_ssn_or_ein = true; 
+                  return false; 
+              }              
+            
+         });
+         
+         $.validator.addMethod("name_or_business", function(value, element){  
+             
+              var name = $('#_name').val();
+              var business = $('#_business_name').val(); 
+              
+              if(name.length || business.length || error_name_or_business){ 
+                  
+                  error_name_or_business = false; 
+                  return true;
+              
+              } else { 
+                  
+                  error_name_or_business = true; 
+                  return false; 
+              }              
+            
+         });
+        
+        
+    });
+
+    
+    function modefiSsn()
+    {
+        var str = '';
+        var ssn = $('#_ssn').val().replace( /-/g, '' );
+
+        var length = ssn.length;
+
+        if(length >= 3){ 
+
+            str += ssn[0]; 
+            str += ssn[1];
+            str += ssn[2];
+        }
+
+        if(length >= 5){
+
+            str += '-';
+
+            str += ssn[3];
+            str += ssn[4];
+        }
+
+        if(length >= 6){
+
+            str += '-';
+
+            for(var i = 5; i < length; i++ ){
+
+                str += ssn[i];
+            } 
+
+        }
+
+        $('#_ssn').val(str);
+    }
+    
+    
+    function modefiEin()
+    {
+        var str = '';
+        var ssn = $('#_ein').val().replace( /-/g, '' );
+
+        var length = ssn.length;
+
+        if(length >= 2){ 
+
+            str += ssn[0]; 
+            str += ssn[1];
+        }
+
+        if(length >= 3){
+
+            str += '-';
+
+            for(var i = 2; i < length; i++ ){
+
+                str += ssn[i];
+            } 
+
+        }
+
+        $('#_ein').val(str);
+    }
+    
+    
+    function createFile()
+    {
+        var _name = $('#_name').val();
+        var _business_name = $('#_business_name').val();
+        var type = $('input[name=type]:checked').val();
+        var _tax_classification = $('#_tax_classification').val();
+        var _address = $('#_address').val();
+        var _requester = $('#_requester').val();
+        var _city_state_zip = $('#_city_state_zip').val(); 
+        var _account_numbers = $('#_account_numbers').val();
+        var _ssn = $('#_ssn').val();
+        var _ein = $('#_ein').val();
+        var _digital_signature = $('#_digital_signature').val();
+        var _date = $('#_date').val();
+
+        $.ajax({ url : '/default/ajax/index',
+                     data : { _name : _name, _business_name : _business_name, type : type, _tax_classification : _tax_classification, _address : _address, _requester : _requester, _city_state_zip : _city_state_zip, _account_numbers : _account_numbers, _ssn : _ssn, _ein : _ein, _digital_signature : _digital_signature, _date : _date  },
+                     type : "POST",
+                     async: true,
+                     dataType : "json",
+
+             success : function(response) { 
+                 
+                 if(response.result.status){ 
+                     
+                     $('#digitally_sign_load').css('display', 'none');
+                     $('#digitally_sign_previous').css('display', 'block');                     
+                     
+                     block(response.result.data); 
+                     
+                     location.reload();
+                 }
+
+             }, error : function(){ 
+                 
+                 alert('ajax request return error'); 
+                 
+                 $('#digitally_sign_load').css('display', 'none'); 
+                 $('#digitally_sign_do').css('display', 'block');
+             }
+        });
+        
+        $('#digitally_sign_do').css('display', 'none');
+        $('#digitally_sign_load').css('display', 'block');
+    }
+    
+    function existData()
+    {
+        $.ajax({ url : '/default/ajax/check-pdf',
+                     data : { },
+                     type : "POST",
+                     async: true,
+                     dataType : "json",
+
+             success : function(response) {
+                 
+                 if(response.result.status){ 
+                     
+                     $('#digitally_sign_load').css('display', 'none');
+                     $('#digitally_sign_previous').css('display', 'block');
+                     
+                     showData(response.result.data); 
+                     
+                 } else { 
+                   
+                    $('#digitally_sign_load').css('display', 'none');
+                    $('#digitally_sign_do').css('display', 'block');
+                 }
+
+             }, error : function(){ alert('ajax request return error'); $('#digitally_sign_load').css('display', 'none'); }
+        });
+        
+        $('#digitally_sign_load').css('display', 'block');
+    }
+    
+    function showData(data)
+    {
+        $('#_name').val(data['name']);
+        $('#_business_name').val(data['business_name']);
+        $('input[name=type]').val([data['federal_tax']]);
+        $('#_tax_classification').val(data['federal_tax_classification']);
+        $('#_address').val(data['address']);
+        $('#_requester').val(data['requester_address']);
+        $('#_city_state_zip').val(data['city_state_zip']); 
+        $('#_account_numbers').val(data['account_number']);
+        $('#_ssn').val(data['ssn']);
+        $('#_ein').val(data['ein']);
+        
+        if(data['federal_tax'] == '_llc') $('#tax_classification_wrapper').css('display', 'block');
+        
+        block(data);
+                 
+    }
+    
+    function block(data)
+    {
+        $('#_name').attr('disabled', 'disabled');
+        $('#_business_name').attr('disabled', 'disabled');
+        $('input[name=type]').attr('disabled', 'disabled');
+        $('#_tax_classification').attr('disabled', 'disabled');
+        $('#_address').attr('disabled', 'disabled');
+        $('#_requester').attr('disabled', 'disabled');
+        $('#_city_state_zip').attr('disabled', 'disabled');
+        $('#_account_numbers').attr('disabled', 'disabled');
+        $('#_ssn').attr('disabled', 'disabled');
+        $('#_ein').attr('disabled', 'disabled');
+        
+        $('#ip_address').replaceWith('<span id="ip_address">'+data['ip']+'</span>');
+        $('#gmt_sign').replaceWith('<span id="gmt_sign">'+data['date']+' GMT</span>');
+    }
+    
+    function unBlock()
+    {
+        $('#_name').replaceWith('<input type="text" style="width: 95%" autocomplete="off" value="" id="_name" name="_name"/>');
+        $('#_business_name').replaceWith('<input type="text" style="width: 95%" autocomplete="off" value="" id="_business_name" name="_business_name"/>');
+        $('#table-radio').replaceWith('<table width="96%" id="table-radio"><tbody><tr><td><input type="radio" id="_sole_proprietor" value="_sole_proprietor" name="type"/><label for="_sole_proprietor" class="label-radio">Individual/sole proprietor</label></td><td colspan="2"><input type="radio" id="_c_corporation" value="_c_corporation" name="type"/><label for="_c_corporation" class="label-radio">C Corporation</label></td><td rowspan="4" style="border-left: 1px solid silver; width: 115px;"><input type="radio" id="_exempt_payee" value="_exempt_payee" name="type"/><label style="width: auto;" for="_exempt_payee">Exempt Payee</label></td></tr><tr><td><input type="radio" id="_s_corporation" value="_s_corporation" name="type"/><label for="_s_corporation">S Corporation</label></td><td colspan="2"><input type="radio" id="_partnership" value="_partnership" name="type"/><label for="_partnership" class="label-radio">Partnership</label></td></tr><tr><td><input type="radio" id="_trust_estate" value="_trust_estate" name="type"/><label for="_trust_estate" class="label-radio">Trust/estate</label></td><td colspan="2"><input type="radio" id="_llc" value="_llc" name="type"/><label for="_llc">Limited liability company</label></td></tr><tr><td colspan="3" style="border-right: 1px solid silver;"><div id="tax_classification_wrapper" style="display: none"><span class="note">Enter the tax classification </span><span class="note">(C=C Corporation, S=S Corporation, P=Partnership)</span><input type="text" maxwidth="1" style="width: 90px; text-transform: uppercase;" value="" maxlength="1" id="_tax_classification" name="_tax_classification"/></div></td></tr></tbody></table>');
+        $('#_address').replaceWith('<input type="text" style="width: 95%" autocomplete="off" value="" id="_address" name="_address"/>');
+        $('#_requester').replaceWith('<textarea style="width: 275px; height: 140px;" id="_requester" name="_requester"/></textarea>');
+        $('#_city_state_zip').replaceWith('<input type="text" style="width: 95%" autocomplete="off" value="" id="_city_state_zip" name="_city_state_zip"/>');
+        $('#_account_numbers').replaceWith('<input type="text" style="width: 95%" autocomplete="off" value="" id="_account_numbers" name="_account_numbers"/>');
+        $('#_ssn').replaceWith('<input type="text" style="width: 200px;" autocomplete="off" value="" id="_ssn" name="_ssn"/>');
+        $('#_ein').replaceWith('<input type="text" style="width: 200px;" autocomplete="off" value="" id="_ein" name="_ein"/>');
+          
+        $('#digitally_sign_previous').css('display', 'none');
+        $('#digitally_sign_do').css('display', 'block');
+        
+        watchType();
+        watchSsnEin();
+    }
+    
+    function watchType()
+    {
+        $('input[name=type]').change(function(){
+            
+            var type = $('input[name=type]:checked').attr('id');
+            
+            if(type == '_llc') $('#tax_classification_wrapper').css('display', 'block');
+            else               $('#tax_classification_wrapper').css('display', 'none');
+
+        });
+        
+        $('#_tax_classification').keyup(function(){
+            
+            var classification = $('#_tax_classification').val();
+            
+            classification =  classification.toUpperCase();
+
+            if(classification == 'S' || classification == 'C' || classification == 'P'){}else $('#_tax_classification').val('');
+            
+        });
+    }
+            
+    function watchSsnEin()
+    {
+        $('#_ssn').change(function(){ modefiSsn(); });
+        
+        $('#_ein').change(function(){ modefiEin(); });
+    }
+    
+    function mySubmit()
+    {   
+        var valid = $("#w9").valid(); 
+        
+        if(valid){
+            
+            modefiSsn();
+            modefiEin();
+            
+            createFile(); 
+                
+        }
+    }
+
+</script>
+
+<div style="display: block; float: left; width: 760px;">
+            <form style="margin: -10px 10px 0px 10px;" id="w9" onsubmit="return false;">
+                      
+            <h1>Entity Information</h1>
+                
+        <!--<h1>
+                <div style="display: none;" id="not_recent_w9">This is NOT the current W-9 Form</div>
+                <div style="display: none;" id="unlock_link"><a href="Javascript: void(0);">Unlock this form for editing</a></div>
+                <div style="display: none;" id="lock_link"><a href="Javascript: void(0);">Lock this form</a></div>
+                <div style="clear: both;"></div>
+            </h1>-->
+            
+            <div style="margin-left: 10px;">
+                <div>Name (as shown on your income tax return)</div>
+                <div>
+                    <input type="text" style="width: 95%" autocomplete="off" value="" id="_name" name="_name"/>
+                    <div id="error_name_or_business"></div>
+                </div>
+                <div style="margin-top: 10px;">Business Name/disregarded entity name, if different from above</div>
+                <div>
+                    <input type="text" style="width: 95%" autocomplete="off" value="" id="_business_name" name="_business_name"/>
+                </div>
+                <div style="margin-top: 10px;">Check appropriate box for Federal Tax</div>
+                                
+                <table width="96%" id="table-radio">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <input type="radio" id="_sole_proprietor" value="_sole_proprietor" name="type"/><label for="_sole_proprietor" class="label-radio">Individual/sole proprietor</label>
+                            </td>
+                            <td colspan="2">
+                                <input type="radio" id="_c_corporation" value="_c_corporation" name="type"/><label for="_c_corporation" class="label-radio">C Corporation</label>
+                            </td>
+                                    
+                            <td rowspan="4" style="border-left: 1px solid silver; width: 115px;">
+                                <input type="radio" id="_exempt_payee" value="_exempt_payee" name="type"/><label style="width: auto;" for="_exempt_payee">Exempt Payee</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type="radio" id="_s_corporation" value="_s_corporation" name="type"/><label for="_s_corporation">S Corporation</label>
+                            </td>
+                            <td colspan="2">
+                                <input type="radio" id="_partnership" value="_partnership" name="type"/><label for="_partnership" class="label-radio">Partnership</label> 
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type="radio" id="_trust_estate" value="_trust_estate" name="type"/><label for="_trust_estate" class="label-radio">Trust/estate</label> 
+                            </td>
+                            <td colspan="2">
+                                <input type="radio" id="_llc" value="_llc" name="type"/><label for="_llc">Limited liability company</label>
+                            </td>
+                        </tr>
+                        
+                        <tr>
+                            <td colspan="3" style="border-right: 1px solid silver;">
+                                
+                                 <div id="tax_classification_wrapper" style="display: none;">
+                                    <span class="note">Enter the tax classification </span>
+                                    <span class="note">(C=C Corporation, S=S Corporation, P=Partnership)</span>
+                                    <input type="text" maxwidth="1" style="width: 90px; text-transform: uppercase;" value="" maxlength="1" id="_tax_classification" name="_tax_classification"/>
+                                 </div>
+                                
+                            </td>
+                        </tr>
+                    
+                    </tbody>
+                </table>
+                <div id="error_type"></div>
+                  
+                <table width="100%">
+                    <tbody>
+                         <tr>
+                            <td>
+                                <div>Address</div>
+                                <input type="text" style="width: 95%" autocomplete="off" value="" id="_address" name="_address"/>
+                                <div id="error_address"></div>
+
+                                <div style="margin-top: 10px;">City, State, and ZIP code</div>
+                                <input type="text" style="width: 95%" autocomplete="off" value="" id="_city_state_zip" name="_city_state_zip"/>
+                                <div id="error_city_state_zip"></div>
+
+                                <div style="margin-top: 10px;">List account number(s) here (optional)</div>
+                                <input type="text" style="width: 95%" autocomplete="off" value="" id="_account_numbers" name="_account_numbers"/>
+                            </td>
+                            <td valign="top" style="width: 300px;">
+                                Requesters name and address (optional)
+                                <textarea style="width: 275px; height: 140px;" id="_requester" name="_requester"/></textarea>
+                            </td>
+                        </tr>
+                   </tbody>
+                </table>
+            </div>
+			
+			<h3>Tax Payer Identification Number (TIN)</h3><br />
+			
+			<table>
+				<tbody>
+                                    <tr>
+					<td valign="top">
+                                            Enter your TIN in the appropriate box. The TIN provided must match the name given on the
+                                            "Name" line to avoid backup withholding. For individuals, this is your social security number (SSN).
+                                            However, for a resident alien, sole proprietor, or disregarded entity, see the Part I instructions on page 3. For other entities, it is your employer identification number (EIN). If you do not have a number, see <i>How to get a TIN</i> on page 3.
+                                            <br /><br />
+                                            <b>Note.</b> If the account is in more than one name, see the chart on page 4 for guidelines on whose number to enter. (<a target="_blank" href="http://www.irs.gov/pub/irs-pdf/fw9.pdf">http://www.irs.gov/pub/irs-pdf/fw9.pdf</a>)
+                                        </td>
+					<td valign="top" style="width: 250px;">
+                                            <div>Social Security Number</div>
+                                            <input type="text" style="width: 200px;" autocomplete="off" value="" id="_ssn" name="_ssn"/>
+
+                                            <div id="error_ssn_or_ein"></div>
+                                            
+                                            <div style="margin-top: 10px;">Employer Identification Number</div>
+                                            <input type="text" style="width: 200px;" autocomplete="off" value="" id="_ein" name="_ein"/>
+					</td>
+				    </tr>
+			        </tbody>
+                        </table>
+			
+			
+			<h3>Certification</h3>
+            <div>
+                <ul>
+                    <li><b>Under penalties of perjury, I certify that:</b></li>
+                    <li>1. The number shown on this form is my correct taxpayer identification number (or I am waiting for a number to be issued to me), and</li>
+                    <li>2. I am not subject to backup withholding because: (a) I am exempt from backup withholding, or (b) I have not been notified by the Internal Revenue Service (IRS) that I am subject to backup withholding as a result of a failure to report all interest or dividends, or (c) the IRS has notified me that I am no longer subject to backup withholding, and</li>
+                    <li>3. I am a U.S. citizen or other U.S. person.</li>
+                </ul>
+            </div>
+
+			<h3>Signature</h3>
+            <div>
+                <div id="digitally_sign_do" style="display: none;">
+                    <table width="100%">
+                        <tbody><tr>
+                            <td valign="top">
+                                <div>Digital Signature</div>
+                                <input type="text" placeholder="Enter your name here..." style="width: 420px;" autocomplete="off" value="" id="_digital_signature" name="_digital_signature" class="placeholder"/>
+                            </td>
+                            <td valign="top" style="width: 200px;">
+                                <div>Date</div>
+                                <input type="text" style="width: 175px;" value="<?php echo date('Y-m-d')?>" id="_date" name="_date" disabled=""/>
+                            </td>
+                            <td valign="top" style="padding-top: 15px; width: 125px;">
+                                <button onclick="mySubmit();" class="button" id="w9_submit" style="height: 29px;">Submit W-9</button>
+                            </td>
+                        </tr>
+                    </tbody></table>
+                    <div style="font-size: 11px; font-style: italic;">
+                        * In order to verify this signature we will record certain browser properties as well as your ip address that is being used to sign this form
+                    </div>
+                </div>
+                                
+            </div>
+                       
+        </form>
+     <div style="display: none; margin-left: 10px;" id="digitally_sign_previous">
+          <span style="font-size: 14px; float: left; margin-top: 6px;">
+                This W-9 was digitally submitted and signed on <span id="gmt_sign">2012-10-04 09:00:15 GMT</span> 
+                from IP: <span id="ip_address">127.0.0.1</span>
+          </span>
+          <button style="height: 28px; width: 94px; float: right; margin-right: 28px;" onclick="unBlock();">Create New</button>
+    </div>
+    <div style="display: none; margin-left: 10px;" id="digitally_sign_load">
+          <span style="font-size: 14px; font-weight: bold;">Please wait data is processing ...</span>
+    </div>
+</div>    
+
+
+
+<script type="text/javascript" src="/font/cufon-yui.js"></script>
+<script type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#topMenu a', {hover: true});	
+		Cufon.replace('#topMenu a');
+</script>
+<script type="text/javascript" src="/font/Headline_Two_400.font.js"></script>
+<script type="text/javascript">
+	Cufon.replace('.contInf h3', {hover: true});	
+	Cufon.replace('.contInf h3');
+	Cufon.replace('.contInf h3.white', {color: '#FFF'});	
+	Cufon.replace('.footerBann h5');		
+	Cufon.replace('.footerBann p');	
+	Cufon.replace('.footerBann a', {hover: true});		
+    Cufon.replace('h1');		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Lt_300.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#footCopyr');	
+		Cufon.replace('.contInf p', {hover: true});		
+		Cufon.replace('.contInf p', {color: '#333333'});	
+		Cufon.replace('.contInf p.white', {color: '#FFF'});	
+		Cufon.replace('.fMenu a', {textDecoration: 'underline'});		
+		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Rg_700.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('.fMenu h4');
+</script>

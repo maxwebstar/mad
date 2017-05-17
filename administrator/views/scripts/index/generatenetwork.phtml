@@ -1,0 +1,34 @@
+<?php if($this->messages):?>
+	<p><?php echo $this->messages; ?></p>
+<?php else: ?>
+	<form action="/administrator/index/generatenetwork/" method="post">
+	<p><strong>Year:</strong>
+	<select name="year">
+	<?php
+	    for($i=2011; $i<=date("Y"); $i++){
+	    	if($i==date("Y"))
+	    		$selected = 'selected="selected"';
+	    	else
+	    		$selected = '';
+	       echo "<option value='$i' $selected>$i</option>";
+	    }
+	?>
+	</select>
+	</p>
+	<p><strong>Month:</strong>
+	<select name="month">
+	<?php
+	    for($i=1; $i<=12; $i++){
+	    	if($i==date("n"))
+	    		$selected = 'selected="selected"';
+	    	else
+	    		$selected = '';
+	    	 
+	    	echo "<option value='$i' $selected>".date("F", mktime(0,0,0,$i,date("d"),date("Y")))."</option>";
+	    }
+	?>
+	</select>
+	</p>
+	<input type="submit" value="Generate">
+	</form>
+<?php endif;?>

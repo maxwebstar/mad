@@ -1,0 +1,153 @@
+<?php
+
+?>
+<style type="text/css">
+
+#user_zones_report {
+    margin-left: 190px;
+    text-align: left;
+    margin-top: 20px;
+    position: absolute;
+    clear: both;
+    padding: 5px 5px;
+}
+
+
+#user_zones_report h4 {
+
+   font-size: 14pt; 
+   color: #DE3232;
+
+}
+
+
+#user_zones_report h4 span {
+   font-size: 14pt; 
+   color: #000000;
+}
+
+
+#user_zones_report ul {
+    margin-left: 20px; margin-top: 10px;
+}
+
+
+#user_zones_report ul li {
+    list-style-type: disc;     
+    margin: 0 0 5px 0px;
+    clear: both;
+    position: static;
+    float: left;        
+}
+
+
+#user_zones_report ul li dl 
+{
+    position: static; 
+    display: block;     
+    float: left;
+    clear: both;     
+}
+
+#user_zones_report ul li dl dt 
+{
+    display: block;
+    float: left; 
+    font-weight: bold; 
+    margin: 0px 5px 5px 0px;
+}
+
+#user_zones_report ul li dl dd 
+{
+    display: block; 
+    float: left; 
+    clear: right;
+    margin-bottom: 5px;
+}
+
+
+.zone_job_result 
+{
+   display: block;
+   background-color: #64a4ff;    
+   border-top: 2px solid #000080;
+   border-bottom: 2px solid #000080;      
+}
+
+.zone_job_error 
+{
+   display: block;      
+   background-color: #ff8080; 
+   border: 2px solid #800000;
+   border-top: 2px solid #800000;
+   border-bottom: 2px solid #800000;         
+}
+
+.zone_message {
+    color: #000000;
+    margin: 5px 0 5px 189px;
+    padding: 5px 3px; 
+}
+
+</style>
+<h1>Zones</h1>
+<a href="/users/report"
+	style="color: #000080; text-decoration: underline;">Back to report</a>
+
+<?php if (isset($this->job['result'])) { ?>
+<p class="zone_message zone_job_result"><?php echo htmlentities($this->job['result']); ?></p>
+<?php } ?>
+<?php if (isset($this->job['error'])) { ?>
+<p class="zone_message zone_job_error"><?php echo htmlentities($this->job['error']); ?></p>
+<?php } ?>
+
+<div id="user_zones_report">
+
+
+<?php foreach($this->userZones as $userZone) { ?>
+	<h4><?php echo htmlentities($userZone->UName); ?> <span>(<?php echo htmlentities($userZone->id); ?>)</span></h4>
+	<ul>
+<?php foreach($userZone->refrences as $ref) { ?>
+     <li>
+        <dl>
+		   <dt>Zone ID:</dt>
+		   <dd><?php echo isset($ref->zoneId) ? htmlentities($ref->zoneId) : '<span class="nullvalue">NULL</span>'; ?><?php if ($ref->zoneId != $userZone->id) { 
+?>
+		   	<form action="" method="post" style="display: inline;">
+		   	   <input type="hidden" name="job" value="unlink" />
+		   	   <input type="hidden" name="display_zone" value="<?php echo htmlentities($ref->zoneId) ;?>" />
+		   	   <input type="submit" value="Unlink" style="border: 2px outset black;" /> 
+		   	</form>
+<?php 
+		   } else {
+		   	?>
+		   			   	<form action="" method="post" style="display: inline;">
+		   			   	   <input type="hidden" name="job" value="link" />
+		   			   	   <input type="hidden" name="display_zone" value="<?php echo htmlentities($ref->zoneId) ;?>" />
+		   			   	   <select name="target">
+		   			   	      <?php foreach($this->userZones as $uz) { 
+		   			   	         if ($uz->id != $userZone->id) {		   			   	         	
+?>
+                                     <option value="<?php echo htmlentities($uz->id);?>"><?php echo htmlentities($uz->UName);?> (<?php echo htmlentities($uz->id);?>)</option>		   			   	         	
+<?php
+		   			   	         }
+		   			   	      }
+		   			   	      	?>
+		   			   	   </select><input type="submit" value="Link" style="border: 2px outset black;" />  
+		   			   	</form>
+		   	<?php 		   
+		   }?></dd>
+		</dl>     
+        <dl>
+		   <dt>Zone:</dt>
+		   <dd><?php echo isset($ref->zone) ? htmlentities($ref->zone) : '<span class="nullvalue">NULL</span>'; ?></dd>
+		</dl>
+		<dl>
+		   <dt>Placement Name:</dt>
+		   <dd><?php echo isset($ref->placementName) ? htmlentities($ref->placementName) : '<span class="nullvalue">NULL</span>'; ?></dd>
+	    </dl>
+	 </li>
+<?php } ?>
+    </ul>			
+<?php } ?>
+</div>

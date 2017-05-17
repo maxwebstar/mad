@@ -1,0 +1,87 @@
+
+<script type="text/javascript">
+        
+        jQuery(document).ready(function(){
+           
+             $('#table_result').dataTable({
+                 "bProcessing": true,
+                 "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+                 "iDisplayLength": -1
+             });
+            
+        });
+         
+    </script>
+
+
+<h1>Notifications</h1>
+<br />
+<?php if($this->message): ?>
+<div style="background-color:#EBF8A4; margin-left: 200px; border:1px solid #D73A3A; display:block; width:700px; color:#000; font-weight:bold; font-size:16px; text-align:center; padding:3px; margin-bottom:2px;"><?php echo $this->message; ?></div>
+<?php endif; ?>
+
+<?php if(isset($this->result)):?>
+
+     <div class="contUsL" style="width: 750px;"> 
+     <table id="table_result" width="740px" cellpadding="0" cellspacing="0" border="0" class="display">
+         
+         <thead>
+             <tr>
+                 <th>Publisher</th>
+                 <th>Email</th>
+                 <th>Result</th>
+             </tr>
+        </thead>
+        <tbody>
+         
+        <?php foreach($this->result as $PubID => $iter):?>
+     
+              <tr>
+                  <td><?php echo $iter['name'];?></td>
+                  <td><?php echo $iter['email'];?></td>
+                  <td><?php echo $iter['status'] ? 'sent' : 'not sent';?></td>
+              </tr>
+        
+        <?php endforeach;?>
+
+        </tbody>
+         
+     </table>  
+     </div>       
+
+<?php else:?>
+
+     <?php echo $this->form; ?>
+
+<?php endif;?>
+  
+
+<script type="text/javascript" src="/font/cufon-yui.js"></script>
+<script type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#topMenu a', {hover: true});	
+		Cufon.replace('#topMenu a');
+</script>
+<script type="text/javascript" src="/font/Headline_Two_400.font.js"></script>
+<script type="text/javascript">
+	Cufon.replace('.contInf h3', {hover: true});	
+	Cufon.replace('.contInf h3');
+	Cufon.replace('.contInf h3.white', {color: '#FFF'});	
+	Cufon.replace('.footerBann h5');		
+	Cufon.replace('.footerBann p');	
+	Cufon.replace('.footerBann a', {hover: true});		
+    Cufon.replace('h1');		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Lt_300.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#footCopyr');	
+		Cufon.replace('.contInf p', {hover: true});		
+		Cufon.replace('.contInf p', {color: '#333333'});	
+		Cufon.replace('.contInf p.white', {color: '#FFF'});	
+		Cufon.replace('.fMenu a', {textDecoration: 'underline'});		
+		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Rg_700.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('.fMenu h4');
+</script>

@@ -1,0 +1,41 @@
+<div class="container">
+    <?php if(count($this->dataNetworksSizes)): ?>
+        <?php foreach($this->dataNetworksSizes as $size): ?>
+            <?php if($size['network_id']==19): ?>
+                <div class="checkbox">
+                    <label>
+                        <input class="aol-sizes" data-size="<?php echo $size['id'] ?>" type="checkbox"
+                               name="sizes_19[<?php echo $size['id'] ?>]"
+                            <?php echo isset($this->formValues['sizes_19'][$size['id']]) ? "checked" : "" ?>
+                        >
+                        <?php echo $size['name'] ?>
+                    </label>
+                </div>
+                <div id="aol-form-<?php echo $size['id'] ?>"
+                     class="<?php echo isset($this->formValues['sizes_19'][$size['id']]) ? "" : "hidden" ?>">
+
+                    <div class="form-group <?php if(isset($this->formErrors['aol_placementId'])) echo "has-error" ?>">
+                        <label for="aol_placementId_<?php echo $size['id'] ?>" class="col-sm-2 control-label">placementId:</label>
+                        <div class="col-sm-4">
+                            <input type="text" class="form-control" id="aol_placementId_<?php echo $size['id'] ?>"
+                                   name="<?php echo isset($this->formValues['sizes_19'][$size['id']]) ? "aol_placementId[{$size['id']}]" : "" ?>" placeholder="placementId"
+                                   value="<?php echo !isset($this->formValues['aol_placementId'][$size['id']]) ? '' : $this->formValues['aol_placementId'][$size['id']] ?>"
+                            >
+                        </div>
+                    </div>
+                    
+                    <div class="form-group <?php if(isset($this->formErrors['aol_network'])) echo "has-error" ?>">
+                        <label for="aol_network_<?php echo $size['id'] ?>" class="col-sm-2 control-label">network:</label>
+                        <div class="col-sm-4">
+                            <input type="text" class="form-control" id="aol_network_<?php echo $size['id'] ?>"
+                                   name="<?php echo isset($this->formValues['sizes_19'][$size['id']]) ? "aol_network[{$size['id']}]" : "" ?>" placeholder="network"
+                                   value="<?php echo !isset($this->formValues['aol_network'][$size['id']]) ? '10634.1' : $this->formValues['aol_network'][$size['id']] ?>"
+                            >
+                        </div>
+                    </div>
+                </div>
+
+            <?php endif; ?>
+        <?php endforeach; ?>
+    <?php endif; ?>
+</div>

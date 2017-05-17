@@ -1,0 +1,507 @@
+<script type="text/javascript">
+    $(document).ready(function(){                        
+        $(".selectDate").click(function(){
+            $("#search-start_date").val($(this).attr('start'));
+            $("#search-end_date").val($(this).attr('end'));
+            $("#showBox").html($.datepicker.formatDate('M d, yy', new Date($(this).attr('start')))+' - '+$.datepicker.formatDate('M d, yy', new Date($(this).attr('end'))));            
+        })
+        
+        $("#search-start_date").change(function(){
+            $("#showBox").html($.datepicker.formatDate('M d, yy', new Date($("#search-start_date").val()))+' - '+$.datepicker.formatDate('M d, yy', new Date($("#search-end_date").val())));                        
+        })        
+
+        $("#search-end_date").change(function(){
+            $("#showBox").html($.datepicker.formatDate('M d, yy', new Date($("#search-start_date").val()))+' - '+$.datepicker.formatDate('M d, yy', new Date($("#search-end_date").val())));                        
+        })        
+
+        $("#update").click(function(){
+            $("#formDate").submit();       
+        })
+
+        $("#cancel").click(function(){
+            $("#showBox").html($(this).attr('txt'));         
+        })
+
+    }) ;   
+</script>
+<form name="size" method="get" id="formDate" action="">	
+<input type="hidden" name="id" value="<?php echo $id ?>">				
+            <!--report TOP-->                                            
+            <div class="reportTop">
+            	<h5>Earnings</h5>                
+                <div class="dateBox">
+                	<p class="dateBoxInn"><a href="#" title="" class="dateLink" id="showBox"><?php echo htmlentities(date("M j, Y", strtotime($this->report_params["start_date"]))); ?> – <?php echo htmlentities(date("M j, Y", strtotime($this->report_params["end_date"]))); ?></a></p>
+                    <div class="subDate">
+                    	<div class="dateRanch">
+                        	<h5>Date Range </h5>
+                            <input type="text" value="<?php echo htmlentities(date("M j, Y", strtotime($this->report_params["start_date"]))); ?>" name="start_date" id="search-start_date"  onfocus="this.value=''" onblur="if (this.value==''){this.value=''}" class="datepicker" />
+                            <input type="text" value="<?php echo htmlentities(date("M j, Y", strtotime($this->report_params["end_date"]))); ?>" name="end_date" id="search-end_date"  onfocus="this.value=''" onblur="if (this.value==''){this.value=''}" class="datepicker"/>                            
+                            <p>
+                            	<a href="#" title="" class="dCancelBtn" id="cancel" txt="<?php echo htmlentities(date("M j, Y", strtotime($this->report_params["start_date"]))); ?> – <?php echo htmlentities(date("M j, Y", strtotime($this->report_params["end_date"]))); ?>">Cancel</a>
+                            	<a href="#" title="" class="dUpdlBtn" id="update">Update</a>                            
+                            </p>
+                        </div>
+                        
+                        <div class="quickDate">
+                        	<h5>Quick dates</h5>
+                            <br class="clear" />
+                            <ul>
+                            	<li><a href="#" class="selectDate" start="<?php echo date("M j, Y"); ?>" end="<?php echo date("M j, Y"); ?>" title="">Today</a></li>
+                            	<li><a href="#" class="selectDate" start="<?php echo date("M j, Y", mktime(0,0,0,date("m"),date("d")-1,date("Y"))); ?>" end="<?php echo date("M j, Y", mktime(0,0,0,date("m"),date("d")-1,date("Y"))); ?>" title="">Yesterday</a></li>
+                            	<li><a href="#" class="selectDate" start="<?php echo date("M j, Y", mktime(0,0,0,date("m"),date("d")-7,date("Y"))); ?>" end="<?php echo date("M j, Y"); ?>" title="">Last 7 days</a></li>
+                            </ul>
+                            
+                            <ul class="rightUl">
+                            	<li><a href="#" class="selectDate" start="<?php echo date("M j, Y", mktime(0,0,0,date("m"),date("d")-30,date("Y"))); ?>" end="<?php echo date("M j, Y"); ?>" title="">Last 30 days</a></li>
+                            	<li><a href="#" class="selectDate" start="<?php echo date("M j, Y", mktime(0,0,0,date("m"),1,date("Y"))); ?>" end="<?php echo date("M j, Y", mktime(0,0,0,date("m"),date("t"),date("Y"))); ?>" title="">This month:<span> <?php echo date("F") ?></span></a></li>
+                            	<li><a href="#" class="selectDate" start="<?php echo date("M j, Y", mktime(0,0,0,date("m")-1,1,date("Y"))); ?>" end="<?php echo date("M j, Y", mktime(0,0,0,date("m")-1,date("t", mktime(0,0,0,date("m")-1,1,date("Y"))),date("Y"))); ?>" title="">Last month: <span><?php echo date("F", mktime(0,0,0,date("m")-1,1,date("Y"))); ?></span></a></li>
+                            </ul>                            
+                        </div>
+                    </div>
+                </div>
+                <p class="sizeSel"><b>Size</b>
+                	<select onchange="this.form.submit();" name="ad_size">
+                    	<option value="">All Media Types</option>
+        <?php foreach($this->ad_sizes as $ad_size) { ?>
+            <option value="<?php echo htmlentities($ad_size["key"]); ?>"<?php if ($this->report_params["ad_size"] ==$ad_size["key"]) { echo ' selected'; } ?>><?php echo htmlentities($ad_size["value"]); ?></option>
+        <?php } ?>
+                    </select>
+                </p>
+                <p class="sizeSel"><b>Site</b>
+                	<select onchange="this.form.submit();" name="site">
+                    	<option value="">All Sites</option>
+    <?php foreach($this->sites as $site) { ?>
+        <option value="<?php echo htmlentities($site["SiteID"]); ?>"<?php if ($this->report_params["site"] ==$site["SiteID"]) { echo ' selected'; } ?>><?php echo htmlentities($site["SiteName"]); ?></option>  
+    <?php } ?>
+                    </select>
+                </p>  
+            </div>
+            <!--//report TOP-->   
+</form>
+<br><br><br>
+<div class="reportBox">	
+<?php if($this->floor_pricing==1):?>
+	<?php 
+	$totalimpressions = 0;
+	$totalPaidimpressions = 0;
+	$totalecpm = 0;
+	$totalrevenue = 0;
+	$count = 0;
+	$line1 = "[";
+	$line2 = "[";
+	$line3 = "[";
+	?>
+
+	<table cellpadding="0" cellspacing="0" id="reportTbl">		
+	<tr>			
+	    <th>Date</th>			
+	    <th>Impressions</th>
+	    <th>Paid Impressions</th>			
+	    <th>eCPM</th>			
+	    <th class="lastTh">Revenue</th>		
+	</tr>																
+	<?php if($this->report):?>
+		<?php foreach ($this->report as $item):?>
+			<?php 												
+				if($item['allocated_impressions']){
+					//$asterics = '';
+					$ecpm = $item['revenue']*1000/$item['allocated_impressions'];	
+					$totalPaidimpressions +=$item['allocated_impressions'];
+				}else{
+					$ecpm = 0;						
+				}
+				
+				if($item['impressions']){
+					$totalimpressions +=$item['impressions'];
+				}
+				
+				
+				//$ecpmFlor = 
+				
+				if ($item['estimated']==1) {
+					$asterics = '*';										if($this->absEcpm>0 && $this->removeAsterics==1 && $item['impressions']>0){
+						$ecpm = $this->absEcpm;
+						$item['revenue'] = $this->absEcpm*$item['impressions']/1000;
+						$asterics = '';
+					}
+						
+				}else{
+					$asterics = '';
+				}								
+				
+				if($item['estimated']==1 && $item['revenue']<=0){
+					if($this->absEcpm>0){
+						$ecpm = $this->absEcpm;
+					}else{
+						$ecpm = 0;
+					}
+				
+					if($this->absEcpm>0 && $item['allocated_impressions']>0){
+						$item['revenue'] = $this->absEcpm*$item['allocated_impressions']/1000;
+					}
+				}				
+				
+				$totalrevenue += $item['revenue'];
+				//graph
+				$count++;
+				
+				$formatLine = '<table class=\"jqplot-highlighter\"><tr><td>Date:</td><td>'.date("M d, Y", strtotime($item['Date'])).'</td></tr><tr><td>Impressions:</td><td>'.number_format($item['impressions']).'</td></tr><tr><td>Revenue:</td><td>$'.number_format($item['revenue'],2).'</td></tr><tr><td>eCPM:</td><td>$'.number_format($ecpm,2).'</td></tr></table>';
+				$formatLinePaid = '<table class=\"jqplot-highlighter\"><tr><td>Date:</td><td>'.date("M d, Y", strtotime($item['Date'])).'</td></tr><tr><td>Paid Impressions:</td><td>'.number_format($item['allocated_impressions']).'</td></tr><tr><td>Revenue:</td><td>$'.number_format($item['revenue'],2).'</td></tr><tr><td>eCPM:</td><td>$'.number_format($ecpm,2).'</td></tr></table>';
+				
+				if($count==count($this->report)){
+					$line1.= "['$item[Date]', ".str_replace(',','.',$item['impressions']).", '$formatLine']";
+					$line2.= "['$item[Date]', ".str_replace(',','.',number_format($item['revenue'],2)).", '$formatLine']";
+					$line3.= "['$item[Date]', ".str_replace(',','.',$item['allocated_impressions']).", '$formatLinePaid']";
+				}else{
+					$line1.= "['$item[Date]', ".str_replace(',','.',$item['impressions']).", '$formatLine'], ";
+					$line2.= "['$item[Date]', ".str_replace(',','.',number_format($item['revenue'],2)).", '$formatLine'], ";
+					$line3.= "['$item[Date]', ".str_replace(',','.',$item['allocated_impressions']).", '$formatLinePaid'], ";
+				}
+				
+			?>
+			<tr>
+				<td><?php echo $item['Date']?> <?php echo $asterics?></td>
+				<td><?php echo number_format($item['impressions']) ?><?php echo $asterics?></td>
+				<td><?php echo number_format($item['allocated_impressions']) ?><?php echo $asterics?></td>
+				<td><?php echo $ecpm==0 ? '-' : "$".number_format($ecpm,2)?><?php echo $asterics?></td>
+				<td><?php echo $ecpm==0 ? '-' : "$".number_format($item['revenue'],2)?><?php echo $asterics?></td>
+											</tr>
+		<?php endforeach;?>
+		
+		<?php 
+			$noresult=false;
+			$line1.= "]";
+			$line2.= "]";
+			$line3.= "]";
+		?>	
+	<?php else:?>
+		<?php 
+	    $line1 = "[";
+	    $line2 = "[";
+	    $line3 = "[";
+	
+	    $start = strtotime($this->report_params['start_date']);
+	    $end = strtotime($this->report_params['end_date']);
+	        
+	    for($i=$start; $i<=$end; $i=$i+86400){
+	                
+	        $formatLine = '<table class=\"jqplot-highlighter\"><tr><td>Date:</td><td>'.date("M d, Y", $i).'</td></tr><tr><td>Impressions:</td><td>0,000</td></tr><tr><td>Revenue:</td><td>$0.00</td></tr><tr><td>eCPM:</td><td>$0.00</td></tr></table>';
+	        $formatLinePaid = '<table class=\"jqplot-highlighter\"><tr><td>Date:</td><td>'.date("M d, Y", $i).'</td></tr><tr><td>Paid Impressions:</td><td>0,000</td></tr><tr><td>Revenue:</td><td>$0.00</td></tr><tr><td>eCPM:</td><td>$0.00</td></tr></table>';
+	         
+	        $line1.= "['".date("M d, Y", $i)."', 0.000, '$formatLine'], ";
+	        $line2.= "['".date("M d, Y", $i)."', 0.00, '$formatLine'], ";  
+	        $line3.= "['".date("M d, Y", $i)."', 0.000, '$formatLinePaid'], ";
+	    }
+	
+	    $line1.= "]";
+	    $line2.= "]"; 
+	    $line3.= "]";
+	    
+	    $noresult=true;
+	    ?>
+	<?php endif;?>
+	<?php 
+		if($totalPaidimpressions > 0) {
+			$totalecpm = $totalrevenue / ($totalPaidimpressions/1000);
+		}else{
+			$totalecpm = "0.00";
+		} 				
+	?>	
+	<tr>
+		<td class="total">Totals </td>
+		<td class="total"><?php echo number_format($totalimpressions) ?></td>
+		<td class="total"><?php echo number_format($totalPaidimpressions) ?></td>
+		<td class="total">$<?php echo number_format($totalecpm,2) ?></td>
+		<td class="total lastTd">$<?php echo number_format($totalrevenue, 2) ?></td>                                                            
+	</tr>
+	</table>
+<script type="text/javascript">
+$(document).ready(function(){
+	  var line1 = <?php echo $line1 ?>;
+	  var line2 = <?php echo $line2 ?>;
+	  var line3 = <?php echo $line3 ?>;
+	 
+	  var plot2 = $.jqplot('chartdiv', [line1, line2, line3], {
+	    series:[{renderer:$.jqplot.highlighter, label:'Impressions', color:'grey'}, {xaxis:'xaxis', yaxis:'y2axis', label:'Revenue', color:'red'}, {renderer:$.jqplot.highlighter, label:'Paid Impressions', color:'green'}],
+	    axesDefaults: {
+	        tickRenderer: $.jqplot.CanvasAxisLabelRenderer,
+	    },
+	    highlighter: {
+	      show: true,
+	      showMarker:false,
+	      tooltipAxes: 'both',
+	      yvalues: 3,
+	      // You can customize the tooltip format string of the highlighter
+	      // to include any arbitrary text or html and use format string
+	      // placeholders (%s here) to represent x and y values.
+	      formatString:'<!--%s%s-->%s'
+	    },    
+	    legend: {
+	        show: true,
+	        placement: 'outsideGrid',
+	        location: 's'
+	    },    
+	    axes: {
+	      xaxis: {
+	        renderer: $.jqplot.DateAxisRenderer,
+	          tickOptions:{
+	            formatString:'%b %#d'
+	          },
+	      },
+	      yaxis: {
+	        autoscale:true,
+	          tickOptions:{
+	            formatString:'%s'
+	            }<?php if($noresult): ?>,   
+	          min:0, 
+	          max: 50000,
+	          tickInterval:10000
+	            <?php endif; ?>
+	      },
+	      y2axis: {
+	          autoscale:true,
+	          tickOptions:{
+	            formatString:'$%.2f'
+	            }<?php if($noresult): ?>,   
+	          min:0.000, 
+	          max: 50.000,
+	          tickInterval:10
+	            <?php endif; ?>
+	      }
+	    }
+	  });
+}) ;   
+</script>	
+	
+<?php else:?>
+	<?php 
+	$totalimpressions = 0;
+	$totalecpm = 0;
+	$totalrevenue = 0;
+	$count = 0;
+	$line1 = "[";
+	$line2 = "[";
+		?>
+	<table cellpadding="0" cellspacing="0" id="reportTbl">		
+	<tr>			
+	    <th>Date</th>			
+	    <th>Impressions</th>
+	    <th>eCPM</th>			
+	    <th class="lastTh">Revenue</th>		
+	</tr>																
+	<?php if($this->report):?>
+		<?php foreach ($this->report as $item):?>
+			<?php 
+				
+				if($item['impressions']){
+					$ecpm = $item['revenue']*1000/$item['impressions'];
+					$totalimpressions +=$item['impressions'];
+				}else{ 
+					$ecpm = 0;
+				}
+				//$ecpmFlor = 
+				
+				
+				if ($item['estimated']==1) {
+					$asterics = '*';										if($this->absEcpm>0 && $this->removeAsterics==1 && $item['impressions']>0){						$ecpm = $this->absEcpm;						$item['revenue'] = $this->absEcpm*$item['impressions']/1000;						$asterics = '';					}
+				}else{
+					$asterics = '';
+				}				
+
+				if($item['estimated']==1 && $item['revenue']<=0){
+					if($this->absEcpm>0){
+						$ecpm = $this->absEcpm;
+					}else{
+						$ecpm = 0;
+					}
+										
+					if($this->absEcpm>0 && $item['impressions']>0){
+						$item['revenue'] = $this->absEcpm*$item['impressions']/1000;						
+					}					
+				}
+
+				$totalrevenue += $item['revenue'];
+				
+				//graph
+				$count++;
+				
+				$formatLine = '<table class=\"jqplot-highlighter\"><tr><td>Date:</td><td>'.date("M d, Y", strtotime($item['Date'])).'</td></tr><tr><td>Impressions:</td><td>'.number_format($item['impressions']).'</td></tr><tr><td>Revenue:</td><td>$'.number_format($item['revenue'],2).'</td></tr><tr><td>eCPM:</td><td>$'.number_format($ecpm,2).'</td></tr></table>';
+				
+				if($count==count($this->report)){
+					$line1.= "['$item[Date]', ".str_replace(',','.',$item['impressions']).", '$formatLine']";
+					$line2.= "['$item[Date]', ".str_replace(',','.',number_format($item['revenue'],2)).", '$formatLine']";
+				}else{
+					$line1.= "['$item[Date]', ".str_replace(',','.',$item['impressions']).", '$formatLine'], ";
+					$line2.= "['$item[Date]', ".str_replace(',','.',number_format($item['revenue'],2)).", '$formatLine'], ";
+				}
+				
+			?>
+			<tr>
+				<td><?php echo $item['Date']?><?php echo $asterics?></td>
+				<td><?php echo number_format($item['impressions']) ?><?php echo $asterics?></td>
+				<td><?php echo $ecpm==0 ? '-' : "$".number_format($ecpm,2)?><?php echo $asterics?></td>
+				<td><?php echo $ecpm==0 ? '-' : "$".number_format($item['revenue'],2)?><?php echo $asterics?></td>
+			</tr>
+		<?php endforeach;?>
+		<?php 
+			$noresult=false;
+			$line1.= "]";
+			$line2.= "]";
+		?>	
+	<?php else:?>
+		<?php 
+	    $line1 = "[";
+	    $line2 = "[";
+	
+	    $start = strtotime($this->report_params['start_date']);
+	    $end = strtotime($this->report_params['end_date']);
+	        
+	    for($i=$start; $i<=$end; $i=$i+86400){
+	                
+	        $formatLine = '<table class=\"jqplot-highlighter\"><tr><td>Date:</td><td>'.date("M d, Y", $i).'</td></tr><tr><td>Impressions:</td><td>0,000</td></tr><tr><td>Revenue:</td><td>$0.00</td></tr><tr><td>eCPM:</td><td>$0.00</td></tr></table>';
+	        
+	        $line1.= "['".date("M d, Y", $i)."', 0.000, '$formatLine'], ";
+	        $line2.= "['".date("M d, Y", $i)."', 0.00, '$formatLine'], ";  
+	    }
+	
+	    $line1.= "]";
+	    $line2.= "]"; 
+	    
+	    $noresult=true;
+	    ?>	
+	<?php endif;?>
+	<?php 
+		if($totalimpressions > 0) {
+			$totalecpm = $totalrevenue / ($totalimpressions/1000);
+		}else{
+			$totalecpm = "0.00";
+		} 
+	?>
+	<tr>
+		<td class="total">Totals </td>
+		<td class="total"><?php echo number_format($totalimpressions) ?></td>
+		<td class="total">$<?php echo number_format($totalecpm,2) ?></td>
+		<td class="total lastTd">$<?php echo number_format($totalrevenue, 2) ?></td>                                                            
+	</tr>
+	</table>
+<script type="text/javascript">
+$(document).ready(function(){
+	  var line1 = <?php echo $line1 ?>;
+	  var line2 = <?php echo $line2 ?>;
+	 
+	  var plot2 = $.jqplot('chartdiv', [line1, line2], {
+	    series:[{renderer:$.jqplot.highlighter, label:'Impressions', color:'grey'}, {xaxis:'xaxis', yaxis:'y2axis', label:'Revenue', color:'red'}],
+	    axesDefaults: {
+	        tickRenderer: $.jqplot.CanvasAxisLabelRenderer,
+	    },
+	    highlighter: {
+	      show: true,
+	      showMarker:false,
+	      tooltipAxes: 'both',
+	      yvalues: 3,
+	      // You can customize the tooltip format string of the highlighter
+	      // to include any arbitrary text or html and use format string
+	      // placeholders (%s here) to represent x and y values.
+	      formatString:'<!--%s%s-->%s'
+	    },    
+	    legend: {
+	        show: true,
+	        placement: 'outsideGrid',
+	        location: 's'
+	    },    
+	    axes: {
+	      xaxis: {
+	        renderer: $.jqplot.DateAxisRenderer,
+	          tickOptions:{
+	            formatString:'%b %#d'
+	          },
+	      },
+	      yaxis: {
+	        autoscale:true,
+	          tickOptions:{
+	            formatString:'%s'
+	            }<?php if($noresult): ?>,   
+	          min:0, 
+	          max: 50000,
+	          tickInterval:10000
+	            <?php endif; ?>
+	      },
+	      y2axis: {
+	          autoscale:true,
+	          tickOptions:{
+	            formatString:'$%.2f'
+	            }<?php if($noresult): ?>,   
+	          min:0.000, 
+	          max: 50.000,
+	          tickInterval:10
+	            <?php endif; ?>
+	      }
+	    }
+	  });
+}) ;   
+</script>	
+<?php endif;?>
+</div><!--estimate-->
+<div class="estimate"><h5>*Estimates Only. Numbers can take up to 2 days to finalize.</h5>	
+<p><div id="chartdiv" style="height: 300px; width: 750px;"></div>	</p></div><!--//estimate-->
+
+
+<script	type="text/javascript" src="/font/cufon-yui.js"></script>
+<script	type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#topMenu a', {hover: true});	
+		Cufon.replace('#topMenu a');
+</script><script	type="text/javascript" src="/font/Headline_Two_400.font.js"></script><script type="text/javascript">
+	Cufon.replace('.footerBann h5');		
+	Cufon.replace('.footerBann p');	
+	Cufon.replace('.footerBann a', {hover: true});	
+</script><script	type="text/javascript" src="/font/Proxima_Nova_Lt_300.font.js"></script><script type="text/javascript">
+		Cufon.replace('#footCopyr');	
+		Cufon.replace('.fMenu a', {textDecoration: 'underline'});		
+		Cufon.replace('.publisher h4');	
+		Cufon.replace('.publisher h4 span');	
+		Cufon.replace('.publMail a');	
+		Cufon.replace('.logOut span');					
+</script><script	type="text/javascript" src="/font/Proxima_Nova_Rg_700.font.js"></script><script type="text/javascript">
+		Cufon.replace('.fMenu h4');
+		Cufon.replace('.reportTop h5');		
+		Cufon.replace('.estimate h5');			
+</script><script type="text/javascript">
+$(document).ready(function() {
+Cufon.set("fontFamily", "Proxima_Nova_Lt_300.font.js");
+	$("#reportL li").hover(
+		function(){
+		$(this).children('a').children('span').addClass('black');
+		Cufon.refresh();		
+		Cufon.replace('.black', {color: '#000000'});	
+		}, 
+	  function () {
+		$(this).children('a').children('span').removeClass('black');
+		Cufon.refresh();			
+		Cufon.replace('#reportL li span', {color: '#DE3232'});	
+	  }
+	);
+	$("#showBox").click(
+		function(){
+		$('.subDate').toggle(220);
+		$('.dateBoxInn').toggleClass('curDate');
+		}
+	);
+	
+	$(".dCancelBtn").click(
+		function(){
+		$('.subDate').fadeOut(600);
+		$('.dateBoxInn').removeClass('curDate');
+		}
+	);	
+	
+
+
+	
+});
+</script><script	type="text/javascript" src="/js/calendar.js.js"></script><script type="text/javascript">
+	$(function(){
+		$('#singleCont').css('backgroundImage', 'url(/images/contBg_1.png)');
+			$(".datepicker").datepicker({dateFormat: 'M d, yy'});
+});
+</script>

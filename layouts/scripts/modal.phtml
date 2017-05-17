@@ -1,0 +1,49 @@
+<?php
+    // Content-Type
+    $this->headMeta()->appendHttpEquiv('Content-Type', 'text/html;charset=utf-8');    
+    // doctype
+    echo $this->doctype();        
+?>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <?php
+        // meta tegs
+        echo $this->headMeta();
+    ?>
+    <?php
+        // title
+        echo $this->headTitle();
+    ?>
+    <?php
+        // styles and javascripts
+        $this->headLink()->appendStylesheet($this->baseUrl().'/styles/style.css');
+        $this->headLink()->appendStylesheet($this->baseUrl().'/styles/reset.css');
+        
+        echo $this->headLink();
+        
+        $this->headScript()->appendFile($this->baseUrl().'/js/jquery-1.6.2.min.js', 'text/javascript');
+                
+        echo $this->headScript();        
+    ?>    
+<link rel="icon" type="image/x-icon" href="/images/favicon.ico" />
+
+<style type="text/css">
+    
+    ul li a { cursor: pointer; }
+    
+    #menu_optimization { display: none; background-color: #F9F9F9; }
+    #menu_optimization li {  }
+    #menu_optimization li:hover { background-color: #E3F2E1; }
+    #menu_optimization li a { background: none; }
+    
+</style>
+
+
+
+</head>
+<body>
+<div id="wrapper">
+        <?php echo $this->layout()->content; ?>
+</div>
+</body>
+</html>

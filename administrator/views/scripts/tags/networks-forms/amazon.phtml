@@ -1,0 +1,30 @@
+<div class="container">
+    <?php if(count($this->dataNetworksSizes)): ?>
+        <?php foreach($this->dataNetworksSizes as $size): ?>
+            <?php if($size['network_id']==9): ?>
+                <div class="checkbox">
+                    <label>
+                        <input class="amazon-sizes" data-size="<?php echo $size['id'] ?>" type="checkbox"
+                               name="sizes_9[<?php echo $size['id'] ?>]"
+                            <?php echo isset($this->formValues['sizes_9'][$size['id']]) ? "checked" : "" ?>
+                            >
+                        <?php echo $size['name'] ?>
+                    </label>
+                </div>
+                <div id="amazon-form-<?php echo $size['id'] ?>"
+                     class="form-group <?php echo isset($this->formValues['sizes_9'][$size['id']]) ? "" : "hidden" ?>
+                    <?php if(isset($this->formErrors['slot_uuid'])) echo "has-error" ?>">
+                    <label for="slot_uuid_<?php echo $size['id'] ?>" class="col-sm-2 control-label">slot_uuid</label>
+                    <div class="col-sm-4">
+                        <input type="text"
+                               class="form-control"
+                               id="slot_uuid_<?php echo $size['id'] ?>"
+                               name="<?php echo isset($this->formValues['sizes_9'][$size['id']]) ? "slot_uuid[{$size['id']}]" : "" ?>"
+                               value="<?php echo !isset($this->formValues['slot_uuid'][$size['id']]) ? '' : $this->formValues['slot_uuid'][$size['id']] ?>"
+                               placeholder="slot_uuid">
+                    </div>
+                </div>
+            <?php endif; ?>
+        <?php endforeach; ?>
+    <?php endif; ?>
+</div>

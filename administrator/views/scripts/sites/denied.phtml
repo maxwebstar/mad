@@ -1,0 +1,226 @@
+<script type="text/javascript" src="/fancybox/jquery.fancybox-1.3.4.js"></script>
+<link href="/fancybox/jquery.fancybox-1.3.4.css" media="screen" rel="stylesheet" type="text/css" />
+<style type="text/css">
+    
+    .link{ cursor: pointer }
+    
+</style>
+<script type="text/javascript" charset="utf-8">
+
+  
+        $(document).ready(function(){
+                        
+            var oTable = $('#denied-sites').dataTable( {
+                        "bProcessing": true,
+                        "bServerSide": true,
+                        "sAjaxSource": '/administrator/sites/ajax-denied',
+                        "fnServerParams": function ( aoData ) {  aoData.push( { "name": "filter", "value": "on" } ); },
+                        "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+                        "iDisplayLength": 100,
+                        "aoColumns": [
+                            { 
+                              "sTitle": "PID",
+                              "fnRender": function(obj){ return obj.aData[0]; } 
+                            },
+                            { 
+                              "sTitle": "SID",
+                              "fnRender": function(obj){ return obj.aData[1]; } 
+                            },
+                            { 
+                              "sTitle": "Website",
+                              "fnRender": function(obj){ return '<a href="/administrator/sites/view/id/'+obj.aData[1]+'" >'+obj.aData[2]+'</a> <div style="display:none;" id="noteBlockNever_'+obj.aData[1]+'">'+obj.aData[9]+'</div>'; } 
+                            },
+                            { 
+                              "sTitle": "Contact",
+                              "fnRender": function(obj){ return obj.aData[3]; } 
+                            },
+                            { 
+                              "sTitle": "Alexa rank",
+                              "fnRender": function(obj){ return obj.aData[4]; } 
+                            },
+                            { 
+                              "sTitle": "Top Alexa Country",
+                              "fnRender": function(obj){ return obj.aData[5]; } 
+                            },                            
+                            { 
+                              "sTitle": "Invite",
+                              "bSortable": false,
+                              "fnRender": function(obj){ return '<a class="link" onclick="invite(\''+obj.aData[6]+'\', \''+obj.aData[8]+'\')">Invite</a>'; } 
+                            },
+                                          
+                        ],                                                
+                        "aaSorting": [[ 2, "asc" ]]
+                      
+                });
+
+            var oTable2 = $('#denied-sites2').dataTable( {
+                        "bProcessing": true,
+                        "bServerSide": true,
+                        "sAjaxSource": '/administrator/sites/ajax-denied',
+                        "fnServerParams": function ( aoData ) {  aoData.push( { "name": "filter", "value": "status_approved" } ); },
+                        "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+                        "iDisplayLength": 100,
+                        "aoColumns": [
+                            { 
+                              "sTitle": "PID",
+                              "fnRender": function(obj){ return obj.aData[0]; } 
+                            },
+                            { 
+                              "sTitle": "SID",
+                              "fnRender": function(obj){ return obj.aData[1]; } 
+                            },
+                            { 
+                              "sTitle": "Website",
+                              "fnRender": function(obj){ return '<a href="/administrator/sites/view/id/'+obj.aData[1]+'">'+obj.aData[2]+'</a> <div style="display:none;" id="noteBlockPrev_'+obj.aData[1]+'">'+obj.aData[9]+'</div>'; } 
+                            },
+                            { 
+                              "sTitle": "Contact",
+                              "fnRender": function(obj){ return obj.aData[3]; } 
+                            },
+                            { 
+                              "sTitle": "Alexa rank",
+                              "fnRender": function(obj){ return obj.aData[4]; } 
+                            },
+                            { 
+                              "sTitle": "Top Alexa Country",
+                              "fnRender": function(obj){ return obj.aData[5]; } 
+                            },                                                        
+                            { 
+                              "sTitle": "Invite",
+                              "bSortable": false,
+                              "fnRender": function(obj){ return '<a class="link" onclick="invite(\''+obj.aData[6]+'\', \''+obj.aData[8]+'\')">Invite</a>'; } 
+                            },
+                                          
+                        ],                                                
+                        "aaSorting": [[ 2, "asc" ]]
+                      
+                });
+
+
+                $("#tabs").tabs();                          
+        });
+        
+        function invite(PubID, SiteName)
+        {
+               $.fancybox({
+                        'width'		: '75%',
+                        'height'	: '75%',
+                        'href'          : '/administrator/sites/invite-denied/id/'+PubID+'/site/'+SiteName,
+                        'autoScale'    	: false,
+                        'transitionIn'	: 'none',
+                        'transitionOut'	: 'none',
+                        'type'		: 'iframe'
+                }); 
+        }
+        
+        function viewNote(id)
+        {
+            $.fancybox({
+                    'titlePosition'		: 'inside',
+                    'transitionIn'		: 'none',
+                    'transitionOut'		: 'none',
+                    'content'                   : $("#"+id).html()
+            });            
+        }
+        
+</script>        
+
+
+<h1>Denied Websites</h1>
+<div class="contUsL" style="width: 750px;">
+<div id="tabs">
+            <ul>
+                <li><a href="#tabs-1">Never Approved</a></li>
+                <li><a href="#tabs-2">Previously Approved</a></li>
+            </ul>
+<div id="tabs-1">    
+        <table width="740px" cellpadding="0" cellspacing="0" border="0" class="display" id="denied-sites">
+                <thead>
+                        <tr>
+                            <th width="5%">PID</th>
+                            <th width="5%">SID</th>
+                            <th width="20%">Website</th>
+                            <th width="20%">Contact</th>
+                            <th width="10%">Alexa rank</th>
+                            <th width="10%">Top Alexa Country</th>
+                            <th width="10%">Invite</th>
+
+                        </tr>
+                </thead>
+                <tbody></tbody>
+                <tfoot>
+                        <tr>
+                            <th>PID</th>
+                            <th>SID</th>
+                            <th>Website</th>
+                            <th>Contact</th>
+                            <th>Alexa rank</th>
+                            <th>Top Alexa Country</th>
+                            <th>Invite</th>
+                        </tr>
+                </tfoot>
+        </table>
+    </div>
+
+<div id="tabs-2">    
+        <table width="740px" cellpadding="0" cellspacing="0" border="0" class="display" id="denied-sites2">
+                <thead>
+                        <tr>
+                            <th width="5%">PID</th>
+                            <th width="5%">SID</th>
+                            <th width="20%">Website</th>
+                            <th width="20%">Contact</th>
+                            <th width="10%">Alexa rank</th>
+                            <th width="10%">Top Alexa Country</th>
+                            <th width="10%">Invite</th>
+
+                        </tr>
+                </thead>
+                <tbody></tbody>
+                <tfoot>
+                        <tr>
+                            <th>PID</th>
+                            <th>SID</th>
+                            <th>Website</th>
+                            <th>Contact</th>
+                            <th>Alexa rank</th>
+                            <th>Top Alexa Country</th>
+                            <th>Invite</th>
+                        </tr>
+                </tfoot>
+        </table>
+    </div>
+
+</div>     
+</div> 
+
+<script type="text/javascript" src="/font/cufon-yui.js"></script>
+<script type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#topMenu a', {hover: true});	
+		Cufon.replace('#topMenu a');
+</script>
+<script type="text/javascript" src="/font/Headline_Two_400.font.js"></script>
+<script type="text/javascript">
+	Cufon.replace('.contInf h3', {hover: true});	
+	Cufon.replace('.contInf h3');
+	Cufon.replace('.contInf h3.white', {color: '#FFF'});	
+	Cufon.replace('.footerBann h5');		
+	Cufon.replace('.footerBann p');	
+	Cufon.replace('.footerBann a', {hover: true});		
+    Cufon.replace('h1');		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Lt_300.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#footCopyr');	
+		Cufon.replace('.contInf p', {hover: true});		
+		Cufon.replace('.contInf p', {color: '#333333'});	
+		Cufon.replace('.contInf p.white', {color: '#FFF'});	
+		Cufon.replace('.fMenu a', {textDecoration: 'underline'});		
+		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Rg_700.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('.fMenu h4');
+</script>
+

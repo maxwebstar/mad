@@ -1,0 +1,31 @@
+<div class="container">
+    <?php if(count($this->dataNetworksSizes)): ?>
+        <?php foreach($this->dataNetworksSizes as $size): ?>
+            <?php if($size['network_id']==17): ?>
+                <div class="checkbox">
+                    <label>
+                        <input class="pop-cash-sizes" data-size="<?php echo $size['id'] ?>" type="checkbox"
+                               name="sizes_17[<?php echo $size['id'] ?>]"
+                            <?php echo isset($this->formValues['sizes_17'][$size['id']]) ? "checked" : "" ?>
+                        >
+                        <?php echo $size['name'] ?>
+                    </label>
+                </div>
+                <div id="pop-cash-form-<?php echo $size['id'] ?>"
+                     class="<?php echo isset($this->formValues['sizes_17'][$size['id']]) ? "" : "hidden" ?>">
+
+                    <div class="form-group <?php if(isset($this->formErrors['wid'])) echo "has-error" ?>">
+                        <label for="wid_<?php echo $size['id'] ?>" class="col-sm-2 control-label">wid:</label>
+                        <div class="col-sm-4">
+                            <input type="text" class="form-control" id="wid_<?php echo $size['id'] ?>"
+                                   name="<?php echo isset($this->formValues['sizes_17'][$size['id']]) ? "wid[{$size['id']}]" : "" ?>" placeholder="wid"
+                                   value="<?php echo !isset($this->formValues['wid'][$size['id']]) ? $this->dataSite['SiteID'] : $this->formValues['wid'][$size['id']] ?>"
+                            >
+                        </div>
+                    </div>
+                </div>
+
+            <?php endif; ?>
+        <?php endforeach; ?>
+    <?php endif; ?>
+</div>

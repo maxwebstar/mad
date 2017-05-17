@@ -1,0 +1,136 @@
+<h2 class="text-center">Revshares</h2>
+<br><br>
+<ul class="nav nav-tabs" role="tablist">
+    <li role="presentation" class="active">
+        <a href="#norev" data-toggle="tab" aria-controls="notags" role="tab">Sites Missing Revshares</a>
+    </li>
+    <li role="presentation">
+        <a href="#widthrev" data-toggle="tab" aria-controls="widthtags" role="tab">Sites With Revshares</a>
+    </li>
+</ul>
+<div class="tab-content">
+    <div role="tabpanel" class="tab-pane fade active in" id="norev">
+        <br><br>
+        <table class="table table-striped table-bordered table-condensed table-responsive" id="tableNorev" cellspacing="0" width="100%">
+            <thead>
+            <tr>
+                <td>PubID</td>
+                <td>SiteID</td>
+                <td>Website</td>
+                <td>Date Approved</td>
+                <td>Actions</td>
+            </tr>
+            </thead>
+            <tfoot>
+            <tr>
+                <td>PubID</td>
+                <td>SiteID</td>
+                <td>Website</td>
+                <td>Date Approved</td>
+                <td>Actions</td>
+            </tr>
+            </tfoot>
+            <tbody></tbody>
+        </table>
+    </div>
+    <div role="tabpanel" class="tab-pane fade in" id="widthrev">
+        <br><br>
+        <table class="table table-striped table-bordered table-condensed table-responsive" id="tableWidthrev" cellspacing="0" width="100%">
+            <thead>
+            <tr>
+                <td>PubID</td>
+                <td>SiteID</td>
+                <td>Website</td>
+                <td>Date Approved</td>
+                <td>Actions</td>
+            </tr>
+            </thead>
+            <tfoot>
+            <tr>
+                <td>PubID</td>
+                <td>SiteID</td>
+                <td>Website</td>
+                <td>Date Approved</td>
+                <td>Actions</td>
+            </tr>
+            </tfoot>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+
+        var tableNo = $('#tableNorev').DataTable( {
+            "processing": true,
+            "serverSide": true,
+            "autoWidth" : false,
+            "lengthMenu": [ 10, 25, 50, 75, 100 ],
+            "pageLength": 50,
+            "ajax": {
+                "url" : "/administrator/revshares/ajax-no-rev",
+                "type": "POST",
+                "data": {
+                    account: function(){ return window.account; }
+                }
+            },
+            "order": [[ 3, "desc" ]],
+            "columns": [
+                {
+                    "width": "10%",
+                    "data" : "PubID"
+                },
+                {
+                    "width": "10%",
+                    "data" : "SiteID"
+                },
+                {"data" : "SiteName"},
+                {"data" : "co_approved_date"},
+                {
+                    "width": "30%",
+                    "searchable": false,
+                    "className": "text-center",
+                    "data" : "SiteID",
+                    "orderable" : false,
+                    "render" : function (data, type, full, meta){
+                        return '<a class="btn btn-success btn-sm" href="/administrator/revshares/add/site/'+data+'" role="button">Add revshares</a>';
+                    }
+                }
+            ]
+        });
+
+        var tableWidth = $('#tableWidthrev').DataTable( {
+            "processing": true,
+            "serverSide": true,
+            "autoWidth" : false,
+            "ajax": {
+                "url" : "/administrator/revshares/ajax-rev",
+                "type": "POST"
+            },
+            "order": [[ 2, "asc" ]],
+            "columns": [
+                {
+                    "width": "10%",
+                    "data" : "PubID"
+                },
+                {
+                    "width": "10%",
+                    "data" : "SiteID"
+                },
+                {"data" : "SiteName"},
+                {"data" : "co_approved_date"},
+                {
+                    "width": "30%",
+                    "searchable": false,
+                    "className": "text-center",
+                    "data" : "SiteID",
+                    "orderable" : false,
+                    "render" : function (data, type, full, meta){
+                        return '<a class="btn btn-success btn-sm" href="/administrator/revshares/edit/site/'+data+'" role="button">Edit revshare</a>';
+                    }
+                }
+            ]
+        });
+    });
+</script>

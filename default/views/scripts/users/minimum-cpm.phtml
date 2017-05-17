@@ -1,0 +1,288 @@
+<link href="/styles/form.css" media="screen" rel="stylesheet" type="text/css" />
+<style type="text/css">
+    
+    .errors li { color: red; font-size: 14px; }
+    
+</style>
+<script type="text/javascript">
+    
+   var prevCpm = null;
+   var prevRate = null;    
+    
+$(document).ready(function(){
+       
+    var SiteID = $('#SiteID').val();
+    checkSite(SiteID);
+    
+    $('#SiteID').change(function(){
+               
+        SiteID = $('#SiteID').val();
+        checkSite(SiteID);
+        
+    });
+        
+    $("#cpm").change(function(){ chengeCpm($(this).val()); });
+    
+    $('#passback728x90').change(function(){ modefi728x90();   });
+    $('#passback300x250').change(function(){ modefi300x250(); });
+    $('#passback160x600').change(function(){ modefi160x600(); });
+    
+    modefi728x90();
+    modefi300x250();
+    modefi160x600();
+    
+})
+
+
+function modefi728x90()
+{
+    var value = $('input[name=passback728x90]:checked').val();
+        
+    if(value == 1) $('#728x90').attr('disabled', 'disabled');
+    else           $('#728x90').removeAttr('disabled');
+}
+function modefi300x250()
+{
+    var value = $('input[name=passback300x250]:checked').val();
+        
+    if(value == 1) $('#300x250').attr('disabled', 'disabled');
+    else           $('#300x250').removeAttr('disabled');
+}
+function modefi160x600()
+{
+    var value = $('input[name=passback160x600]:checked').val();
+        
+    if(value == 1) $('#160x600').attr('disabled', 'disabled');
+    else           $('#160x600').removeAttr('disabled');
+}
+
+
+function chengeCpm(id)
+{
+    switch(id)
+    {
+    case '0.05':
+        
+      $("#estim_cpm").html('$0.15');
+      $("#estim_rate").html('70%');
+      
+      break;
+    case '0.10':
+        
+      $("#estim_cpm").html('$0.20');
+      $("#estim_rate").html('60%');
+      
+      break;
+    case '0.25':
+        
+      $("#estim_cpm").html('$0.40');
+      $("#estim_rate").html('40%');
+      
+      break;
+    case '0.50':
+        
+      $("#estim_cpm").html('$0.70');
+      $("#estim_rate").html('30%');
+      
+      break;
+    case '0.75':
+        
+      $("#estim_cpm").html('$0.90');
+      $("#estim_rate").html('20%');
+      
+      break;      
+    case '1.00':
+        
+      $("#estim_cpm").html('$1.20');
+      $("#estim_rate").html('10%');
+      
+      break;
+    case 'Previous':
+    
+      $("#estim_cpm").html(prevCpm);
+      $("#estim_rate").html(prevRate);
+    
+      break;
+    default:
+        
+      $("#estim_cpm").html('Revshare');
+      $("#estim_rate").html('100%');
+      
+    }
+}
+
+function checkSite(SiteID)
+{
+//     $.ajax({ url : '/default/ajax/check-site-cpm',
+//                     data : { SiteID : SiteID },
+//                     async: true,
+//                     dataType : "json",
+//
+//             success : function(response) { 
+//                 
+//                 if(response.result.status){ 
+//
+//                     $('#estim_cpm').html('$'+response.result.data[0].price);
+//                     $('#estim_rate').html(response.result.data[0].percent+'%');
+//                     
+//                     prevCpm = '$'+response.result.data[0].price;
+//                     prevRate = response.result.data[0].percent+'%';
+//                     
+//                     $('<option id="previous" label="Previous CPM" value="Previous" selected="selected">Previous CPM</option>').appendTo('#cpm');
+//
+//                 } else { $('#cpm #previous').remove(); chengeCpm($("#cpm").val()); }
+//
+//             }, error : function(){ 
+//
+//             }
+//        });
+        
+        $.ajax({ url : '/default/ajax/check-minimum-cpm',
+                     data : { SiteID : SiteID },
+                     async: true,
+                     dataType : "json",
+
+             success : function(response) { 
+                 
+                 if(response.result.status){ 
+
+                     $('#cpm').val(response.result.data['cpm']);
+
+                     $('#estim_cpm').html('$'+response.result.data['estim_cpm']);
+                     $('#estim_rate').html(response.result.data['estim_rate']+'%');
+
+                     $('#728x90').val(response.result.data['728x90']);
+                     if(response.result.data['passback728x90'] == 1){
+                         $('#passback728x90').attr('checked', 'checked');
+                         $('#728x90').attr('disabled', 'disabled');
+                     }
+                     $('#300x250').val(response.result.data['300x250']);
+                     if(response.result.data['passback300x250'] == 1){
+                         $('#passback300x250').attr('checked', 'checked');
+                         $('#300x250').attr('disabled', 'disabled');
+                     }
+                     $('#160x600').val(response.result.data['160x600']);
+                     if(response.result.data['passback160x600'] == 1){
+                         $('#passback160x600').attr('checked', 'checked');
+                         $('#160x600').attr('disabled', 'disabled');
+                     }
+              
+                 } else { 
+                     
+                     $('#cpm').val('Max Fill');
+                     
+                     $('#728x90').val('');
+                     $('#passback728x90').removeAttr('checked');
+                     $('#728x90').removeAttr('disabled');
+                     
+                     $('#300x250').val('');
+                     $('#passback300x250').removeAttr('checked');
+                     $('#300x250').removeAttr('disabled');
+                
+                     $('#160x600').val('');
+                     $('#passback160x600').removeAttr('checked');
+                     $('#160x600').removeAttr('disabled');
+                         
+                     chengeCpm($("#cpm").val()); 
+                 }
+
+             }, error : function(){ 
+
+             }
+        });
+}
+
+</script>
+<h1 class="applTitle">Minimum CPMs</h1>
+
+<div style="border:1px solid #CCCCCC; background-color:#EEEEEE; padding:3px; width:70%; margin:5px 0; margin-left: 195px;"><b style="color:#CB0008">Minimum CPM:</b> In this section you can define what "minimum CPM" you're willing to accept for your site.  When there are no advertisers remaining at your defined rate, we will send the remainder of your ad requests to your "passback tags" (typically a "house ad" or another ad network's tags).  Have any questions?  <a href="/contact-us/">Contact us</a>.</div>
+<br>
+
+<?php if(isset($this->minimumCpm)):?>
+    <div align="center" style="background-color:#009900; color:#FFFFFF; font-weight:bold; width:750px; margin:0 0 0 200px; font-size:14px">This site (<?php echo $this->minimumCpm['SiteName'];?>) has the following changes pending.</div>
+    <div align="center" style="width:750px; margin:0 0 0 200px; font-size:14px">(<a style="color:#FF0000 " href="/minimum-cpm-cancel/<?php echo $this->minimumCpm['id'];?>">Cancel changes</a>)</div>
+    <br />
+<?php elseif(isset($this->cencel)):?>
+    <div align="center" style="background-color:#009900; color:#FFFFFF; font-weight:bold; width:750px; margin:0 0 0 200px; font-size:14px">The changes for this site (<?php echo $this->cencel;?>) have been recalled.</div>
+    <br />
+<?php endif;?>
+                    
+        <form method="POST" action="" enctype="multipart/form-data" id="minimum-cpm">
+
+            <?php echo $this->form->SiteID;?>
+            <br />
+            <?php echo $this->form->cpm;?>
+
+                <div class="calculate-cpm">
+                    Estimated eCPM: <span id="estim_cpm"></span>
+                </div>
+                <div class="calculate-rate">
+                    Estimated Fill Rate: <span id="estim_rate"></span>
+                </div>
+
+            <?php echo $this->form->getElement('728x90');?>
+            <br />
+            <?php echo $this->form->passback728x90;?><br />
+
+            <?php echo $this->form->getElement('300x250');?>
+            <br />
+            <?php echo $this->form->passback300x250;?><br />
+
+            <?php echo $this->form->getElement('160x600');?>
+            <br />
+            <?php echo $this->form->passback160x600;?>
+
+            <div style="clear: both"></div>
+
+            <?php echo $this->form->submit;?>
+
+        </form>                   
+
+<script type="text/javascript" src="/font/cufon-yui.js"></script>
+<script type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#topMenu a', {hover: true});	
+		Cufon.replace('#topMenu a');
+</script>
+<script type="text/javascript" src="/font/Headline_Two_400.font.js"></script>
+<script type="text/javascript">
+	Cufon.replace('.footerBann h5');		
+	Cufon.replace('.footerBann p');	
+	Cufon.replace('.footerBann a', {hover: true});	
+	Cufon.replace('#content h1');		
+				
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Lt_300.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#footCopyr');	
+		Cufon.replace('.fMenu a', {textDecoration: 'underline'});		
+		Cufon.replace('.topSlog');	
+		Cufon.replace('.applInfo label');	
+		Cufon.replace('.subAplBtn',{textShadow: '-1px -1px #5F5F5F'});
+		Cufon.replace('.applSideR li a');		
+		Cufon.replace('.applRbox p');		
+		Cufon.replace('.applRbox p a');				
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Rg_700.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('.fMenu h4');
+		Cufon.replace('.applInn h3');		
+		
+</script>
+<script type="text/javascript">
+$(document).ready(function() {
+Cufon.set("fontFamily", "Proxima_Nova_Lt_300.font.js");
+	$(".subAplBtn").hover(
+		function(){
+		$(this).addClass('subAplBtnHov');
+		Cufon.refresh();		
+		Cufon.replace('.subAplBtnHov', {textShadow: '-1px -1px #A21A1A'});	
+		}, 
+	  function () {
+		$(this).removeClass('subAplBtnHov');
+		Cufon.refresh();			
+		Cufon.replace('.subAplBtnHov', {textShadow: '-1px -1px #5F5F5F'});	
+	  }
+	);
+});
+</script>

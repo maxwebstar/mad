@@ -1,0 +1,28 @@
+
+<style type="text/css">
+    
+    #form-revert-tag{ display: block; width: 200px; }
+    #form-revert-tag #captcha-input-label{ float: left; display: block; width: 200px; }
+    #form-revert-tag #captcha-input-label label{ font-size: 20px; }
+    #form-revert-tag .my-captcha{ float: left; display: block; width: 200px; }
+    #form-revert-tag .my-captcha #captcha-input{ width: 198px; }
+    #form-revert-tag .my-captcha ul.errors { list-style: none; }
+    #form-revert-tag .my-captcha .errors li{ color: red; }
+    #form-revert-tag .my-submit input{ width: 200px; }
+ 
+    
+</style>
+
+<?php if($this->data->value == 0):?>
+
+<?php echo $this->form; ?>
+
+<?php elseif($this->data->value == 1):?>
+
+      Regeneration Tag Pending
+
+<?php elseif($this->data->value == 2):?>
+      
+      Tags Now Regenerated
+
+<?php endif; ?>

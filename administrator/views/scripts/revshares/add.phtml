@@ -1,0 +1,30 @@
+<h2 class="text-center">Add revshares</h2>
+<?php if(count($this->formErrors)): ?>
+    <div class="alert alert-danger" role="alert">
+        <ul>
+            <?php foreach($this->formErrors as $error): ?>
+                <?php foreach($error as $item): ?>
+                    <li><?php echo $item; ?></li>
+                <?php endforeach; ?>
+            <?php endforeach; ?>
+        </ul>
+    </div>
+<?php endif; ?>
+<form  method="post" class="form-horizontal">
+    <?php if($this->dataSizes): ?>
+        <?php foreach($this->dataSizes as $sizes): ?>
+            <div class="form-group <?php if(isset($this->formErrors['revshare'])) echo "has-error" ?>">
+                <label for="size_<?php echo $sizes['id']; ?>" class="col-sm-2 control-label"><?php echo $sizes['size_name'] ?></label>
+                <div class="col-sm-2">
+                    <input type="text" class="form-control" id="size_<?php echo $sizes['id']; ?>" name="revshare[<?php echo $sizes['id']; ?>]"
+                           value="<?php echo !isset($this->formValues['revshare'][$sizes['id']]) ? '' : $this->formValues['revshare'][$sizes['id']] ?>">
+                </div>
+            </div>
+        <?php endforeach; ?>
+    <?php endif; ?>
+    <hr>
+    <div class="form-group">
+        <button type="submit" class="btn btn-success">Save</button>
+        <a class="btn btn-danger" href="/administrator/revshares" role="button">Cancel</a>
+    </div>
+</form>

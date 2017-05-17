@@ -1,0 +1,31 @@
+<div class="container">
+    <?php if(count($this->dataNetworksSizes)): ?>
+        <?php foreach($this->dataNetworksSizes as $size): ?>
+            <?php if($size['network_id']==18): ?>
+                <div class="checkbox">
+                    <label>
+                        <input class="sekindo-sizes" data-size="<?php echo $size['id'] ?>" type="checkbox"
+                               name="sizes_18[<?php echo $size['id'] ?>]"
+                            <?php echo isset($this->formValues['sizes_18'][$size['id']]) ? "checked" : "" ?>
+                        >
+                        <?php echo $size['name'] ?>
+                    </label>
+                </div>
+                <div id="sekindo-form-<?php echo $size['id'] ?>"
+                     class="<?php echo isset($this->formValues['sizes_18'][$size['id']]) ? "" : "hidden" ?>">
+
+                    <div class="form-group <?php if(isset($this->formErrors['spaceId'])) echo "has-error" ?>">
+                        <label for="spaceId_<?php echo $size['id'] ?>" class="col-sm-2 control-label">spaceId:</label>
+                        <div class="col-sm-4">
+                            <input type="text" class="form-control" id="spaceId_<?php echo $size['id'] ?>"
+                                   name="<?php echo isset($this->formValues['sizes_18'][$size['id']]) ? "spaceId[{$size['id']}]" : "" ?>" placeholder="spaceId"
+                                   value="<?php echo !isset($this->formValues['spaceId'][$size['id']]) ? '' : $this->formValues['spaceId'][$size['id']] ?>"
+                            >
+                        </div>
+                    </div>
+                </div>
+
+            <?php endif; ?>
+        <?php endforeach; ?>
+    <?php endif; ?>
+</div>

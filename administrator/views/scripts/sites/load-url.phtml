@@ -1,0 +1,220 @@
+<html>
+<head>
+
+<link rel="stylesheet" type="text/css" href="/styles/style.css"/>
+<link rel="stylesheet" type="text/css" href="/styles/reset.css"/>
+<link rel="stylesheet" type="text/css" href="/styles/jquery-ui-1.8.18.custom.css"/>
+<link rel="stylesheet" type="text/css" href="/styles/table.css"/>
+<link rel="stylesheet" type="text/css" href="/js/jquery-tooltip/jquery.tooltip.css"/>
+
+<script type="text/javascript" src="/js/jquery-1.6.2.min.js"></script>
+<script type="text/javascript" src="/js/jquery-ui-1.8.18.custom.min.js"></script>
+<script type="text/javascript" src="/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="/js/jquery-tooltip/jquery.tooltip.js"></script>
+
+</head>
+<body>
+
+<style type="text/css">
+    
+    .tooltip a{ cursor: pointer; }
+    
+</style>
+<script type="text/javascript">
+
+  $(document).ready(function(){     
+      
+           var totalScript = 0;
+           var totalIframe = 0;
+           
+           var oTable1 = $('#script').dataTable( {
+                "bProcessing": true,
+                "bServerSide": true,
+                "sAjaxSource": '/administrator/sites/ajax-url',
+                "fnServerParams": function ( aoData ) {  
+                    aoData.push( { "name": "id", "value": <?php echo $this->id;?> } ) 
+                    aoData.push( { "name": "start_date", "value": $("#start_date_scr").val() } ) 
+                    aoData.push( { "name": "end_date", "value": $("#end_date_scr").val() } ) 
+                    },                    
+                "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+                "iDisplayLength": 100,
+                "aoColumns": [
+                    { 
+                      "sTitle": "Url", 
+                       "fnRender": function(obj){ return obj.aData[0]; }
+
+                    },
+                    { 
+                      "sTitle": "Count",
+                      "fnRender": function(obj){ totalScript += parseInt(obj.aData[1]); return obj.aData[1]; }
+                    },
+                    
+                ],
+                "aaSorting": [[ 0, "asc" ]],
+                "fnDrawCallback": function(nHead, aData, iStart, iEnd, aiDisplay){ nHead.nTHead.getElementsByTagName('th')[1].innerHTML = "Count ("+totalScript+")"; totalScript=0; }
+        });
+      
+        var oTable2 = $('#iframe').dataTable( {
+                "bProcessing": true,
+                "bServerSide": true,
+                "sAjaxSource": '/administrator/sites/ajax-url-iframe',
+                "fnServerParams": function ( aoData ) {  
+                    aoData.push( { "name": "id", "value": <?php echo $this->id;?> } )
+                    aoData.push( { "name": "start_date", "value": $("#start_date_ifr").val() } ) 
+                    aoData.push( { "name": "end_date", "value": $("#end_date_ifr").val() } ) 
+                },
+                "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+                "iDisplayLength": 100,
+                "aoColumns": [
+                    { 
+                      "sTitle": "Url", 
+                       "fnRender": function(obj){ return obj.aData[0]; }
+
+                    },
+                    { 
+                      "sTitle": "Page", 
+                       "fnRender": function(obj){ return obj.aData[1]; }
+
+                    },
+                    { 
+                      "sClass": "tooltip",  
+                      "sTitle": "Src",
+                      "fnRender": function(obj){ if(obj.aData[2]) return '<a title="'+obj.aData[2]+'">show</a>';
+                                                 else             return 'none';}
+                    },
+                    { 
+                      "sTitle": "Count",
+                      "fnRender": function(obj){ totalIframe += parseInt(obj.aData[3]); return obj.aData[3]; }
+                    },
+                    
+                ],
+                "aaSorting": [[ 0, "asc" ]],
+                "fnDrawCallback": function(nHead, aData, iStart, iEnd, aiDisplay){ 
+    
+                          nHead.nTHead.getElementsByTagName('th')[3].innerHTML = "Count ("+totalIframe+")";
+                          
+                          $('.tooltip a').tooltip({track: true, delay: 0, showURL: false, fade: 200}); 
+                          totalIframe=0;
+                }
+                
+        });
+      
+        $('#show_scr').click(function(){ totalScript=0; oTable1.fnDraw();  });
+        $('#show_ifr').click(function(){ totalIframe=0; oTable2.fnDraw();  });
+      
+      
+        $("#tabs").tabs();
+        
+	$( ".datepicker" ).live('click', function(){
+		$(this).datepicker({
+			showOn:'focus',
+			'dateFormat'  : "yy-mm-dd"
+			}).focus();				
+	});
+        
+      
+  });
+  
+</script>
+
+<div id="wrapper">
+<div id="mainInsideIn">  
+<div id="content" style="width: 100%">  
+<div id="report">
+    <h1>Show URLs</h1>
+    <div class="contUsL" style="width: 960px;">    
+    
+        <div id="tabs">
+
+            <ul>
+                <li><a href="#tabs-1">Script</a></li>
+                <li><a href="#tabs-2">Iframe</a></li>
+            </ul>
+
+            <div id="tabs-1">
+                <input type="text" class="datepicker" name="start_date" id="start_date_scr" style="width: 100px" value="<?php echo date("Y-m-d", time()-604800) ?>" /> - <input type="text" class="datepicker" name="end_date" id="end_date_scr" style="width: 100px" value="<?php echo date("Y-m-d") ?>"  /> <a class="sendMasBtn" id="show_scr" style="float: none; margin-left: 15px" title="" href="#">Show</a>
+                <table width="940px" cellpadding="0" cellspacing="0" border="0" class="display" id="script">
+
+                    <thead>
+                        <tr>
+                            <th width="90%">Url</th>
+                            <th width="10%">Count<span id="total-count"></span></th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                    <tfoot>
+                        <tr>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </tfoot>            
+
+                </table>
+                <div class="clear"></div>   
+            </div>
+            <div id="tabs-2">
+                <input type="text" class="datepicker" name="start_date" id="start_date_ifr" style="width: 100px" value="<?php echo date("Y-m-d", time()-604800) ?>" /> - <input type="text" class="datepicker" name="end_date" id="end_date_ifr" style="width: 100px" value="<?php echo date("Y-m-d") ?>"  /> <a class="sendMasBtn" id="show_ifr" style="float: none; margin-left: 15px" title="" href="#">Show</a>
+                <table width="940px" cellpadding="0" cellspacing="0" border="0" class="display" id="iframe">
+
+                    <thead>
+                        <tr>
+                            <th width="25%">Url</th>
+                            <th width="53%">Page</th>
+                            <th width="5%">Src</th>
+                            <th width="7%">Count<span id="total-count"></span></th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                    <tfoot>
+                        <tr>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </tfoot>            
+
+                </table>
+                <div class="clear"></div>   
+
+            </div>    
+
+        </div>
+     </div>
+</div>
+</div>
+</div>
+</div>
+    
+<script type="text/javascript" src="/font/cufon-yui.js"></script>
+<script type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#topMenu a', {hover: true});	
+		Cufon.replace('#topMenu a');
+</script>
+<script type="text/javascript" src="/font/Headline_Two_400.font.js"></script>
+<script type="text/javascript">
+	Cufon.replace('.contInf h3', {hover: true});	
+	Cufon.replace('.contInf h3');
+	Cufon.replace('.contInf h3.white', {color: '#FFF'});	
+	Cufon.replace('.footerBann h5');		
+	Cufon.replace('.footerBann p');	
+	Cufon.replace('.footerBann a', {hover: true});		
+    Cufon.replace('h1');		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Lt_300.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#footCopyr');	
+		Cufon.replace('.contInf p', {hover: true});		
+		Cufon.replace('.contInf p', {color: '#333333'});	
+		Cufon.replace('.contInf p.white', {color: '#FFF'});	
+		Cufon.replace('.fMenu a', {textDecoration: 'underline'});		
+		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Rg_700.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('.fMenu h4');
+</script>
+
+</body>
+</html>

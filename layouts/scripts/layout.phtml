@@ -1,0 +1,148 @@
+<?php
+    // Content-Type
+    $this->headMeta()->appendHttpEquiv('Content-Type', 'text/html;charset=utf-8');    
+    // doctype
+    echo $this->doctype();        
+?>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <?php
+        // meta tegs
+        echo $this->headMeta();
+    ?>
+    <?php
+        // title
+        echo $this->headTitle();
+    ?>
+    <?php
+        // styles and javascripts
+        $this->headLink()->appendStylesheet($this->baseUrl().'/styles/style.css');
+        $this->headLink()->appendStylesheet($this->baseUrl().'/styles/reset.css');
+        //$this->headLink()->appendStylesheet($this->baseUrl().'/styles/jqueryui.css');
+        $this->headLink()->appendStylesheet($this->baseUrl().'/styles/jquery-ui-1.8.18.custom.css');
+        $this->headLink()->appendStylesheet($this->baseUrl().'/styles/jquery.jqplot.min.css');
+        $this->headLink()->appendStylesheet($this->baseUrl().'/styles/table.css');
+        $this->headLink()->appendStylesheet($this->baseUrl().'/styles/form.css');
+        
+        echo $this->headLink();
+        
+        $this->headScript()->appendFile($this->baseUrl().'/js/jquery-1.6.2.min.js', 'text/javascript');
+        $this->headScript()->appendFile($this->baseUrl().'/js/jquery-ui-1.8.18.custom.min.js', 'text/javascript');
+        $this->headScript()->appendFile($this->baseUrl().'/js/jquery.ulslide.js', 'text/javascript');
+        $this->headScript()->appendFile($this->baseUrl().'/js/excanvas.js', 'text/javascript', array('conditional' => 'lt IE 9'));        
+        $this->headScript()->appendFile($this->baseUrl().'/js/jquery.jqplot.min.js', 'text/javascript');
+
+        $this->headScript()->appendFile($this->baseUrl().'/js/plugins/jqplot.highlighter.min.js', 'text/javascript');
+        $this->headScript()->appendFile($this->baseUrl().'/js/plugins/jqplot.cursor.min.js', 'text/javascript');
+        $this->headScript()->appendFile($this->baseUrl().'/js/plugins/jqplot.dateAxisRenderer.min.js', 'text/javascript');
+
+        $this->headScript()->appendFile($this->baseUrl().'/js/plugins/jqplot.canvasTextRenderer.min.js', 'text/javascript');
+        $this->headScript()->appendFile($this->baseUrl().'/js/plugins/jqplot.canvasAxisTickRenderer.min.js', 'text/javascript');
+        $this->headScript()->appendFile($this->baseUrl().'/js/plugins/jqplot.categoryAxisRenderer.min.js', 'text/javascript');
+        $this->headScript()->appendFile($this->baseUrl().'/js/plugins/jqplot.barRenderer.min.js', 'text/javascript');
+        $this->headScript()->appendFile($this->baseUrl().'/js/plugins/jqplot.pointLabels.min.js', 'text/javascript');
+
+        $this->headScript()->appendFile($this->baseUrl().'/js/jquery.dataTables.min.js', 'text/javascript');
+        
+        $this->headScript()->appendFile($this->baseUrl().'/js/ckeditor/ckeditor.js','text/javascript');
+        $this->headScript()->appendFile($this->baseUrl().'/js/ckeditor/adapters/jquery.js','text/javascript');
+        
+        $this->headScript()->appendFile($this->baseUrl().'/js/jquery-date-format.js','text/javascript');
+                
+        echo $this->headScript();            
+    ?>    
+<link rel="icon" type="image/x-icon" href="/images/favicon.ico" />
+</head>
+<body>
+<div id="wrapper">
+ <div id="mainInsideIn">	
+	<!--header top-->
+    <div id="headerTop">
+    	<div id="hTopInn">
+	    	<div id="logo"><a href="/" title=""><img src="/images/logo_new.png" width="316" height="101" alt="" /></a></div>
+            <div id="topMenu">
+            	<ul>
+                  <?php if(Zend_Auth::getInstance()->getIdentity()): ?>
+                    <li><a href="/" title=""><span>Home</span></a></li>
+                	<li <?php if($this->layout()->nav=='report') echo 'class="cur"' ?> ><a href="/report/" ><span>My Account</span></a></li>
+                	<li <?php if($this->layout()->nav=='contacts') echo 'class="cur"' ?>><a href="/contact-us/"><span>Contact Us</span></a></li>
+                  <?php else: ?>                
+                    <li <?php if($this->layout()->nav=='home') echo 'class="cur"' ?> ><a href="/" title=""><span>Home</span></a></li>
+                	<li <?php if($this->layout()->nav=='login') echo 'class="cur"' ?> ><a href="/login/" title=""><span>Login</span></a></li>
+                	<li <?php if($this->layout()->nav=='apply') echo 'class="cur"' ?> ><a href="/registration/" title=""><span> Apply Now</span></a></li>
+                	<li <?php if($this->layout()->nav=='about') echo 'class="cur"' ?> ><a href="/about-us/" title=""><span>Why Us?</span></a></li>
+                	<li <?php if($this->layout()->nav=='contacts') echo 'class="cur"' ?> ><a href="/contact-us/" title=""><span>Contact Us</span></a></li>
+                 <?php endif; ?>                    
+                </ul>
+            </div>
+        </div>
+    </div>
+	<!--//header top-->
+    <!--content-->
+    <div id="content">
+
+        <?php echo $this->layout()->content; ?>
+
+    </div>
+    <!--//content-->    
+  <div id="footerBlock"></div>
+ </div>
+</div>
+<div id="footerMain">
+ <div id="footer">
+ 	<div id="footTop">
+    	<div class="fMenu">
+        	<h4>Pages</h4>
+            <ul>
+            	<li><a href="/" title="">Home</a></li>
+            	<li><a href="/about-us/" title="">About Us</a></li>
+            	<li><a href="/contact-us/" title="">Contact Us</a></li>                                
+            	<li><a href="/faq/" title="">FAQ</a></li>                                
+            	<li><a href="/careers/" title="">Careers</a></li>                                
+            </ul>
+        </div>
+        
+    	<div class="fMenu">
+        	<h4>Publishers</h4>
+            <ul>
+            	<li><a href="/registration/" title="">Apply Now</a></li>
+            </ul>
+        </div>  
+        
+    	<div class="fMenu">
+        	<h4>Follow Us</h4>
+			<a href="http://www.facebook.com/MadAdsMediaLP" title="MadAds Media on Facebook" class="socLink" rel="nofollow"><img src="/images/faceBook.png" width="40" height="40" alt="" /></a>
+			<a href="http://www.twitter.com/MadAdsMedia" title="MadAds Media on Twitter" class="socLink" rel="nofollow"><img src="/images/twitt.png" width="40" height="40" alt="" /></a>
+        </div>
+        
+    	<div class="fMenu" style="margin-left:-10px; width:230px;">
+			<a href="http://www.instantssl.com" title="Secured by Comodo" rel="nofollow" class="socLink"><img src="/images/comodo_secure_100x85_transp.png" alt="" width="90" /></a>
+			<a href="http://www.gigenet.com/318.html" title="Proudly Hosted by Gigenet" rel="nofollow" target="_blank">Proudly hosted by: <img src="/images/gigenet-logo.png" alt="" width="90" /></a>
+        </div>
+        
+        <div class="footerBann">
+        	<h5>Have a question?</h5>
+            <p>24-7 Support is here to answer!</p>
+            <a href="/contact-us/" title="">Contact Us</a>
+        </div>      
+      
+    </div>
+    
+	<div id="footCopyr">&copy;2011-<?php echo date("Y"); ?> Mad Ads Media LP - All rights reserved.</div>
+ </div>
+</div>
+
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-26708249-2']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</body>
+</html>

@@ -1,0 +1,185 @@
+<style type="text/css">
+    
+    .action a{ margin: 0px 4px 0px 4px; }
+    .sendMasBtn{ cursor: pointer; }
+    
+</style>
+<link rel="stylesheet" type="text/css" href="/fancybox/jquery.fancybox-1.3.4.css" media="screen" />
+<script type="text/javascript" src="/fancybox/jquery.fancybox-1.3.4.js"></script>
+<script type="text/javascript" charset="utf-8">
+
+var oTable = new Object();
+
+$(document).ready(function() {   
+
+        <?php if($this->filter):?>  
+            var filter = '<?php echo $this->filter;?>';
+            $('#filter').val(filter);
+        <?php else:?>
+            var filter = $('#filter').val();
+        <?php endif;?>
+
+        oTable = $('#table_adx').dataTable( {
+                "bProcessing": true,
+                "bServerSide": true,
+                "sAjaxSource": '/administrator/adx/ajax-get',
+                "fnServerParams": function ( aoData ) {  aoData.push( { "name": "filter", "value": filter } ); },
+                "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+                "iDisplayLength": 100
+                ,
+                "aoColumns": [
+                    { 
+                      "sTitle": "Adx Network Name",
+                      "fnRender": function(obj){ return obj.aData[0]+' ('+ucwords(obj.aData[12].replace("http://", "").replace("https://", "").replace(".www", ""))+')'; } 
+                    },
+                    { 
+                      "sTitle": "Name",
+                      "fnRender": function(obj){ return obj.aData[1]; } 
+                    },
+                    { 
+                      "sTitle": "Company",
+                      "fnRender": function(obj){ return obj.aData[2]; } 
+                    },
+                    { 
+                      "sTitle": "Contact",
+                      "fnRender": function(obj){ return obj.aData[3]; } 
+                    },
+                    { 
+                      "sTitle": "Date",
+                      "fnRender": function(obj){ return obj.aData[4]; } 
+                    },
+                    { 
+                      "sTitle": "Status",
+                      "fnRender": function(obj){ var result = '';
+                          
+                                                 if(obj.aData[5] == 1) result = 'new';
+                                                 if(obj.aData[5] == 2) result = 'rejected';
+                                                 if(obj.aData[5] == 3) result = 'approved';   
+                                                 if(obj.aData[5] == 4) result = 'invited';
+                                                 if(obj.aData[5] == 5) result = 'expired';
+                          
+                                                 return result; } 
+                    },
+                    { 
+                      "sTitle": "",
+                      "sClass": "action",
+                      "bSortable": false,
+                      "fnRender": function(obj){ var result = '';
+                          
+                                                 if(obj.aData[6] == 1) result = '<a class="sendMasBtn" style="float: left; width:60px" href="/administrator/adx/change/do/3/PubID/'+obj.aData[7]+'">approve</a><a class="sendMasBtn" style="float: left; width:60px" href="/administrator/adx/change/do/2/PubID/'+obj.aData[7]+'">reject</a><a class="sendMasBtn" style="float: left; width:60px" href="/administrator/adx/change/do/delete/PubID/'+obj.aData[7]+'">remove</a>';
+                                                 if(obj.aData[6] == 2) result = '<a class="sendMasBtn" style="float: left; width:60px" href="/administrator/adx/change/do/3/PubID/'+obj.aData[7]+'">approve</a><a class="sendMasBtn" style="float: left; width:60px" href="/administrator/adx/change/do/delete/PubID/'+obj.aData[7]+'">remove</a>';
+                                                 if(obj.aData[6] == 3) result = '<a class="sendMasBtn" style="float: left; width:60px" href="/administrator/adx/change/do/2/PubID/'+obj.aData[7]+'">reject</a><a class="sendMasBtn" style="float: left; width:60px" href="/administrator/adx/change/do/delete/PubID/'+obj.aData[7]+'">remove</a>';
+                                                 if(obj.aData[6] == 4) result = '<a class="sendMasBtn" style="float: left; width:60px" onClick="updateInviteURL('+obj.aData[7]+')">edit url</a><a class="sendMasBtn" style="float: left; width:60px" href="/administrator/adx/change/do/delete/PubID/'+obj.aData[7]+'">remove</a>';  
+                                                 if(obj.aData[6] == 5) result = '<a class="sendMasBtn" style="float: left; width:60px" onClick="updateInviteURL('+obj.aData[7]+')">edit url</a><a class="sendMasBtn" style="float: left; width:60px" href="/administrator/adx/change/do/2/PubID/'+obj.aData[7]+'">reject</a><a class="sendMasBtn" style="float: left; width:60px" href="/administrator/adx/change/do/delete/PubID/'+obj.aData[7]+'">remove</a>';   
+                                                   
+                                                 return result; } 
+                    },
+                    { 
+                      "sTitle": "",
+                      "bSortable": false,
+                      "fnRender": function(obj){ return '<a href="/administrator/index/auth/id/'+obj.aData[7]+'">login</a>'; } 
+                    },
+                          
+
+                ],                                                
+                "aaSorting": [[ 1, "asc" ]]
+
+        });
+        
+        $('#filter').change(function(){ filter = $('#filter').val(); oTable.fnClearTable(); });
+
+});
+
+function updateInviteURL(id)
+{
+    $.fancybox({
+            'width'	: '75%',
+            'height'	: '75%',
+            'href'      : '/administrator/adx/edit-invite-url/id/'+id,
+            'autoScale'    	: false,
+            'transitionIn'	: 'none',
+            'transitionOut'	: 'none',
+            'type'		: 'iframe',
+            'onClosed': function() { oTable.fnClearTable(); }
+    }); 
+}
+
+function ucwords(str)
+{
+    return (str + '').replace(/^([a-z])|\s+([a-z])/g, function ($1) { return $1.toUpperCase(); });    
+}
+
+</script>
+
+<div class="contUsL" style="width: 950px;">
+<h1>AdX Registration</h1>
+
+<p>
+    <select id="filter">
+	<option value="all">All</option>
+	<option value="new" selected="selected">Pending</option>
+        <option value="expired">Expired</option>
+	<option value="reject">Reject</option>
+	<option value="approved">Approved</option>
+        <option value="invited">Invited</option>
+    </select>
+</p>
+
+<table width="1180px" cellpadding="0" cellspacing="0" border="0" class="display" id="table_adx">
+	<thead>
+		<tr>
+                    <th width="15%">Adx Network Name</th>
+                    <th width="15%">Name</th>
+                    <th width="15%">Company</th>
+                    <th width="15%">Contact</th>
+                    <th width="5%">Date</th>
+                    <th width="10%">Status</th>
+                    <th width="25%" style="width: 240px"></th>
+                    <th width="5%"></th>
+		</tr>
+	</thead>
+	<tbody></tbody>
+	<tfoot>
+		<tr>
+                    <th>AdX Network Name</th>
+                    <th>Name</th>
+                    <th>Company</th>
+                    <th>Contact</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th></th>
+                    <th></th>
+ 		</tr>
+	</tfoot>
+</table>
+</div>
+<script type="text/javascript" src="/font/cufon-yui.js"></script>
+<script type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#topMenu a', {hover: true});	
+		Cufon.replace('#topMenu a');
+</script>
+<script type="text/javascript" src="/font/Headline_Two_400.font.js"></script>
+<script type="text/javascript">
+	Cufon.replace('.contInf h3', {hover: true});	
+	Cufon.replace('.contInf h3');
+	Cufon.replace('.contInf h3.white', {color: '#FFF'});	
+	Cufon.replace('.footerBann h5');		
+	Cufon.replace('.footerBann p');	
+	Cufon.replace('.footerBann a', {hover: true});		
+    Cufon.replace('h1');		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Lt_300.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#footCopyr');	
+		Cufon.replace('.contInf p', {hover: true});		
+		Cufon.replace('.contInf p', {color: '#333333'});	
+		Cufon.replace('.contInf p.white', {color: '#FFF'});	
+		Cufon.replace('.fMenu a', {textDecoration: 'underline'});		
+		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Rg_700.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('.fMenu h4');
+</script>
+

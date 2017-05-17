@@ -1,0 +1,361 @@
+<script type="text/javascript">
+    $(document).ready(function(){
+        $("input[type='radio'][name='paymentBy']").click(function(){
+            if($(this).val()==2){
+                $("#paydirect").css('display', 'none');
+                $("#paypal").css('display', 'block');
+            }else if($(this).val()==3){
+                $("#paypal").css('display', 'none');                
+                $("#paydirect").css('display', 'block');
+            }else{
+                $("#paypal").css('display', 'none');                
+                $("#paydirect").css('display', 'none');                
+            }
+        })
+        
+        $("input[type='radio'][name='payType']").click(function(){
+            if($(this).val()==1){
+                $("#ein").css('display', 'none');
+                $("#ssn").css('display', 'block');
+            }else if($(this).val()==2){
+                $("#ssn").css('display', 'none');                
+                $("#ein").css('display', 'block');
+            }
+        })
+        
+        $("#country").change(function(){            
+            if($(this).val()==237){
+                $("#stateTxt").css('display', 'none');
+                $("#stateTxt").attr('name', '');
+                $("#stateTxt").val('');
+                $("#stateSel").css('display', 'block');
+                $("#stateSel").attr('name', 'state');
+                $("#stateSel").val('');
+                                
+            }else{
+                $("#stateTxt").css('display', 'block');
+                $("#stateTxt").attr('name', 'state');
+                $("#stateTxt").val('');
+                $("#stateSel").css('display', 'none');  
+                $("#stateSel").attr('name', '');   
+                $("#stateSel").val(''); 
+                
+            }
+        })
+                
+    })
+</script>
+<dir class="main">
+<table width="980" cellspacing="0" cellpadding="0" border="0">
+
+    <tr>
+
+        <td width="175">
+
+        <a style="color:#CB0008; line-height:25px;" href="/report/">Earnings</a>
+
+        <br />
+
+        <a style="color:#CB0008; line-height:25px;" href="/adcode/">Ad Code</a>
+
+        <br />
+
+        <a style="color:#CB0008; line-height:25px;" href="/contact/">Contact Info</a>
+
+        <br />
+
+        <a style="color:#CB0008; line-height:25px;" href="/password/">Password</a>
+
+        <br />
+
+        <a style="color:#CB0008; line-height:25px; font-weight:bold" href="/payment/">» Payment Profile</a>
+        <?php if(isset($_SESSION['admin_id'])): ?>
+        <br />
+        <a style="color:#CB0008; line-height:25px;" href="/administrator/index/back"><< Back To Admin</a>
+        <?php endif; ?>        
+
+        </td>
+
+        <td>
+
+                <h1>Payment Profile</h1>
+				<form method="post" class="sign-up" style="margin:0; padding:0;">
+                <table cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td>
+                            <div class="contUsL">
+                            <h4 class="grad">General Information</h4>
+                            <br />
+                            <p><label><strong>Account ID:</strong> </label> <br /><?php echo $this->userData['id'] ?></p>
+                            <p><label><strong>Payee Name:</strong> </label> <br /><input type="text" name="name" value="<?php echo $this->formValues['name'] ?>" />
+                                <?php if($this->formErrors['name']): ?>
+                          <ul>
+                                    <?php foreach($this->formErrors['name'] as $errors): ?>
+                                        <li><?php echo $errors ?></li>
+                                    <?php endforeach; ?>
+                          </ul>
+                                <?php endif; ?>                                            
+                            </p>
+                            <p><label><strong>Payee Type:</strong> </label> <br /><input type="radio" name="payType" value="1" <?php echo $this->formValues['payType']==1 ? 'checked' : '' ?> /> Individual/Sole Proprietor <input type="radio" name="payType" value="2" <?php echo $this->formValues['payType']==2 ? 'checked' : '' ?> /> Business
+                                <?php if($this->formErrors['payType']): ?>
+                          <ul>
+                                    <?php foreach($this->formErrors['payType'] as $errors): ?>
+                                        <li><?php echo $errors ?></li>
+                                    <?php endforeach; ?>
+                          </ul>
+                                <?php endif; ?>                                                                        
+                            </p>
+                            <fieldset style="padding-left: 10px;">
+                                <legend>Street</legend>
+                                <p><input type="text" name="street1" value="<?php echo $this->formValues['street1'] ?>" />
+                                    <?php if($this->formErrors['street1']): ?>
+                            <ul>
+                                        <?php foreach($this->formErrors['street1'] as $errors): ?>
+                                            <li><?php echo $errors ?></li>
+                                        <?php endforeach; ?>
+                            </ul>
+                                    <?php endif; ?>                                                                                                        
+                                </p>
+                                <p><input type="text" name="street2" value="<?php echo $this->formValues['street2'] ?>" />
+                                    <?php if($this->formErrors['street2']): ?>
+                            <ul>
+                                        <?php foreach($this->formErrors['street2'] as $errors): ?>
+                                            <li><?php echo $errors ?></li>
+                                        <?php endforeach; ?>
+                            </ul>
+                                    <?php endif; ?>                                                                                                        
+                                </p>
+                            </fieldset>
+                            <p><label><strong>Country:</strong> </label> <br />
+                                <select name="country" id="country">
+                                    <option>Please Select...</option>
+                                    <?php foreach($this->country as $item): ?>
+                                    <option value="<?php echo $item['key'] ?>" <?php echo $item['key']==$this->formValues['country'] ? 'selected' : '' ?> ><?php echo $item['value'] ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <?php if($this->formErrors['country']): ?>
+                          <ul>
+                                    <?php foreach($this->formErrors['country'] as $errors): ?>
+                                        <li><?php echo $errors ?></li>
+                                    <?php endforeach; ?>
+                          </ul>
+                                <?php endif; ?>                                                                                                                                                                
+                            </p>                            
+                            <p><label><strong>State or Province:</strong> </label> <br />
+                                <input type="text" <?php echo $this->formValues['country']==237 ? "name=\"\" style=\"display:none;\"" : "name=\"state\" style=\"display:block;\""  ?> id="stateTxt" value="<?php echo $this->formValues['state'] ?>" />
+                                <select id="stateSel" <?php echo $this->formValues['country']==237 ? "name=\"state\" style=\"display:block;\"" : "name=\"\" style=\"display:none;\""  ?>>
+                                        <?php foreach($this->state as $item): ?>
+                                        <option value="<?php echo $item['key'] ?>" <?php echo $item['key']==$this->formValues['state'] ? 'selected' : '' ?> ><?php echo $item['value'] ?></option>
+                                        <?php endforeach; ?>        
+                                </select>
+                                <?php if($this->formErrors['state']): ?>
+                          <ul>
+                                    <?php foreach($this->formErrors['state'] as $errors): ?>
+                                        <li><?php echo $errors ?></li>
+                                    <?php endforeach; ?>
+                          </ul>
+                                <?php endif; ?>                                                                                                                                    
+                            </p>
+                            <p><label><strong>City:</strong> </label> <br /><input type="text" name="city" value="<?php echo $this->formValues['city'] ?>" />
+                                <?php if($this->formErrors['city']): ?>
+                          <ul>
+                                    <?php foreach($this->formErrors['city'] as $errors): ?>
+                                        <li><?php echo $errors ?></li>
+                                    <?php endforeach; ?>
+                          </ul>
+                                <?php endif; ?>                                                                                                                                    
+                            </p>
+                            <p><label><strong>Zip / Postal Code:</strong> </label> <br /><input type="text" name="zip" value="<?php echo $this->formValues['zip'] ?>" />
+                                <?php if($this->formErrors['zip']): ?>
+                          <ul>
+                                    <?php foreach($this->formErrors['zip'] as $errors): ?>
+                                        <li><?php echo $errors ?></li>
+                                    <?php endforeach; ?>
+                          </ul>
+                                <?php endif; ?>                                                                                                                                                                
+                            </p>
+                            <p><label style="width: 160px;"><strong>Minimum Payment Amount:</strong> </label> <br />
+                                <select name="paymentAmout">
+                                    <option>Please Select...</option>
+                                    <?php foreach($this->payment as $item): ?>
+                                    <option value="<?php echo $item['key'] ?>" <?php echo $item['key']==$this->formValues['paymentAmout'] ? 'selected' : '' ?> ><?php echo $item['value'] ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <?php if($this->formErrors['paymentAmout']): ?>
+                          <ul>
+                                    <?php foreach($this->formErrors['paymentAmout'] as $errors): ?>
+                                        <li><?php echo $errors ?></li>
+                                    <?php endforeach; ?>
+                          </ul>
+                                <?php endif; ?>                                                                                                                                                                
+                            </p>
+                        </div>
+                        </td>
+                        <td style="padding-left:5px; ">
+                        <div class="contUsL">
+                            <h4 class="grad">Tax Info</h4>
+                            <br />
+                            <p id="ssn" style="display: <?php echo $this->formValues['payType']==1 ? 'block' : 'none' ?>;"><label><strong>SSN:</strong> </label> <br /><input type="text" name="ssn" value="<?php echo $this->formValues['ssn'] ?>" />
+                                <?php if($this->formErrors['ssn']): ?>
+                          <ul>
+                                    <?php foreach($this->formErrors['ssn'] as $errors): ?>
+                                        <li><?php echo $errors ?></li>
+                                    <?php endforeach; ?>
+                          </ul>
+                                <?php endif; ?>                                                                                                                                                                                            
+                            </p>
+                            <p id="ein" style="display: <?php echo $this->formValues['payType']==2 ? 'block' : 'none' ?>;"><label><strong>EIN:</strong> </label> <br /><input type="text" name="ein" value="<?php echo $this->formValues['ein'] ?>" />
+                                <?php if($this->formErrors['ein']): ?>
+                          <ul>
+                                    <?php foreach($this->formErrors['ein'] as $errors): ?>
+                                        <li><?php echo $errors ?></li>
+                                    <?php endforeach; ?>
+                          </ul>
+                                <?php endif; ?>                                                                                                                                                                                                                        
+                            </p>
+                            <h4 class="grad">Payment Method</h4>
+                            <br />
+                            <p><input type="radio" name="paymentBy" value="1" <?php echo $this->formValues['paymentBy']==1 ? 'checked' : '' ?> /> <strong>Payment by Check</strong> <br />
+                                <input type="radio" name="paymentBy" value="2" <?php echo $this->formValues['paymentBy']==2 ? 'checked' : '' ?> /> <strong>Payment by PayPal</strong><br />
+                                <input type="radio" name="paymentBy" value="3" <?php echo $this->formValues['paymentBy']==3 ? 'checked' : '' ?> /> <strong>Payment by Direct Deposit (Automated Clearing House)</strong>
+                                <?php if($this->formErrors['paymentBy']): ?>
+                          <ul>
+                                    <?php foreach($this->formErrors['paymentBy'] as $errors): ?>
+                                        <li><?php echo $errors ?></li>
+                                    <?php endforeach; ?>
+                          </ul>
+                                <?php endif; ?>                                                                                                                                                                                                                        
+                            </p>
+                            <div style="background-color: #ECECEC; display: <?php echo $this->formValues['paymentBy']==2 ? 'block' : 'none' ?>; padding: 10px 2px 10px 10px;" id="paypal">
+                                <p><label><strong>PayPal Email:</strong> </label> <br /><input type="text" name="paypalmail" value="<?php echo $this->formValues['paypalmail'] ?>" />
+                                <?php if($this->formErrors['paypalmail']): ?>
+                              <ul>
+                                    <?php foreach($this->formErrors['paypalmail'] as $errors): ?>
+                                        <li><?php echo $errors ?></li>
+                                    <?php endforeach; ?>
+                              </ul>
+                                <?php endif; ?>                                                                                                                                                                                                                                                        
+                                </p>
+                            </div>
+                            <div style="background-color: #ECECEC; display: <?php echo $this->formValues['paymentBy']==3 ? 'block' : 'none' ?>; padding: 10px 2px 10px 10px;" id="paydirect">
+                                <span style="color: red; font-size: 11px;">All Payments are in US dollars. Receiving account must be<br />able to accept US dollars.</span>
+                                <p><label><strong>Bank Country:</strong> </label> <br /><input type="radio" name="bank" value="1" <?php echo $this->formValues['bank']==1 ? 'checked' : '' ?> /> Canadian Bank <input type="radio" name="bank" value="2" <?php echo $this->formValues['bank']==2 ? 'checked' : '' ?> /> US Bank
+                                <?php if($this->formErrors['bank']): ?>
+                              <ul>
+                                    <?php foreach($this->formErrors['bank'] as $errors): ?>
+                                        <li><?php echo $errors ?></li>
+                                    <?php endforeach; ?>
+                              </ul>
+                                <?php endif; ?>                                                                                                                                                                                                                                                                                        
+                                </p>
+                                <p><label><strong>Account Name:</strong> </label> <br /><input type="password" name="accName" value="<?php echo $this->formValues['accName'] ?>" />
+                                <?php if($this->formErrors['accName']): ?>
+                              <ul>
+                                    <?php foreach($this->formErrors['accName'] as $errors): ?>
+                                        <li><?php echo $errors ?></li>
+                                    <?php endforeach; ?>
+                              </ul>
+                                <?php endif; ?>                                                                                                                                                                                                                                                                                                                        
+                                </p>
+                                <p><label><strong>Bank Name:</strong> </label> <br /><input type="text" name="bankName" value="<?php echo $this->formValues['bankName'] ?>" />
+                                <?php if($this->formErrors['bankName']): ?>
+                              <ul>
+                                    <?php foreach($this->formErrors['bankName'] as $errors): ?>
+                                        <li><?php echo $errors ?></li>
+                                    <?php endforeach; ?>
+                              </ul>
+                                <?php endif; ?>                                                                                                                                                                                                                                                                                                                                                        
+                                </p>
+                            <p><label><strong>Account Type:</strong> </label> <br />
+                                <select name="accType">
+                                    <option value="1" <?php echo $this->formValues['accType']==1 ? 'selected' : '' ?> >Checking</option>
+                                    <option value="2" <?php echo $this->formValues['accType']==2 ? 'selected' : '' ?> >Savings</option>
+                                </select>
+                                <?php if($this->formErrors['accType']): ?>
+                              <ul>
+                                    <?php foreach($this->formErrors['accType'] as $errors): ?>
+                                        <li><?php echo $errors ?></li>
+                                    <?php endforeach; ?>
+                              </ul>
+                                <?php endif; ?>                                                                                                                                                                                                                                                                                                                                                        
+                            </p>
+                            <p><label><strong>Account Number:</strong> </label> <br /><input type="text" name="accNumber" value="<?php echo $this->formValues['accNumber'] ?>" />
+                                <?php if($this->formErrors['accNumber']): ?>
+                              <ul>
+                                    <?php foreach($this->formErrors['accNumber'] as $errors): ?>
+                                        <li><?php echo $errors ?></li>
+                                    <?php endforeach; ?>
+                              </ul>
+                                <?php endif; ?>                                                                                                                                                                                                                                                                                                                                                                                    
+                            </p>
+                            <p><label style="width: 170px;"><strong>Confirm Account Number:</strong> </label> <br /><input type="text" name="confirmAccNumber" value="<?php echo $this->formValues['confirmAccNumber'] ?>" />
+                                <?php if($this->formErrors['confirmAccNumber']): ?>
+                              <ul>
+                                    <?php foreach($this->formErrors['confirmAccNumber'] as $errors): ?>
+                                        <li><?php echo $errors ?></li>
+                                    <?php endforeach; ?>
+                              </ul>
+                                <?php endif; ?>                                                                                                                                                                                                                                                                                                                                                                                                                
+                            </p>
+                            <p><label><strong>Routing Number:</strong> </label> <br /><input type="text" name="routNumber" value="<?php echo $this->formValues['routNumber'] ?>" />
+                                <?php if($this->formErrors['routNumber']): ?>
+                              <ul>
+                                    <?php foreach($this->formErrors['routNumber'] as $errors): ?>
+                                        <li><?php echo $errors ?></li>
+                                    <?php endforeach; ?>
+                              </ul>
+                                <?php endif; ?>                                                                                                                                                                                                                                                                                                                                                                                                                
+                            </p>
+                            <p><label style="width: 170px;"><strong>Confirm Routing Number:</strong> </label> <br /><input type="text" name="confirmRoutNumber" value="<?php echo $this->formValues['confirmRoutNumber'] ?>" />
+                                <?php if($this->formErrors['confirmRoutNumber']): ?>
+                              <ul>
+                                    <?php foreach($this->formErrors['confirmRoutNumber'] as $errors): ?>
+                                        <li><?php echo $errors ?></li>
+                                    <?php endforeach; ?>
+                              </ul>
+                                <?php endif; ?>                                                                                                                                                                                                                                                                                                                                                                                                                
+                            </p>
+                            </div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+                <p><input type="submit" value="Submit button" /></p>
+                </form>
+                
+        </td>
+
+    </tr>
+
+</table>					                
+                
+</dir>
+
+<script type="text/javascript" src="/font/cufon-yui.js"></script>
+<script type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#topMenu a', {hover: true});	
+		Cufon.replace('#topMenu a');
+        Cufon.replace('.error', {color: 'red'});
+</script>
+<script type="text/javascript" src="/font/Headline_Two_400.font.js"></script>
+<script type="text/javascript">
+	Cufon.replace('.footerBann h5');		
+	Cufon.replace('.footerBann p');	
+	Cufon.replace('.footerBann a', {hover: true});	
+	Cufon.replace('.contactUs h1');		
+				
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Lt_300.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#footCopyr');	
+		Cufon.replace('.fMenu a');		
+		Cufon.replace('.contactUs p');	
+		Cufon.replace('.contUsL label');		
+		Cufon.replace('.contBtn p');			
+		Cufon.replace('.sendMasBtn',{textShadow: '-1px -1px #5F5F5F'});		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Rg_700.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('.fMenu h4');
+</script>

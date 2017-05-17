@@ -1,0 +1,223 @@
+<script type="text/javascript" charset="utf-8">
+
+
+        $(document).ready(function(){ 
+            
+            var sumSAll = 0;
+            var sumSLive = 0;    
+            var sumSApprove = 0;
+            
+            var sumUAll = 0;
+            var sumUApprove = 0;
+            var sumULive = 0;
+            
+            var currentYear = $('#filterYear').val();
+            var currentMonth = $('#filterMonth').val(); 
+            
+            var oTable1 = $('#table-users').dataTable( {
+                        "bProcessing": true,
+                        "bServerSide": true,
+                        "sAjaxSource": '/administrator/index/ajax-new-account-user',
+                        "fnServerParams": function ( aoData ) {  aoData.push( { "name": "year", "value": currentYear }, { "name": "month", "value": currentMonth } ); },
+                        "fnDrawCallback": function( oSettings ) 
+                        {
+                             $('.sumUAll').html(sumUAll); 
+                             $('.sumUApprove').html(sumUApprove);
+                             $('.sumULive').html(sumULive); 
+                             sumUAll = 0; 
+                             sumUApprove = 0;
+                             sumULive  = 0; 
+                             
+                        },
+                        "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+                        "iDisplayLength": 100,
+                        "aoColumns": [
+                            { 
+                              "sTitle": "Date",
+                              "fnRender": function(obj){ return obj.aData[0]; } 
+                            },
+                            { 
+                              //"sTitle": "Total Applications",
+                              "fnRender": function(obj){ sumUAll += parseInt(obj.aData[1]); return obj.aData[1]; } 
+                            },
+                            { 
+                              //"sTitle": "Total Approved",
+                              "fnRender": function(obj){ sumUApprove += parseInt(obj.aData[2]); return '<a target="_blank" style="cursor: pointer;" href="/administrator/index/approved-date-user/date-cofirm/'+obj.aData[0]+'">'+obj.aData[2]+'</a>'; } 
+                            }, 
+                            { 
+                              "sTitle": "Approval %",
+                              "fnRender": function(obj){ return obj.aData[3]+' %'; } 
+                            },
+                            { 
+                                //"sTitle": "Who Went Live",
+                                "fnRender": function(obj)
+                                {
+                                    var curr_live = 0;
+                                    if(parseInt(obj.aData[4]))
+                                        var curr_live = parseInt(obj.aData[4]);
+                                     sumULive += curr_live; return curr_live; 
+                                } 
+                            }  
+                        ],                                                
+                        "aaSorting": [[ 0, "desc" ]]
+                });
+
+            var oTable2 = $('#table-sites').dataTable( {
+                    "bProcessing": true,
+                    "bServerSide": true,
+                    "sAjaxSource": '/administrator/index/ajax-new-account-site',
+                    "fnServerParams": function ( aoData ) {  aoData.push( { "name": "year", "value": currentYear }, { "name": "month", "value": currentMonth } ); },
+                    "fnDrawCallback": function( oSettings ) { $('.sumSAll').html(sumSAll); $('.sumSApprove').html(sumSApprove); $('.sumSLive').html(sumSLive); sumSAll = 0; sumSApprove = 0; sumSLive = 0; },
+                    "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+                    "iDisplayLength": 100,
+                    "aoColumns": [
+                            { 
+                              "sTitle": "Date",
+                              "fnRender": function(obj){ return obj.aData[0]; } 
+                            },
+                            { 
+                              //"sTitle": "Total Applications",
+                              "fnRender": function(obj){ sumSAll += parseInt(obj.aData[1]); return obj.aData[1]; } 
+                            },
+                            { 
+                              //"sTitle": "Total Approved",
+                              "fnRender": function(obj){ sumSApprove += parseInt(obj.aData[2]); return obj.aData[2]; } 
+                            }, 
+                            { 
+                              "sTitle": "Approval %",
+                              "fnRender": function(obj){ return obj.aData[3]+' %'; } 
+                            },
+                            { 
+                              //"sTitle": "Who Went Live",
+                              "fnRender": function(obj){ sumSLive += parseInt(obj.aData[4]); return '<a target="_blank" style="cursor: pointer;" href="/administrator/index/approve-live/date-live/'+obj.aData[5]+'">'+obj.aData[4]+'</a>'; } 
+                            } 
+                       
+                    ],                                                
+                    "aaSorting": [[ 0, "desc" ]]
+            	});            	
+          	
+
+            	$("#tabs").tabs();
+                
+                $('#filterYear').change(function(){ currentYear = $('#filterYear').val(); oTable1.fnClearTable(); oTable2.fnClearTable(); });
+                $('#filterMonth').change(function(){ currentMonth = $('#filterMonth').val(); oTable1.fnClearTable(); oTable2.fnClearTable(); });
+                             	
+        });        
+
+
+        
+</script>
+
+<h1>New Accounts</h1>
+<div class="contUsL" style="width: 750px;">
+<br /><br />
+<p>
+    <span style="padding-left: 57px;">Year:</span>
+    <select id="filterYear">
+        <?php for($i=2013; $i<=date("Y"); $i++){
+                if($i==date("Y")) echo "<option value='$i' selected='selected'>$i</option>";
+                             else echo "<option value='$i'>$i</option>";
+            }?>
+    </select>
+
+    <span style="">Month:</span>
+    <select id="filterMonth">
+        <?php for($j=1; $j<=12; $j++){
+                if($j == date('n')) echo "<option value='$j' selected='selected'>" .date("F", mktime(0, 0, 0, $j,   date("d"),   date("Y")))."</option>";
+                               else echo "<option value='$j'>" .date("F", mktime(0, 0, 0, $j,   date("d"),   date("Y")))."</option>";
+            }?>
+    </select>
+</p>
+
+<br/><br/>
+
+<div id="tabs">
+    <ul>
+        <li><a href="#tabs-1">Users</a></li>
+        <li><a href="#tabs-2">Sites</a></li>			
+    </ul>
+        
+    <div id="tabs-1">
+
+        <table width="750px" cellpadding="0" cellspacing="0" border="0" class="display" id="table-users">
+            <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Total Applications (<span class="sumUAll"></span>)</th>
+                        <th>Total Approved (<span class="sumUApprove"></span>)</th>
+                        <th>Approval %</th>
+                        <th>Who Went Live (<span class="sumULive"></span>)</th>
+                    </tr>
+            </thead>
+            <tbody>
+            </tbody>
+            <tfoot>
+                    <tr>
+                        <th>Date</th>
+                        <th>Total Applications (<span class="sumUAll"></span>)</th>
+                        <th>Total Approved (<span class="sumUApprove"></span>)</th>
+                        <th>Approval %</th>
+                        <th>Who Went Live (<span class="sumULive"></span>)</th>
+                    </tr>
+            </tfoot>
+        </table>
+
+    </div>
+    <div id="tabs-2">        
+
+        <table width="750px" cellpadding="0" cellspacing="0" border="0" class="display" id="table-sites">
+            <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Total Applications (<span class="sumSAll"></span>)</th>
+                        <th>Total Approved (<span class="sumSApprove"></span>)</th>
+                        <th>Approval %</th>
+                        <th>Who Went Live (<span class="sumSLive"></span>)</th>
+                    </tr>
+            </thead>
+            <tbody>
+            </tbody>	
+            <tfoot>
+                    <tr>
+                        <th>Date</th>
+                        <th>Total Applications (<span class="sumSAll"></span>)</th>
+                        <th>Total Approved (<span class="sumSApprove"></span>)</th>
+                        <th>Approval %</th>
+                        <th>Who Went Live (<span class="sumSLive"></span>)</th>
+                    </tr>
+            </tfoot>
+        </table>
+
+    </div>
+
+</div>
+</div> 
+<script type="text/javascript" src="/font/cufon-yui.js"></script>
+<script type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#topMenu a', {hover: true});	
+		Cufon.replace('#topMenu a');
+</script>
+<script type="text/javascript" src="/font/Headline_Two_400.font.js"></script>
+<script type="text/javascript">
+	Cufon.replace('.contInf h3', {hover: true});	
+	Cufon.replace('.contInf h3');
+	Cufon.replace('.contInf h3.white', {color: '#FFF'});	
+	Cufon.replace('.footerBann h5');		
+	Cufon.replace('.footerBann p');	
+	Cufon.replace('.footerBann a', {hover: true});		
+    Cufon.replace('h1');		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Lt_300.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#footCopyr');	
+		Cufon.replace('.contInf p', {hover: true});		
+		Cufon.replace('.contInf p', {color: '#333333'});	
+		Cufon.replace('.contInf p.white', {color: '#FFF'});	
+		Cufon.replace('.fMenu a', {textDecoration: 'underline'});		
+		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Rg_700.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('.fMenu h4');
+</script>

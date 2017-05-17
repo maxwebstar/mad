@@ -1,0 +1,78 @@
+<style>
+ .fancyFrame
+ {
+    height: 500px;
+ }
+</style>
+<?php
+    switch($this->userInfo['paymentBy']){
+        case 1:
+?>
+<h1>Payment by Check</h1>
+<p><strong>Payee Name:</strong> <?php echo $this->userInfo['name'] ?></p>
+<p><strong>Payee Type:</strong> <?php echo $this->userInfo['payType']==1 ? 'Individual/Sole' : 'Business' ?></p>
+<p><strong>Phone Number:</strong> <?php echo $this->userInfo['phone'] ?></p>
+<p><strong>Street:</strong> <?php echo $this->userInfo['street1'] .' '. $this->userInfo['street2'] ?></p>
+<p><strong>Country:</strong> <?php echo $this->userInfo['country'] ?></p>
+<p><strong>State or Province:</strong> <?php echo $this->userInfo['state'] ?></p>
+<p><strong>City:</strong> <?php echo $this->userInfo['city'] ?></p>
+<p><strong>Zip / Postal Code:</strong> <?php echo $this->userInfo['zip'] ?></p>
+<?php
+            break;
+        case 2:
+?>
+<h1>Payment by PayPal</h1>
+<p><strong>PayPal Email:</strong> <?php echo $this->userInfo['paypalmail'] ?></p>
+<?php
+
+            break;
+        case 3:
+?>
+<h1>Payment by Direct Deposit (Automated Clearing House)</h1>
+<?php
+if($this->userInfo['bank']==1)
+    $bank = 'Canadian Bank';
+elseif($this->userInfo['bank']==2)
+    $bank = 'US Bank';
+else
+    $bank = '';
+
+
+if($this->userInfo['accType']==1)
+    $acType = 'Checking';
+elseif($this->userInfo['accType']==2)
+    $acType = 'Savings';
+else
+    $acType = '';
+
+?>
+<p><strong>Bank Country:</strong> <?php echo $bank ?></p>
+<p><strong>Account Name:</strong> <?php echo $this->userInfo['accName'] ?></p>
+<p><strong>Bank Name:</strong> <?php echo $this->userInfo['bankName'] ?></p>
+<p><strong>Account Type:</strong> <?php echo $acType ?></p>
+<p><strong>Account Number:</strong> <?php echo $this->userInfo['accNumber'] ?></p>
+<p><strong>Confirm Account Number:</strong> <?php echo $this->userInfo['confirmAccNumber'] ?></p>
+<p><strong>Routing Number:</strong> <?php echo $this->userInfo['routNumber'] ?></p>
+<p><strong>Confirm Routing Number:</strong> <?php echo $this->userInfo['confirmRoutNumber'] ?></p>
+
+<?php
+           break;
+       case 4:
+?>
+<h1>Wire Transfer </h1>
+
+<p><strong>Bank Name:</strong> <?php echo $this->userInfo['bankName2'] ?></p>
+<p><strong>Bank Adress:</strong> <?php echo $this->userInfo['bankAdress']; ?></p>
+<p><strong>Account Name:</strong> <?php echo $this->userInfo['accName2'] ?></p>
+<p><strong>Account Number:</strong> <?php echo $this->userInfo['accNumber2'] ?></p>
+<p><strong>Swift:</strong> <?php echo $this->userInfo['swift'] ?></p>
+<p><strong>IBAN:</strong> <?php echo $this->userInfo['iban'] ?></p>
+
+<?php
+
+            break;
+    }
+?>
+<?php if($this->userInfo['payment_approved']):?>
+<p style='color: red; font-size: 12px;'><strong>PaymentProfile Last Changed:</strong> <?php echo date('m/d/Y',strtotime($this->userInfo['payment_approved'])); ?></p>
+<?php endif;?>

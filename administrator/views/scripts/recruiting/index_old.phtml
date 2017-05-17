@@ -1,0 +1,597 @@
+<script type="text/javascript" src="/js/fancybox/jquery.fancybox-1.3.4.js"></script>
+<link href="/js/fancybox/jquery.fancybox-1.3.4.css" media="screen" rel="stylesheet" type="text/css" />
+<script>
+
+    $(function() {
+
+        //import CSV file
+        $("#importCSVFile").change(function(e) {
+
+            var $csvfile = $(this);
+            var path = $csvfile.val();
+
+            if (path.length > 0) {
+
+                var file = $csvfile[0].files[0];
+
+                var oFReader = new FileReader();
+
+                oFReader.onload = function(oFREvent) {
+
+                    var result = oFREvent.target.result;
+
+                    var data = result.split(";");
+                    var base64 = data[1];
+                    var csvtext = base64.split(",")[1];
+
+                    $("#import").show();
+                    $importButton = $("#importButton");
+
+                    $importButton.click(function(e) {
+
+                        e.preventDefault();
+                        $importButton.html("Importing...");
+
+                        var href = $(this).attr("href");
+                        var eID = document.getElementById("upSel2");
+                        var staffID = eID.options[eID.selectedIndex].value;
+
+						if (!staffID){
+
+							$(eID).prev().css("color","red").css("font-weight","bold");
+							
+                            $importButton.css("background-color","red").html("Please select a recruiter -->");
+                            setTimeout(function() {
+                                $importButton.css("background-color","#8E8E8E").html("Import");
+                                
+                            }, 3000)
+                            
+							return;
+						}
+                        
+                        var importEmailsOnly = ($("#importEmailsOnly").is(":checked")) ? 1 : 0;
+                        var skipInitialEmail = ($("#skipInitialEmail").is(":checked")) ? 1 : 0;
+                        
+                        $.post(href, {data: csvtext, staffID: staffID, importEmailsOnly : importEmailsOnly, skipInitialEmail : skipInitialEmail}, function(res) {
+
+                            if (!res.error) {
+
+                                var imported = res.data;
+                                $importButton.html("Imported " + imported + " records");
+
+                                setTimeout(function() {
+                                    $importButton.html("Import");
+                                    $("#import").hide();
+                                    $csvfile.val("");
+                                    window.location.reload();
+                                }, 3000)
+
+                            } else {
+                                if (typeof console == "object")
+                                    console.log(res.data);
+
+                                $importButton.html("Import failed");
+                            }
+                        });
+                    });
+                };
+
+                oFReader.readAsDataURL(file);
+
+            }
+        });
+
+        $("#importCSVWSFile").change(function(e) {
+
+            var $csvfile = $(this);
+            var path = $csvfile.val();
+
+            if (path.length > 0) {
+
+                var file = $csvfile[0].files[0];
+
+                var oFReader = new FileReader();
+
+                oFReader.onload = function(oFREvent) {
+
+                    var result = oFREvent.target.result;
+
+                    var data = result.split(";");
+                    var base64 = data[1];
+                    var csvtext = base64.split(",")[1];
+
+                    $("#importWS").show();
+                    $importButton = $("#importWSButton");
+                    $importHeader = $("#importWSHeader");
+
+                    $importButton.click(function(e) {
+
+                        e.preventDefault();
+                        $importButton.html("Importing...");
+
+                        var href = $(this).attr("href");
+                        var eID = document.getElementById("upSel1");
+                        var staffID = eID.options[eID.selectedIndex].value;
+                        $.post(href, {data: csvtext, staffID: staffID}, function(res) {
+
+                            if (!res.error) {
+
+                                var imported = res.data;
+                                $importButton.html("Imported " + imported + " records");
+
+                                setTimeout(function() {
+                                    $importButton.html("Import");
+                                    $("#import").hide();
+                                    $csvfile.val("");
+                                    window.location.reload();
+                                }, 3000)
+
+                            } else {
+                                if (typeof console == "object")
+                                    console.log(res.data);
+
+                                $importButton.html("Import failed");
+                                $importHeader.show();
+                                $importHeader.text(res.data);
+
+                            }
+                        });
+                    });
+                };
+
+                oFReader.readAsDataURL(file);
+
+            }
+        });
+
+
+        //upload email template
+        $("#uploadTemplateName").keyup(function(e) {
+
+            var name = $(this).val();
+            if (name.length >= 10)
+                $("#uploadTemplate").show();
+        });
+
+        $("#uploadTemplateOrder").change(function(e) {
+
+            var order = $(this).val();
+            if (parseInt(order) > 0)
+                $("#uploadTemplateNameDiv").show();
+        });
+
+        $("#uploadTemplateNewName").keyup(function(e) {
+
+            var name = $(this).val();
+            if (name.length >= 10)
+                $("#uploadTemplateFileContainer").show();
+        });
+
+        $("#uploadTemplateFile").change(function(e) {
+
+            var name = $("#uploadTemplateName").val();
+            var order = $("#uploadTemplateOrder").val();
+            var template_name = $("#uploadTemplateNewName").val();            
+            var $uploadTemplateFile = $(this);
+            var path = $uploadTemplateFile.val();
+
+            if (path.length > 0) {
+
+                var file = $uploadTemplateFile[0].files[0];
+
+                var oFReader = new FileReader();
+
+                oFReader.onload = function(oFREvent) {
+
+                    var result = oFREvent.target.result;
+
+                    var data = result.split(";");
+                    var base64 = data[1];
+                    var template64 = base64.split(",")[1];
+
+                    $("#upload").show();
+                    $uploadButton = $("#uploadButton");
+
+                    $uploadButton.click(function(e) {
+
+                        e.preventDefault();
+
+                        $uploadButton.html("Uploading...");
+
+                        var href = $(this).attr("href");
+
+                        $.post(href, {'name': name, "order": order, data: template64, template_name: template_name}, function(res) {
+
+                            if (typeof res.error != "undefined" && !res.error) {
+
+                                var imported = res.data;
+                                $uploadButton.html("Uploaded");
+
+                                setTimeout(function() {
+                                    $uploadButton.html("Upload");
+                                    $("#upload").hide();
+                                    $uploadTemplateFile.val("");
+                                    window.location.reload();
+                                }, 3000)
+
+                            } else {
+                                if (typeof console == "object")
+                                    console.log(res.data);
+
+                                $uploadButton.html("Upload failed");
+                            }
+                        });
+                    });
+                };
+
+                oFReader.readAsDataURL(file);
+
+            }
+        });
+
+        //table of templates
+        var $templateTable;
+
+        var options = {
+            "bProcessing": true,
+            "bServerSide": true,
+            "sAjaxSource": null,
+            "fnServerParams": function(aoData) {
+
+            },
+            "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+            "iDisplayLength": 50,
+            "aoColumns": [
+                {
+                    "sType": "num-html",
+                    "sTitle": "ID#",
+                    "fnRender": function(obj) {
+                        var id = obj.aData["id"];
+                        return id;
+                    }
+                },
+                {
+                    "sTitle": "Subject",
+                    "fnRender": function(obj) {
+
+                        return obj.aData["name"];
+                    }
+                },
+                {
+                    "sTitle": "Order",
+                    "fnRender": function(obj) {
+
+                        var order = "";
+
+                        if (obj.aData["order"] == "1")
+                            order = "Initial";
+                        else if (obj.aData["order"] == "2")
+                            order = "Follow Up";
+                        else if (obj.aData["order"] == "3")
+                            order = "Final";
+
+                        return order;
+                    }
+                },
+                {
+                    "sTitle": "Action",
+                    "fnRender": function(obj) {
+
+                        var id = obj.aData["id"];
+                        return "<a class=\"iframe viewTemplate\" href=\"/administrator/recruiting/view/id/" + id + "\">View</a> | <a class=\"deleteTemplate\" href=\"/administrator/recruiting/template/id/" + id + "/case/delete\">Delete</a> | <a style=\"cursor: pointer\" onClick=\"editTemplate("+id+")\">Edit</a>";
+                    }
+                },
+            ],
+            "fnDrawCallback": function() {
+                $(".deleteTemplate").click(function(e) {
+
+                    e.preventDefault();
+
+                    var href = $(this).attr("href");
+
+                    $.get(href, function(res) {
+
+                        if (typeof res.error != "undefined" && !res.error)
+                        {
+                            $templateTable.fnClearTable(true);
+                        }
+                        else
+                        {
+                            if (typeof console == "object")
+                                console.log(res.data);
+                        }
+                    });
+                });
+                $(".viewTemplate").click(function(e) {
+                    e.preventDefault();
+                    $(this).fancybox({'width': 450, 'height': 450});
+                });
+            },
+            "aaSorting": [[0, "asc"]]
+        };
+
+        options.sAjaxSource = "/administrator/recruiting/templates";
+        $templateTable = $('#templateTable').dataTable(options);
+
+        //send out email templates
+        $("#staff").change(function(e) {
+
+            var staff_id = parseInt($(this).val());
+
+            if (!isNaN(staff_id) && staff_id > 0)
+                $("#sendTemplate").show();
+        });
+
+        $("#template").change(function(e) {
+
+            var template_id = parseInt($(this).val());
+            if (!isNaN(template_id) && template_id > 0) {
+                $("#send").show();
+            }
+        });
+
+        var sending = function(e) {
+
+            $(this).click(false);//$("#sendButton")
+
+            e.preventDefault();
+            var $sendEmails = $(this);
+            var href = $sendEmails.attr("href");
+            $sendEmails.html("Sending Emails...");
+            var staff_id = $("#staff").val();
+            var template_id = $("#template").val();
+
+            $.get(href, {"staff_id": staff_id, "template_id": template_id}, function(res) {
+                if (typeof res.error != "undefined" && !res.error)
+                    $sendEmails.html("Sent " + res.data + " emails");
+                else
+                    $sendEmails.after("An error occurred and recruiting emails could not be sent");
+                $("#sendButton").click(sending);
+            });
+        };
+
+        $("#sendButton").click(sending);
+    });
+
+    function editTemplate(id)
+    {
+       $.fancybox({
+           'type'	   : 'iframe',
+           'autoScale'     : false,
+           'transitionIn'  : 'none',
+           'transitionOut' : 'none',
+           'width'         : 450, 
+           'height'        : 450,
+           'href'          : '/administrator/recruiting/edit/id/'+id
+       });   
+    }
+</script>
+<script type="text/javascript" src="/fancybox/jquery.fancybox-1.3.4.js"></script>
+<link href="/fancybox/jquery.fancybox-1.3.4.css" media="screen" rel="stylesheet" type="text/css" />
+<style>
+    .section {
+        padding:0 0 12px 0;
+    }
+
+    .section-sm {
+        padding:0 0 8px 0;
+
+    }
+    .sendMasBtn, .sendMasBtn:hover {
+        float:none;
+        padding:3px 18px 3px 18px;
+    }	
+
+    .hidden {
+        display:none;
+    }
+
+    #import {
+        display:none;
+    }
+
+    #importWS {
+        display:none;
+    }
+    #importWSHeader{
+        display: none;
+    }
+
+    #uploadTemplateName {
+        border: 1px solid #C0C0C0;
+        padding:2px;
+        width:200px;
+    }
+
+    h2 {
+        font-weight:bold;
+        font-size:larger;
+        padding: 12px 0 0 0;
+    }
+</style>
+<div>
+    <h1>Recruiting Emailer</h1>
+    <div class="section">
+        <h2>Import Web sites</h2>
+        <form name="importWSForm">
+                        <table><tr><td>
+            Select CSV file to import<br/>
+            <input type="file" id="importCSVWSFile" name="importCSVWSFile" />
+                                </td><td>
+            <span id="importWS">
+                Click to start import<br/>
+                <a href="/administrator/recruiting/importws" id="importWSButton" title="Start Import" class="sendMasBtn">Import</a>	
+                </span>
+                    </td><td>
+                        <div style="padding-left: 20px;"><h3>Uploader</h3>
+                            <select id="upSel1" name="staff">
+                                <?php
+                                foreach ($this->staff as $staff) {
+                                    echo "<option value=\"".$staff['id']."\">" . $staff['name'] . "</option>";
+                                }
+                                ?>
+                            </select>
+                        </div>
+                    </td></tr></table>
+        </form>	
+
+
+        <h2 id="importWSHeader">Testing</h2>
+    </div>
+    <div class="section">
+        <h2>Export Websites</h2>
+        <a href="/administrator/recruiting/downloadwebsites" title="Download" class="sendMasBtn">Download</a>
+    </div>
+    <div class="section">
+        <h2>Import Web sites/Emails</h2>
+        <form name="importForm">
+            <table>
+            	<tr>
+            		<td>
+                        Select CSV file to import<br/>
+                        <input type="file" id="importCSVFile" name="importCSVFile" />
+                    </td>
+                    <td>
+                        <span id="import">
+                            Click to start import<br/>
+                            <a href="/administrator/recruiting/import" id="importButton" title="Start Import" class="sendMasBtn">Import</a>
+                        </span>
+                    </td>
+                    <td>
+                        <div style="padding-left: 20px;"><h3>Uploader</h3>
+                            <select  id="upSel2" name="staff">
+                            	<option value="">Select recruiter</option>
+                                <?php
+                                foreach ($this->staff as $staff) {
+                                    echo "<option value=\"".$staff['id']."\">" . $staff['name'] . "</option>";
+                                }
+                                ?>
+                            </select>
+                        </div>
+                    </td>
+                    <td>
+                    	<div style="padding-left: 20px;">
+	                    	Final Email Already Sent<br />
+	                    	<input type="checkbox" value="1" name="import_emails_only" id="importEmailsOnly" /> Import only, do not email
+                    	</div>
+                    </td>
+                    <td>
+                    	<div style="padding-left: 20px;">
+	                    	Skip Initial Email<br />
+	                    	<input type="checkbox" value="1" name="skip_initial_email" id="skipInitialEmail" /> Set to Pending
+                    	</div>
+                    </td>                    
+        		</tr>
+        	</table>
+        </form>	
+    </div>
+
+    <div class="section">
+        <h2>Upload Template</h2>
+
+        <div class="section-sm">
+            Replace tags: 
+            <?php foreach ($this->emailTags as $tag): ?>
+                <?= $tag ?>
+            <?php endforeach; ?>
+            {staff_ref_id}
+        </div>
+
+        <form name="uploadForm">
+            Create a new email template. 
+            <label>Subject:
+                <input type="text" id="uploadTemplateName" name="uploadTemplateName" /></label>
+
+            <div id="uploadTemplate" class="hidden">
+
+                <div>
+                    <label for="uploadTemplateOrder">Select order
+                        <select id="uploadTemplateOrder" name="uploadTemplateOrder">
+                            <option value="">Select Order</option>
+                            <option value="1">Initial Email</option>
+                            <option value="2">Follow Up Email</option>
+                            <option value="3">Final Email</option>
+                        </select>
+                    </label>
+                </div>	
+                <br/>
+                <div id="uploadTemplateNameDiv" class="hidden">
+                    <label for="uploadTemplateNewName">Template Name:
+                        <input style="border: 1px silver solid;" type="text" id="uploadTemplateNewName" name="uploadTemplateNewName" /></label>
+                </div>	
+
+                <div id="uploadTemplateFileContainer" class="hidden">
+                    <label for="uploadTemplateFile">Select template HTML file
+                        <input type="file" id="uploadTemplateFile" name="uploadTemplateFile" /></label>
+                </div>
+
+                <span id="upload" class="hidden">
+                    Click to start upload
+                    <a href="/administrator/recruiting/upload" id="uploadButton" title="Start Upload" class="sendMasBtn">Upload</a>			
+                </span>
+            </div>
+        </form>	
+
+
+
+    </div>
+
+    <div class="section">
+        <h2>Email</h2>
+        <form name="sendForm">
+            Select a sender
+            <select name="staff" id="staff">
+                <option value="">Select a Staff Member</option>
+                <?php foreach ($this->staff as $staff): ?>
+                    <option value="<?= $staff->id ?>"><?= $staff->name ?></option>
+                <?php endforeach; ?>
+            </select>
+            <div id="sendTemplate" class="hidden">
+                Select a template
+                <select name="template" id="template">
+                    <option value="">Select an Email Template</option>
+                    <?php foreach ($this->templates as $template): ?>
+                        <option value="<?= $template->id ?>"><?= $template->order ?>. <?= $template->name ?></option>
+                    <?php endforeach; ?>
+                </select>		
+                <span id="send" class="hidden">
+                    Click to send out emails
+                    <a href="/administrator/recruiting/send" id="sendButton" title="Send out Emails" class="sendMasBtn">Send Emails</a>
+                </span>
+            </div>
+        </form>
+    </div>
+
+    <div class="section">
+        <h2>Templates</h2>
+        <div style="float:left; width:760px; ">
+            <table class="display" id="templateTable">
+                <thead>
+                    <tr>
+                        <th width="10%">ID #</th>
+                        <th width="50%">Subject</th>
+                        <th width="20%">Order</th>
+                        <th width="20%">Action</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+                <tfoot>
+                    <tr>
+                        <th>ID #</th>
+                        <th>Subject</th>
+                        <th>Order</th>
+                        <th>Action</th>
+                    </tr>
+                </tfoot>
+            </table>	
+        </div>	
+    </div>	
+
+</div>
+
+<script type="text/javascript" src="/font/cufon-yui.js"></script>
+<script	type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script	type="text/javascript" src="/font/Headline_Two_400.font.js"></script>
+<script type="text/javascript">
+    Cufon.replace('h1');
+</script>

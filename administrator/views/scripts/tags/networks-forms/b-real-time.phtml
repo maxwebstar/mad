@@ -1,0 +1,33 @@
+<div class="container">
+    <?php if(count($this->dataNetworksSizes)): ?>
+        <?php foreach($this->dataNetworksSizes as $size): ?>
+            <?php if($size['network_id']==21): ?>
+                <div class="checkbox">
+                    <label>
+                        <input class="brt-sizes" data-size="<?php echo $size['id'] ?>" type="checkbox"
+                               name="sizes_21[<?php echo $size['id'] ?>]"
+                            <?php echo isset($this->formValues['sizes_21'][$size['id']]) ? "checked" : "" ?>
+                        >
+                        <?php echo $size['name'] ?>
+                    </label>
+                </div>
+                <div id="brt-form-<?php echo $size['id'] ?>"
+                     class="<?php echo isset($this->formValues['sizes_21'][$size['id']]) ? "" : "hidden" ?>">
+
+                    <div class="form-group <?php if(isset($this->formErrors['brt_placementId'])) echo "has-error" ?>">
+                        <label for="brt_placementId_<?php echo $size['id'] ?>" class="col-sm-2 control-label">placementId:</label>
+                        <div class="col-sm-4">
+                            <input type="text" class="form-control" id="brt_placementId_<?php echo $size['id'] ?>"
+                                   name="<?php echo isset($this->formValues['sizes_21'][$size['id']]) ? "brt_placementId[{$size['id']}]" : "" ?>" placeholder="placementId"
+                                   value="<?php echo !isset($this->formValues['brt_placementId'][$size['id']]) ? '' : $this->formValues['brt_placementId'][$size['id']] ?>"
+                            >
+                        </div>
+                    </div>
+                    
+                </div>
+
+            <?php endif; ?>
+        <?php endforeach; ?>
+    <?php endif; ?>
+</div>
+

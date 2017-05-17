@@ -1,0 +1,178 @@
+<link href="/styles/jquery.multiselect.css" media="screen" rel="stylesheet" type="text/css" >
+<link href="/styles/jquery.multiselect.filter.css" media="screen" rel="stylesheet" type="text/css" >
+<script type="text/javascript" src="/js/jquery-ui-1.9.2.custom.min.js"></script>
+<script type="text/javascript" src="/js/jquery.multiselect.js"></script>
+<script type="text/javascript" src="/js/jquery.multiselect.filter.js"></script>
+<script>
+	$(document).ready(function(){
+		$( ".datepicker" ).live('click', function(){
+			$(this).datepicker({
+				showOn:'focus',
+				'dateFormat'  : "yy-mm-dd"
+				}).focus();				
+		});
+		$(".addPrice").click(function(){
+			$("#florPriceContent").append('<br><br><label></label><input type="text" style="width: 100px;" class="datepicker" name="floor_price_date[]" value="" /> <input type="text" style="width: 100px;" name="floor_price[]" value="0." /> <input type="text" style="width: 100px;" name="floor_percent[]" value="0.5" />');
+			return false;
+		});
+		$("#userSearch").multiselect({
+			   multiple: false,
+			   header: "Select an option",
+			   noneSelectedText: "Select an Option",
+			   selectedList: 1
+		}).multiselectfilter();		if($("#pay_estimates").attr('checked')){			$("#cpm").css('display', 'block');		}else{			$("#cpm").css('display', 'none');		}		$("#pay_estimates").click(function(){			if($("#pay_estimates").attr('checked')){				$("#cpm").css('display', 'block');			}else{				$("#cpm").css('display', 'none');			}				});				if($("#floor_pricing").attr('checked')){			$("#florPriceContent").css('display', 'block');			$("#notes").css('display', 'block');		}else{			$("#florPriceContent").css('display', 'none');			$("#notes").css('display', 'none');		}		$("#floor_pricing").click(function(){			if($("#floor_pricing").attr('checked')){				$("#florPriceContent").css('display', 'block');				$("#notes").css('display', 'block');			}else{				$("#florPriceContent").css('display', 'none');				$("#notes").css('display', 'none');			}				});/**/		
+
+                
+
+});
+</script>
+
+<form action="" method="post" class="sign-up">
+<div class="contUsL" style="width: 700px;">
+    <p><label>User: </label>
+        <select name="user" id="userSearch">
+            <?php foreach($this->user as $item): ?>
+            <option value="<?php echo $item['key'] ?>" <?php echo $item['key']==$this->formValues['user'] ? 'selected="selected"' : '' ?> ><?php echo "#".$item['key'].": ".$item['value']." (".$item['company'].")" ?></option>
+            <?php endforeach; ?>
+        </select>
+    <?php if(isset($this->formErrors['user'])): ?>
+        <ul class="error">
+        <?php foreach($this->formErrors['user'] as $errors): ?>
+            <li><?php echo $errors ?></li>
+        <?php endforeach; ?>
+        </ul>
+    <?php endif; ?>                                               
+    </p>
+
+    <p><label>Site Type: </label>
+        <select name="type">
+            <option>Please Select...</option>
+            <?php foreach($this->type as $item): ?>
+            <option value="<?php echo $item['key'] ?>" <?php echo $item['key']==$this->formValues['type'] ? 'selected="selected"' : '' ?> ><?php echo $item['value'] ?></option>
+            <?php endforeach; ?>
+        </select>
+    <?php if(isset($this->formErrors['type'])): ?>
+        <ul class="error">
+        <?php foreach($this->formErrors['type'] as $errors): ?>
+            <li><?php echo $errors ?></li>
+        <?php endforeach; ?>
+        </ul>
+    <?php endif; ?>                                               
+    </p>
+
+    <p><label>Rubicon: </label>
+        <select name="rubicon_type">
+            <?php foreach($this->rubicon_type as $item): ?>
+            <option value="<?php echo $item['key'] ?>" <?php echo $item['key']==$this->formValues['rubicon_type'] ? 'selected="selected"' : '' ?> ><?php echo $item['value'] ?></option>
+            <?php endforeach; ?>
+        </select>
+    <?php if(isset($this->formErrors['rubicon_type'])): ?>
+        <ul class="error">
+        <?php foreach($this->formErrors['rubicon_type'] as $errors): ?>
+            <li><?php echo $errors ?></li>
+        <?php endforeach; ?>
+        </ul>
+    <?php endif; ?>                                               
+    </p>    
+    
+    <p><label>Site Name: </label> <input type="text" name="name" value="<?php echo $this->formValues['name'] ?>" />
+    <?php if(isset($this->formErrors['name'])): ?>
+        <ul class="error">
+        <?php foreach($this->formErrors['name'] as $errors): ?>
+            <li><?php echo $errors ?></li>
+        <?php endforeach; ?>
+        </ul>
+    <?php endif; ?>                
+    </p>
+    
+    <p><label>SiteURL: </label><input type="text" name="SiteURL" value="<?php echo $this->formValues['SiteURL'] ?>" />
+    <?php if(isset($this->formErrors['SiteURL'])): ?>
+        <ul class="error">
+        <?php foreach($this->formErrors['SiteURL'] as $errors): ?>
+            <li><?php echo $errors ?></li>
+        <?php endforeach; ?>
+        </ul>
+    <?php endif; ?>                
+    </p>
+    
+    	<p><label style="width: 140px;">Pay on estimates: </label> <input type="checkbox" id="pay_estimates" name="pay_estimates" value="1" <?php echo $this->formValues['pay_estimates']==1 ? 'checked="checked"' : '' ?> style="width: 20px;" />   
+        <p style="display:none" id="cpm"><label>CPM: </label> <input type="text" name="cpm" value="<?php echo $this->formValues['cpm'] ?>"  />
+        <p><label>Floor Pricing?: </label> <input type="checkbox" id="floor_pricing" name="floor_pricing" value="1" <?php echo $this->formValues['floor_pricing']==1 ? 'checked="checked"' : '' ?> style="width: 20px;" />
+        
+    <?php if(isset($this->formErrors['floor_pricing'])): ?>
+        <ul class="error">
+        <?php foreach($this->formErrors['floor_pricing'] as $errors): ?>
+            <li><?php echo $errors ?></li>
+        <?php endforeach; ?>
+        </ul>
+    <?php endif; ?>                
+      </p>  
+    
+    <p id="florPriceContent" style="display: none"><label>Floor price: <a href="#" class="addPrice">+</a></label> 
+    <?php if($this->pricing):?>
+    	<?php $count = 0;?>
+    	<?php foreach ($this->pricing as $item):?>
+    		<?php if($count==0):?>
+    		<input type="text" style="width: 100px;" class="datepicker" name="floor_price_date[]" value="<?php echo $item['date'] ?>" /> <input type="text" style="width: 100px;" name="floor_price[]" value="<?php echo $item['price'] ?>" /> <input type="text" style="width: 100px;" name="floor_percent[]" value="<?php echo $item['percent'] ?>" />
+    		<?php else:?>
+    		<br><br><label></label><input type="text" style="width: 100px;" class="datepicker" name="floor_price_date[]" value="<?php echo $item['date'] ?>" /> <input type="text" style="width: 100px;" name="floor_price[]" value="<?php echo $item['price'] ?>" /> <input type="text" style="width: 100px;" name="floor_percent[]" value="<?php echo $item['percent'] ?>" />
+    		<?php endif;?>
+    		<?php $count++;?>    	
+    	<?php endforeach;?>
+    <?php else:?>
+    <input type="text" style="width: 100px;" class="datepicker" name="floor_price_date[]" value="" /> <input type="text" style="width: 100px;" name="floor_price[]" value="0." /> <input type="text" style="width: 100px;" name="floor_percent[]" value="0.5" />
+    <?php endif;?>
+    </p>      
+    
+    <p><label>Admeld: </label> <input type="checkbox" id="auto_report_file" name="auto_report_file" value="1" <?php echo $this->formValues['auto_report_file']==1 ? 'checked="checked"' : '' ?> style="width: 20px;" /></p>
+    <p><label>Notifications: </label> <input type="checkbox" id="email_notlive_3day" name="email_notlive_3day" value="1" <?php echo $this->formValues['email_notlive_3day']==1 ? 'checked="checked"' : '' ?> style="width: 20px;" /></p> 
+    
+    <p id="notes" style="display: none"><label>Notes: </label> <textarea name="notes" style="width:500px; height:100px; "><?php echo $this->formValues['notes'] ?></textarea><br>
+	<div style="background-color:#FFFFD7; width:400px; margin: 0 auto; padding:3px; text-align:center">If it's a floor price site, don't forget the <a href="http://www.madadsmedia.com/admin/tags/pixel.php" target="_blank">passback pixels</a>!</div>
+    <?php if(isset($this->formErrors['notes'])): ?>
+        <ul class="error">
+        <?php foreach($this->formErrors['notes'] as $errors): ?>
+            <li><?php echo $errors ?></li>
+        <?php endforeach; ?>
+        </ul>
+    <?php endif; ?>                
+    </p>
+    
+
+    
+<p><a href="#" title="" onclick="document.getElementById('subForm').click(); return false;" class="sendMasBtn">Save</a></p>
+<input type="submit" id="subForm" style="display: none;" />
+</div>
+</form>
+
+<script type="text/javascript" src="/font/cufon-yui.js"></script>
+<script type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#topMenu a', {hover: true});	
+		Cufon.replace('#topMenu a');
+    Cufon.replace('.error', {color: 'red'});	    
+
+</script>
+<script type="text/javascript" src="/font/Headline_Two_400.font.js"></script>
+<script type="text/javascript">
+	Cufon.replace('.footerBann h5');		
+	Cufon.replace('.footerBann p');	
+	Cufon.replace('.footerBann a', {hover: true});	
+	Cufon.replace('.contactUs h1');		
+    Cufon.replace('h1');				
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Lt_300.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#footCopyr');	
+		Cufon.replace('.fMenu a');		
+		Cufon.replace('.contactUs p');	
+		Cufon.replace('.contUsL label');		
+		Cufon.replace('#location');		
+		Cufon.replace('.contBtn p');			
+		Cufon.replace('.sendMasBtn',{textShadow: '-1px -1px #5F5F5F'});		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Rg_700.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('.fMenu h4');
+		Cufon.replace('.headquaters');		
+</script>    

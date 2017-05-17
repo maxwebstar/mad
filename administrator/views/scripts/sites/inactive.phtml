@@ -1,0 +1,290 @@
+<link rel="stylesheet" type="text/css" href="/fancybox/jquery.fancybox-1.3.4.css" media="screen" />
+<script type="text/javascript" src="/fancybox/jquery.fancybox-1.3.4.js"></script>
+<script type="text/javascript" charset="utf-8">
+
+        $(document).ready(function() {   
+            
+                var countLive = 0;            
+                var filterType = $('#filterType').val();
+                <?php if($this->dataAuth->role == 'super'):?>
+                    var accounts = $('#accounts').val();
+                <?php else:?>
+                    var accounts = <?php echo $this->manager['id'] ? $this->manager['id'] : -1; ?>;
+                <?php endif;?>    
+                    var hidden = $('#hidden').val();
+                var oTable = $('#users').dataTable( {
+                        "bProcessing": true,
+                        "bServerSide": true,
+                        "sAjaxSource": '/administrator/sites/ajax-inactive',
+                        "fnServerParams": function ( aoData ) {  aoData.push( { "name": "filterType", "value": filterType }, { "name": "accounts", "value": accounts }, { "name": "hidden", "value": hidden } ); },
+                        "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+                        "iDisplayLength": 100
+                        ,
+                        "aoColumns": [
+                            { 
+                              "sTitle": "PID",
+                              "fnRender": function(obj){ return obj.aData[0]; } 
+                            },
+                            { 
+                              "sTitle": "SID",
+                              "fnRender": function(obj){ return obj.aData[1]; } 
+                            },
+                            { 
+                              "sTitle": "Website",
+                              "fnRender": function(obj){ return '<a href="/administrator/sites/view/id/'+obj.aData[1]+'">'+obj.aData[2]+'</a>'; } 
+                            },
+                            { 
+                              "sTitle": "Contact",
+                              "fnRender": function(obj){ return obj.aData[3]; } 
+                            },
+                            { 
+                              "sTitle": "Impres yesterday",
+                              "fnRender": function(obj){ return obj.aData[4]; } 
+                            },
+                            { 
+                              "sTitle": "Impres 2 day ago",
+                              "fnRender": function(obj){ return obj.aData[5]; } 
+                            },
+                            { 
+                              "sTitle": "Impres change",
+                              "fnRender": function(obj){ var percent = 0; if(obj.aData[6]) percent = obj.aData[6]; return percent+'%'; } 
+                            },
+                            { 
+                              "sTitle": "Highest Impres",
+                              "fnRender": function(obj){ return number_format(obj.aData[7],0,'.',',')+'<br/>('+obj.aData[17]+')'; } 
+                            },                            
+                            { 
+                              "sTitle": "Alexa rank",
+                              "fnRender": function(obj){ return obj.aData[8]; } 
+                            },
+                            { 
+                              "sTitle": "Date Inactive",
+                              "fnRender": function(obj){ if(obj.aData[9]){ var datArr = obj.aData[9].split('-'); return datArr[1]+'/'+datArr[2]+'/'+datArr[0]; }else{ return '';} }
+                                                        
+                            },
+                            { 
+                              "sTitle": "Contacted",
+                              "fnRender": function(obj){  
+                                  
+                                  if(obj.aData[10]!=1) return '<a href="javascript:void(0);"><img data-id="'+obj.aData[1]+'" class="mail_contacted" src="/images/stats-red-x.gif"/></a>';
+                                  else             return '<a href="/administrator/sites/followup/id/'+obj.aData[1]+'/actions/0"><img src="/images/status-green-check.gif"/></a>';       } 
+                            },                            
+                            { 
+                              "sTitle": "DFP",
+                              "bSortable": false,
+                              "fnRender": function(obj){  
+                                  
+                                  if(obj.aData[11] == 4) return '<a href="/administrator/tags/edit/tag/'+obj.aData[15]+'/site/'+obj.aData[1]+'/user/'+obj.aData[0]+'"><img src="/images/status-green-check.gif"></a>';
+                                  else                   return '<a href="/administrator/tags/edit/tag/'+obj.aData[15]+'/site/'+obj.aData[1]+'/user/'+obj.aData[0]+'"><img src="/images/stats-red-x.gif"></a>';    }  
+                                                 
+                            },
+                            { 
+                              "sTitle": "Login",
+                              "bSortable": false,
+                              "fnRender": function(obj){ return '<a href="/administrator/index/auth/id/'+obj.aData[0]+'" target="_blank">Login</a>'; } 
+                            },
+							{ 
+                              "sTitle": "Hide",
+                              "bSortable": false,
+                              "fnRender": function(obj){
+								  if(obj.aData[17] == 0)	return '<a href="javascript:void(0)" class="hide-link">Hide</a>';
+                                  else						return '<a href="javascript:void(0)" class="hide-link">Un-hide</a>';
+							  } 
+                            },                                    
+                        ],                                                
+                        "aaSorting": [[ 2, "asc" ]]
+                         
+                } );
+                
+                $('#filterType').change(function(){ filterType = $('#filterType').val(); oTable.fnClearTable();  });
+                $('#accounts').change(function(){ accounts = $('#accounts').val(); oTable.fnClearTable(); });
+                $('#hidden').change(function() { hidden = $(this).val(); oTable.fnClearTable(); });
+                
+                $('.hide-link').live("click", function() {
+                        var item	= $(this);
+                        var sid		= $(this).parents('tr').find('td:nth-child(2)').text();
+
+                        $.ajax({
+                                url: '/administrator/sites/ajax-hide',
+                                data: { iSId: sid },
+                                dataType: 'json',
+                                success: function(res) {
+                                        if (res['status']) {
+                                                oTable.fnClearTable();
+                                        }
+                                }
+                        });
+                }); 
+                
+                $('.mail_contacted').live('click',function()
+                {
+                    var id = $(this).attr('data-id');
+                    $.fancybox({
+                        'width' : '75%',
+                        'height': '75%',
+                        'href'  : '/administrator/sites/mail-contacted/id/'+id,
+                        'autoScale'     : false,
+                        'transitionIn'  : 'none',
+                        'transitionOut' : 'none',
+                        'type'	    : 'iframe',
+                        'onClosed'      : function(){ oTable.fnClearTable(); }
+                }); 
+                });                                               
+        } );
+  
+function updateInfo(action, name, id, color)
+{   
+    var popup=prompt('Your Name:',name)
+    
+    if(popup){
+        location.href = '/administrator/sites/update/act/'+action+'/name/'+popup+'/id/'+id+'/color/'+color;
+    }else{
+        return false;
+    }
+}
+
+function loginUser(id){ 
+
+    location.href='/administrator/index/auth/id/'+id;
+    
+}
+
+function number_format( number, decimals, dec_point, thousands_sep ) {	// Format a number with grouped thousands
+	// 
+	// +   original by: Jonas Raoni Soares Silva (http://www.jsfromhell.com)
+	// +   improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+	// +	 bugfix by: Michael White (http://crestidg.com)
+
+	var i, j, kw, kd, km;
+
+	// input sanitation & defaults
+	if( isNaN(decimals = Math.abs(decimals)) ){
+		decimals = 2;
+	}
+	if( dec_point == undefined ){
+		dec_point = ",";
+	}
+	if( thousands_sep == undefined ){
+		thousands_sep = ".";
+	}
+
+	i = parseInt(number = (+number || 0).toFixed(decimals)) + "";
+
+	if( (j = i.length) > 3 ){
+		j = j % 3;
+	} else{
+		j = 0;
+	}
+
+	km = (j ? i.substr(0, j) + thousands_sep : "");
+	kw = i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousands_sep);
+	//kd = (decimals ? dec_point + Math.abs(number - i).toFixed(decimals).slice(2) : "");
+	kd = (decimals ? dec_point + Math.abs(number - i).toFixed(decimals).replace(/-/, 0).slice(2) : "");
+
+
+	return km + kw + kd;
+}
+</script>
+<h1>Inactive Websites</h1>
+<div class="contUsL" style="width: 750px;">
+<p>
+Site Type: <select id="filterType">
+    <option value="all">All</option>
+    <option value="4">Google Admanager</option>
+    <option value="5">Rubicon</option>
+    <option value="6">Burst</option>
+    <option value="7">MadX</option>            
+    <option value="8">Pubmatic</option>
+    <option value="9">Amazon</option>
+    <option value="10">PulsePoint</option>
+</select>
+
+<select id="accounts">
+<?php if($this->dataAuth->role == 'super'):?>
+    <option value="-1">All</option>
+    <?php foreach($this->contactManager as $iter):?>
+         <option value="<?php echo $iter['id']?>"><?php echo $iter['mail'];?></option>
+    <?php endforeach;?>
+<?php else: ?>
+    <option value="<?php echo $this->manager['id'] ? $this->manager['id'] : -1; ?>">Show My Accounts</option>                 
+    <option value="-1">Show All Accounts</option>
+<?php endif;?>    
+</select>   
+
+<select id="hidden">
+	<!--<option value="3">All</option>-->
+	<option value="0">Un-hidden</option>
+	<option value="1">Hidden</option>
+</select>
+</p>
+
+<br /><br />
+<table width="740px" cellpadding="0" cellspacing="0" border="0" class="display" id="users">
+	<thead>
+		<tr>
+                    <th width="5%">PID</th>
+                    <th width="5%">SID</th>
+                    <th width="20%">Website</th>
+                    <th width="20%">Contact</th>
+                    <th width="10%">Impres yesterday</th>
+                    <th width="10%">Impres 2 day ago</th>
+                    <th width="10%">Impres change</th>
+                    <th width="10%">Highest Impres</th>
+                    <th width="10%">Alexa rank</th>
+                    <th width="10%">Date Inactive</th>
+                    <th width="10%">Contacted</th>
+                    <th width="10%">DFP</th>
+                    <th width="10%">Login</th>
+                    <th width="10%">Hide</th>
+		</tr>
+	</thead>
+	<tbody></tbody>
+	<tfoot>
+		<tr>
+                    <th>PID</th>
+                    <th>SID</th>
+                    <th>Website</th>
+                    <th>Contact</th>
+                    <th>Impres yesterday</th>
+                    <th>Impres 2 day ago</th>
+                    <th>Impres change</th>
+                    <th>Highest Impres</th>
+                    <th>Alexa rank</th>
+                    <th>Date Inactive</th>
+                    <th>Contacted</th>
+                    <th>DFP</th>
+                    <th>Login</th>
+                    <th>Hide</th>
+		</tr>
+	</tfoot>
+</table>
+</div> 
+<script type="text/javascript" src="/font/cufon-yui.js"></script>
+<script type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#topMenu a', {hover: true});	
+		Cufon.replace('#topMenu a');
+</script>
+<script type="text/javascript" src="/font/Headline_Two_400.font.js"></script>
+<script type="text/javascript">
+	Cufon.replace('.contInf h3', {hover: true});	
+	Cufon.replace('.contInf h3');
+	Cufon.replace('.contInf h3.white', {color: '#FFF'});	
+	Cufon.replace('.footerBann h5');		
+	Cufon.replace('.footerBann p');	
+	Cufon.replace('.footerBann a', {hover: true});		
+    Cufon.replace('h1');		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Lt_300.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#footCopyr');	
+		Cufon.replace('.contInf p', {hover: true});		
+		Cufon.replace('.contInf p', {color: '#333333'});	
+		Cufon.replace('.contInf p.white', {color: '#FFF'});	
+		Cufon.replace('.fMenu a', {textDecoration: 'underline'});		
+		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Rg_700.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('.fMenu h4');
+</script>

@@ -1,0 +1,451 @@
+<script type="text/javascript" src="/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
+<link rel="stylesheet" type="text/css" href="/fancybox/jquery.fancybox-1.3.4.css" media="screen" />
+<script type="text/javascript" charset="utf-8">
+$(document).ready(function() {
+
+        var filter = $('#filter').val();
+        var filterYear = $('#filterYear').val();
+        var filterMonth = $('#filterMonth').val();
+        var filterPaymentType = $('#filterPaymentType').val();
+        var filterDue = $('#null_due:checked').val() ? 1 : 0;
+
+        var oTable = $('#users').dataTable( {
+                "bProcessing": true,
+                "bServerSide": true,
+                "sAjaxSource": '/administrator/payments/ajax-get',
+                "fnServerParams": function ( aoData ) {  aoData.push( { "name": "filter", "value": filter }, { "name": "filterYear", "value": filterYear }, { "name": "filterMonth", "value": filterMonth }, { "name": "filterPaymentType", "value": filterPaymentType }, { "name": "filterDue", "value": filterDue } ); },
+                "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+                "iDisplayLength": 100,
+                "aoColumns": [
+                    {
+                      "sTitle": "",
+                      "bSortable": false,
+                      "fnRender": function(obj){
+                          var color = '';
+                          if(Number(obj.aData[14])==1)
+                              color = '#02EA2C';
+                          else if(Number(obj.aData[9])>=Number(obj.aData[7]) && Number(obj.aData[14])!=1)
+                              color = '#FF0400';
+                          else if(Number(obj.aData[9])<Number(obj.aData[7]))
+                              color = '#FFA100';
+                          else
+                              color = 'none';
+                          
+                          if(obj.aData[5] != 1) color = 'grey';
+							 
+                          //if(obj.aData[13]!=1 && color = 'none';)
+                              //color = '#D3D3D3';
+
+                          if(obj.aData[14]==1)
+                            return '<div id="PublisherContent_'+obj.aData[0]+'"><a class="sendMasBtn revert" style="width: auto; background-color:'+color+'" real="'+obj.aData[0]+':'+obj.aData[16]+'" href="#">Revert</a></div>';
+                          else
+                            return '<div id="PublisherContent_'+obj.aData[0]+'"><a id="Publisher_'+obj.aData[0]+'" class="sendMasBtn paidComent" style="width: auto; background-color:'+color+'" real="'+obj.aData[0]+':'+obj.aData[16]+'" href="#paidDiv">Paid</a></div>';
+                      }
+                    },
+                    {
+                      "sTitle": "PubID",
+                      "fnRender": function(obj){ return obj.aData[1]; }
+                    },                     
+                    {
+                      "sTitle": "Publisher",
+                      "fnRender": function(obj){
+                          var txt = '';
+                          var sites = obj.aData[13].split(',');
+                          txt = obj.aData[2]+' <select style="width: auto;">';
+                          $.each(sites, function(key, iter){
+                              var item = iter.split(':');
+                              txt+='<option value="'+item[0]+'">'+item[1]+'</option>';
+                          });
+                          txt+='</select>'
+                          return txt;
+                      }
+                    },
+                    {
+                      "sTitle": "Email",
+                      "fnRender": function(obj){ return obj.aData[3]; }
+                    },
+                    {
+                      "sTitle": "Revenue",
+                      "fnRender": function(obj){ var reven = obj.aData[4]; return reven; }
+                    },
+                    {
+                      "sTitle": "Payment Profile?",
+                      "fnRender": function(obj){
+                          if(obj.aData[5] == 1)
+                            return '<img src="/images/status-green-check.gif">';
+                          else
+                            return '<a href="/administrator/sites/sendmail/id/'+obj.aData[15]+'" class="sendMail"><img src="/images/stats-red-x.gif"></a>';
+                        }
+                    },
+                    {
+                      "sTitle": "Payment Type",
+                      "fnRender": function(obj){
+                          switch (obj.aData[6]) {
+                              case '1': return '<a href="/administrator/sites/userpayment/id/'+obj.aData[15]+'" class="fancyFrame">Check</a>'; break
+                              case '2': return '<a href="/administrator/sites/userpayment/id/'+obj.aData[15]+'" class="fancyFrame">Paypal</a>'; break
+                              case '3': return '<a href="/administrator/sites/userpayment/id/'+obj.aData[15]+'" class="fancyFrame">ACH</a>'; break
+                              case '4': return '<a href="/administrator/sites/userpayment/id/'+obj.aData[15]+'" class="fancyFrame">Wire Transfer</a>'; break
+                              default: return '';
+                          }
+                      }
+                    },
+                    {
+                      "sTitle": "Minimum Payment",
+                      "fnRender": function(obj){ return obj.aData[7]; }
+                    },
+                    {
+                      "sTitle": "$ Carried Over",
+                      "fnRender": function(obj){ return obj.aData[8]; }
+                    },
+                    {
+                      "sTitle": "Total Due",
+                      "fnRender": function(obj){ return obj.aData[9]; }
+
+                    },
+                    {
+                      "sTitle": "",
+                      "bSortable": false,
+                      "fnRender": function(obj){ return '<a target="_blank" href="/administrator/index/auth/id/'+obj.aData[15]+'">Login</a>'; }
+                    },
+                    {
+                      "sTitle": "Note",
+                      "fnRender": function(obj){
+                            if(obj.aData[12])
+                                return '<img src="/images/status-green-check.gif">';
+                            else
+                                return '<img src="/images/stats-red-x.gif">';
+                        }
+                    }
+                ],
+                "aaSorting": [[ 4, "desc" ]],
+                "fnHeaderCallback": function(nHead, aData, iStart, iEnd, aiDisplay){
+
+                        var iTotal = 0;
+                        var iTotal2 = 0;
+                        for ( var i=0 ; i<aData.length ; i++ ){
+                                iTotal += aData[i][4]*1;
+                                iTotal2 += aData[i][9]*1;
+                        }
+                                nHead.getElementsByTagName('th')[4].innerHTML = "Revenue (Total: "+Number(iTotal).toFixed(2)+")";
+                                nHead.getElementsByTagName('th')[9].innerHTML = "Total Due (Total: "+Number(iTotal2).toFixed(2)+")";
+                    }
+
+
+        } );
+
+        $('#filter').change(function(){ filter = $('#filter').val(); filterYear = $('#filterYear').val(); filterMonth = $('#filterMonth').val(); filterPaymentType = $('#filterPaymentType').val(); filterDue = $('#null_due:checked').val() ? 1 : 0; oTable.fnClearTable();  });
+        $('#filterYear').change(function(){ filter = $('#filter').val(); filterYear = $('#filterYear').val(); filterMonth = $('#filterMonth').val(); filterPaymentType = $('#filterPaymentType').val(); filterDue = $('#null_due:checked').val() ? 1 : 0; oTable.fnClearTable();  });
+        $('#filterMonth').change(function(){ filter = $('#filter').val(); filterYear = $('#filterYear').val(); filterMonth = $('#filterMonth').val(); filterPaymentType = $('#filterPaymentType').val(); filterDue = $('#null_due:checked').val() ? 1 : 0; oTable.fnClearTable();  });
+        $('#filterPaymentType').change(function(){ filter = $('#filter').val(); filterYear = $('#filterYear').val(); filterMonth = $('#filterMonth').val(); filterPaymentType = $('#filterPaymentType').val(); filterDue = $('#null_due:checked').val() ? 1 : 0; oTable.fnClearTable();  });
+        $('#null_due').change(function(){ filter = $('#filter').val(); filterYear = $('#filterYear').val(); filterMonth = $('#filterMonth').val(); filterPaymentType = $('#filterPaymentType').val(); filterDue = $('#null_due:checked').val() ? 1 : 0; oTable.fnClearTable(); });
+
+        $("#GeneretePayment").fancybox({
+                'width'				: '30%',
+                'height'			: '30%',
+            'autoScale'     	: false,
+            'transitionIn'		: 'none',
+                'transitionOut'		: 'none',
+                'type'				: 'iframe',
+                'onClosed'			: function () { oTable.fnClearTable(); }
+        });
+
+        $(".sendMail").live('click', function(){
+            $this = $(this);
+            $.fancybox({
+                'height': '70%',
+                'width': '50%',
+                'autoScale': false,
+                'transitionIn': 'none',
+                'href': $this.attr('href'),
+                'type': 'iframe'
+            });
+            return false;
+        })
+
+        $(".fancyFrame").live('click', function(){
+            $this = $(this);
+            $.fancybox({
+                'height': '75%',
+                'width': '75%',
+                'autoScale': false,
+                'transitionIn': 'none',
+                'href': $this.attr('href'),
+                'type': 'iframe'
+            });
+            return false;
+        })
+
+        $(".paidComent").live('click', function(){
+                var real = $(this).attr('real');
+                var data = real.split(':');
+                $("#PubIDComment").val(data[0]);
+                $("#DateComment").val(data[1]);
+                    $.fancybox({
+                        'titlePosition'		: 'inside',
+                        'transitionIn'		: 'fade',
+                        'transitionOut'		: 'fade',
+                        'autoDimensions'	: false,
+                        'width'			: 390,
+                        'height'		: 220,
+                        'href'			: '#paidDiv',
+                        'onComplete'		: function () { $("#paidDiv").css('display', 'block'); },
+                        'onClosed'		: function () { $("#paidDiv").css('display', 'none'); $("#PubIDComment").val(''); $("#textComment").val(''); $("#DateComment").val(''); }
+
+                    });
+                return false;
+        });
+
+        $(".revert").live('click', function(){
+                var real = $(this).attr('real');
+                var data = real.split(':');
+                $("#PubIDComment").val(data[0]);
+                $("#DateComment").val(data[1]);
+                
+                $.ajax({
+                        'url'			:  '/administrator/payments/getcoment/',
+                        'data'			:  'date='+data[1]+'&id='+data[0],
+                        'type'			:  'POST',
+                        'dataType'		:  'json',
+                        'success'		:   function(data){
+                                        if(data.error){
+                                                alert(data.error);
+                                        }else if(data.status=='OK'){
+											openFancyRevert(data.PubID, data.date, data.comment);
+                                        }else{
+                                                alert("Application ERROR!!!");
+                                        }
+                                }
+                });                                
+                return false;
+        });
+		
+        $("#CommentPost").click(function(){
+                $("#AjaxLoader").css('display', 'block');
+                $.ajax({
+                        'url'			:  '/administrator/payments/setcoment/',
+                        'data'			:  'date='+$("#DateComment").val()+'&id='+$("#PubIDComment").val()+'&comment='+$("#textComment").val(),
+                        'type'			:  'POST',
+                        'dataType'		:  'json',
+                        'success'		:   function(data){
+                                        if(data.error){
+                                                alert(data.error);
+                                                $("#AjaxLoader").css('display', 'none');
+                                        }else if(data.status=='OK'){
+                                                $("#PublisherContent_"+data.PubID).html('<a class="sendMasBtn revert" style="width: auto; background-color: #02EA2C;" real="'+data.PubID+':'+data.date+'" href="#">Revert</a>');
+                                                $("#AjaxLoader").css('display', 'none');
+                                                $.fancybox.close();
+                                        }else{
+                                                alert("Application ERROR!!!");
+                                        }
+                                }
+                });
+                return false;
+        });
+
+        $("#revrtPost").click(function(){
+                $("#AjaxLoaderRevert").css('display', 'block');
+                $.ajax({
+                        'url'			:  '/administrator/payments/revert/',
+                        'data'			:  'date='+$("#DateCommentRevert").val()+'&id='+$("#PubIDCommentRevert").val()+'&comment='+$("#textCommentRevert").val(),
+                        'type'			:  'POST',
+                        'dataType'		:  'json',
+                        'success'		:   function(data){
+                                        if(data.error){
+                                                alert(data.error);
+                                                $("#AjaxLoaderRevert").css('display', 'none');
+                                        }else if(data.status=='OK'){
+                                                $("#PublisherContent_"+data.PubID).html('<a class="sendMasBtn paidComent" style="width: auto; background-color: #FF0400;" real="'+data.PubID+':'+data.date+'" href="#">Paid</a>');
+                                                $("#AjaxLoaderRevert").css('display', 'none');
+                                                $.fancybox.close();
+                                        }else{
+                                                alert("Application ERROR!!!");
+                                        }
+                                }
+                });
+                return false;
+        });
+
+        $(".viewpaidComent").live('click', function(){
+            var real = $(this).attr('real');
+            var data = real.split(':');
+            $("#PubIDComment").val(data[0]);
+            $("#DateComment").val(data[1]);
+            $.fancybox({
+                'width'		: '50%',
+                'height'	: '50%',
+                'autoScale'     : false,
+                'transitionIn'	: 'none',
+                'transitionOut'	: 'none',
+                'type'		: 'iframe',
+                'href'		: '/administrator/payments/viewcomment/date/'+$("#DateComment").val()+'/PubID/'+$("#PubIDComment").val(),
+                'onClosed'      : function () { $("#paidDiv").css('display', 'none'); $("#PubIDComment").val(''); $("#DateComment").val(''); $("#textComment").val(''); }
+            });
+            return false;
+        });
+
+} );
+
+function openFancyRevert(id, date, comment)
+{
+    $("#PubIDCommentRevert").val(id);
+    $("#DateCommentRevert").val(date);
+    $("#textCommentRevert").val(comment);    
+    $.fancybox({
+        'titlePosition'		: 'inside',
+        'transitionIn'		: 'fade',
+        'transitionOut'		: 'fade',
+        'autoDimensions'	: false,
+        'width'			: 390,
+        'height'		: 220,
+        'href'			: '#revertDiv',
+        'onComplete'		: function () { $("#revertDiv").css('display', 'block'); },
+        'onClosed'		: function () { $("#revertDiv").css('display', 'none'); $("#PubIDCommentRevert").val(''); $("#textCommentRevert").val(''); $("#DateCommentRevert").val(''); }
+
+    });
+return false;	
+}
+</script>
+<h1>Payments Due</h1>
+<div class="contUsL" style="width: 750px;">
+<p>
+    <a href="/administrator/payments/level">Edit/Add Revenue Level</a>
+</p>
+<p>
+    <a href="/administrator/payments/pending">Payment Info Changes (<?php echo $this->paymentPending;?>)</a>
+    <a style="margin-left: 30px;" href="/administrator/contact/index">Contact Info Changes (<?php echo $this->contact;?>)</a>
+    <a style="margin-left: 30px;" href="/administrator/quickbooks/index">Quickbooks API</a>
+</p>
+<p>
+    <a href="/administrator/sites/generate/" title="Generate Payment Report" id="GeneretePayment">Generate Payment Report</a>
+    <a style="margin-left: 5px;" href="/administrator/sites/generate-report">(view report)</a>
+
+
+    <input type="checkbox" name="null_due" id="null_due" value="1"  style="background: none; height: 15px; width: 20px; margin-left: 201px;"/>
+    <span style="">Show Users With $0 Due</span>
+</p>
+<p>
+    <span style="padding-left: 57px;">Year:</span>
+    <select id="filterYear">
+        <?php for($i=2011; $i<=date("Y"); $i++){
+                if($i==date("Y")) echo "<option value='$i' selected='selected'>$i</option>";
+                             else echo "<option value='$i'>$i</option>";
+            }?>
+    </select>
+
+    <span style="">Month:</span>
+    <select id="filterMonth">
+        <?php for($j=1; $j<=12; $j++){
+                if($j == date('n')) echo "<option value='$j' selected='selected'>" .date("F", mktime(0, 0, 0, $j,   1,   date("Y")))."</option>";
+                               else echo "<option value='$j'>" .date("F", mktime(0, 0, 0, $j,   1,   date("Y")))."</option>";
+            }?>
+    </select>
+</p>
+<p>
+    <span>Payment Type:</span>
+    <select id="filterPaymentType">
+	<option value="">All</option>
+	<option value="1">Check</option>
+	<option value="2">Paypal</option>
+	<option value="3">ACH</option>
+        <option value="4">Wire Transfer</option>
+    </select>
+
+    <span style="margin-left: 43px;"></span>
+    <select id="filter">
+	<option value="all">All</option>
+	<option value="paid">Paid</option>
+	<option value="unpaid">Unpaid</option>
+	<option value="minimum">Under Minimum</option>
+        <option value="unpaid_minimum">Unpaid (Minimum Met)</option>
+    </select>
+</p>
+<br><br>
+<table width="740px" cellpadding="0" cellspacing="0" border="0" class="display" id="users">
+    <thead>
+        <tr>
+            <th width="1%"></th>        
+            <th width="1%">PubID</th>
+            <th width="30%">Publisher</th>
+            <th width="10%">Email</th>
+            <th width="10%">Revenue</th>
+            <th width="10%">Payment Profile?</th>
+            <th width="10%">Payment Type</th>
+            <th width="10%">Minimum Payment</th>
+            <th width="5%">$ Carried Over</th>
+            <th width="5%">Total Due</th>
+            <th width="5%"></th>
+            <th width="5%">Note</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+    <tfoot>
+        <tr>
+            <th></th>
+            <th>PubID</th>            
+            <th>Publisher</th>
+            <th>Email</th>
+            <th>Revenue</th>
+            <th>Payment Profile?</th>
+            <th>Payment Type</th>
+            <th>Minimum Payment</th>
+            <th>$ Carried Over</th>
+            <th>Total Due</th>
+            <th></th>
+            <th>Note</th>
+        </tr>
+    </tfoot>
+</table>
+<div id="paidDiv">
+<img alt="" id="AjaxLoader" src="/images/ajax-loader.gif" style="display: none">
+	<form action="#" method="post">
+		<input type="hidden" id="PubIDComment" value="" />
+                <input type="hidden" id="DateComment" value="" />
+		<p>Comment:
+		<textarea rows="7" id="textComment" cols="50"></textarea></p>
+		<br><br>
+		<a class="sendMasBtn" id="CommentPost" title="" href="#">Save</a>
+	</form>
+</div>
+
+<div id="revertDiv" style="display:none;">
+<img alt="" id="AjaxLoaderRevert" src="/images/ajax-loader.gif" style="display: none">
+	<form action="#" method="post">
+		<input type="hidden" id="PubIDCommentRevert" value="" />
+                <input type="hidden" id="DateCommentRevert" value="" />
+		<p>Comment:
+		<textarea rows="7" id="textCommentRevert" cols="50"></textarea></p>
+		<br><br>
+		<a class="sendMasBtn" id="revrtPost" title="" href="#">Revert</a>
+	</form>
+</div>
+
+</div>
+<script type="text/javascript" src="/font/cufon-yui.js"></script>
+<script type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#topMenu a', {hover: true});
+		Cufon.replace('#topMenu a');
+</script>
+<script type="text/javascript" src="/font/Headline_Two_400.font.js"></script>
+<script type="text/javascript">
+	Cufon.replace('.contInf h3', {hover: true});
+	Cufon.replace('.contInf h3');
+	Cufon.replace('.contInf h3.white', {color: '#FFF'});
+	Cufon.replace('.footerBann h5');
+	Cufon.replace('.footerBann p');
+	Cufon.replace('.footerBann a', {hover: true});
+    Cufon.replace('h1');
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Lt_300.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#footCopyr');
+		Cufon.replace('.contInf p', {hover: true});
+		Cufon.replace('.contInf p', {color: '#333333'});
+		Cufon.replace('.contInf p.white', {color: '#FFF'});
+		Cufon.replace('.fMenu a', {textDecoration: 'underline'});
+
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Rg_700.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('.fMenu h4');
+</script>

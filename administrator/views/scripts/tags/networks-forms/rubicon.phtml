@@ -1,0 +1,84 @@
+<div class="container">
+<?php if(count($this->dataNetworksSizes)): ?>
+    <?php foreach($this->dataNetworksSizes as $size): ?>
+        <?php if($size['network_id']==5): ?>
+            <div class="checkbox">
+                <label>
+                    <input class="rubicon-sizes" data-size="<?php echo $size['id'] ?>" type="checkbox"
+                           name="sizes_5[<?php echo $size['id'] ?>]"
+                        <?php echo isset($this->formValues['sizes_5'][$size['id']]) ? "checked" : "" ?>
+                        >
+                    <?php echo $size['name'] ?>
+                </label>
+            </div>
+
+            <div
+                class="rubicon-form-<?php echo $size['id'] ?> form-group <?php echo isset($this->formValues['sizes_5'][$size['id']]) ? "" : "hidden" ?>
+                    <?php if(isset($this->formErrors['use_id'])) echo "has-error" ?>">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <div class="checkbox">
+                        <label>
+                            <input class="use_id" data-size="<?php echo $size['id'] ?>" type="checkbox"
+                                   name="<?php echo isset($this->formValues['use_id'][$size['id']]) ? "use_id[{$size['id']}]" : "" ?>"
+                                   id="use_id_<?php echo $size['id'] ?>"
+                                <?php echo isset($this->formValues['use_id'][$size['id']]) ? "checked" : "" ?>
+                            >
+                        Use IDs
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div
+                class="rubicon-form-<?php echo $size['id'] ?> form-group <?php echo isset($this->formValues['sizes_5'][$size['id']]) ? "" : "hidden" ?>
+                    <?php if(isset($this->formErrors['rp_account']) && isset($this->formValues['use_id'][$size['id']])) echo "has-error" ?>">
+                <label for="rp_account_<?php echo $size['id'] ?>" class="col-sm-2 control-label">rp_account</label>
+                <div class="col-sm-4 input-group">
+                    <input type="text"
+                           class="form-control ids_<?php echo $size['id'] ?>"
+                           id="rp_account_<?php echo $size['id'] ?>"
+                           name="<?php echo isset($this->formValues['use_id'][$size['id']]) ? "rp_account[{$size['id']}]" : "" ?>"
+                           value="<?php echo !isset($this->formValues['rp_account'][$size['id']]) ? '' : $this->formValues['rp_account'][$size['id']] ?>" <?php echo isset($this->formValues['use_id'][$size['id']]) ? "" : "readonly" ?>>
+                </div>
+            </div>
+            <div
+                class="rubicon-form-<?php echo $size['id'] ?> form-group <?php echo isset($this->formValues['sizes_5'][$size['id']]) ? "" : "hidden" ?>
+                    <?php if(isset($this->formErrors['rp_zonesize']) && isset($this->formValues['use_id'][$size['id']])) echo "has-error" ?>">
+                <label for="rp_zonesize_<?php echo $size['id'] ?>" class="col-sm-2 control-label">rp_zonesize</label>
+                <div class="col-sm-4 input-group">
+                    <input type="text"
+                           class="form-control ids_<?php echo $size['id'] ?>"
+                           id="rp_zonesize_<?php echo $size['id'] ?>"
+                           name="<?php echo isset($this->formValues['use_id'][$size['id']]) ? "rp_zonesize[{$size['id']}]" : "" ?>"
+                           value="<?php echo !isset($this->formValues['rp_zonesize'][$size['id']]) ? '' : $this->formValues['rp_zonesize'][$size['id']] ?>" <?php echo isset($this->formValues['use_id'][$size['id']]) ? "" : "readonly" ?>>
+                    <div class="input-group-addon">-<?php echo $size['rp_zonesize'] ?></div>
+                </div>
+            </div>
+            <div
+                class="rubicon-form-<?php echo $size['id'] ?> form-group <?php echo isset($this->formValues['sizes_5'][$size['id']]) ? "" : "hidden" ?>
+                    <?php if(isset($this->formErrors['rp_site']) && isset($this->formValues['use_id'][$size['id']])) echo "has-error" ?>">
+                <label for="rp_site_<?php echo $size['id'] ?>" class="col-sm-2 control-label">rp_site</label>
+                <div class="col-sm-4 input-group">
+                    <input type="text"
+                           class="form-control ids_<?php echo $size['id'] ?>"
+                           id="rp_site_<?php echo $size['id'] ?>"
+                           name="<?php echo isset($this->formValues['use_id'][$size['id']]) ? "rp_site[{$size['id']}]" : "" ?>"
+                           value="<?php echo !isset($this->formValues['rp_site'][$size['id']]) ? '' : $this->formValues['rp_site'][$size['id']] ?>" <?php echo isset($this->formValues['use_id'][$size['id']]) ? "" : "readonly" ?>>
+                </div>
+            </div>
+            <div
+                 class="rubicon-form-<?php echo $size['id'] ?> form-group <?php echo isset($this->formValues['sizes_5'][$size['id']]) ? "" : "hidden" ?>
+                    <?php if(isset($this->formErrors['rubicon_site_name'])) echo "has-error" ?>">
+                <label for="rubicon_site_name_<?php echo $size['id'] ?>" class="col-sm-2 control-label">Site Name</label>
+                <div class="col-sm-4 input-group">
+                    <input type="text"
+                           class="form-control"
+                           id="rubicon_site_name_<?php echo $size['id'] ?>"
+                           name="<?php echo isset($this->formValues['sizes_5'][$size['id']]) ? "rubicon_site_name[{$size['id']}]" : "" ?>"
+                           value="<?php echo !isset($this->formValues['rubicon_site_name'][$size['id']]) ? $this->dataSite['SiteName'] : $this->formValues['rubicon_site_name'][$size['id']] ?>"
+                           placeholder="Site Name">
+                </div>
+            </div>
+        <?php endif; ?>
+    <?php endforeach; ?>
+<?php endif; ?>
+</div>

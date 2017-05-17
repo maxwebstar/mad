@@ -1,0 +1,181 @@
+<style type="text/css">
+    
+    
+    #main{ display: block; width: 1300px; float: left; padding: 10px; }
+    
+    #main #left{ display: block; float: left; width: 700px; }
+    #main #right{ display: block; float: left; width: 530px; margin-left: 15px; overflow: scroll; height: 549px; overflow-x: hidden; border: 1px solid #D3D3D3; padding-top: 4px; padding-left: 4px; }
+    
+    #right .itemMail{ display: block; float: left; width: 510px; }
+    .itemMail .itemHead{ float: left; background: #D3D3D3; padding: 1px 5px 2px; width: 500px; }
+    .itemMail .itemDate{ display: block; float: right; width: 150px; text-align: right; }
+    .itemMail .itemAuthor{ display: block; float: left; width: 320px; }
+    .itemMail .itemSubject{ display: block; float: left; width: 500px; padding: 0px 4px 0px 4px; border: 1px solid #D3D3D3; margin: 0px 0px 2px 0px; }
+    .itemMail .itemText{ display: block; float: left; width: 500px; padding: 0px 4px 0px 4px; border: 1px solid #D3D3D3; margin: 2px 0px 7px 0px; }    
+
+    #main #label-subject{ float: left; width: 100px; }
+    #main #subject { float: left; width: 696px; margin-bottom: 2px; padding-left: 5px; }
+    
+    #main #label-text{ float: left; width: 100px; margin-top: 7px; }
+    #main #text { float: left; width: 600px; height: 300px; margin-top: 7px; }
+
+    #main #mySubmit{ display: block; float: left; height: 28px; width: 129px; font-size: 16px; background-color: #8E8E8E; color: #FFFFFF; cursor: pointer; margin-top: 7px; margin-left: 347px; }
+    #main #mySubmit:hover{ background-color: #DC2323; }
+    #main #mySubmit span{ float: left; margin: 4px 0px 0px 46px; } 
+    
+    #main #myButton{ display: block; float: left; height: 28px; width: 220px; font-size: 16px; background-color: #8E8E8E; color: #FFFFFF; cursor: pointer; margin-top: 7px; margin-left: 0px; }
+    #main #myButton:hover{ background-color: #DC2323; }
+    #main #myButton span{ float: left; margin: 4px 0px 0px 20px; }
+    
+    #radioStatus{ display: block; margin-left: 100px; margin-bottom: 5px; border: 1px solid #DBDFE6; padding-bottom: 2px; padding-top: 2px; }
+    #radioStatus span{ margin-right: 10px; } 
+    
+    #messageActiveUser{ display: block; font-weight: 600; font-size: 16px;  margin-bottom: 20px; margin-left: 100px; }
+    #cke_text{ margin-left: 0px; margin-top: 5px; }
+    
+    .error{ color: #CF2B2B; font-weight: 600; font-size: 16px; display: block; }
+    #client{ float: left; margin-right: 7px; margin-top: 11px; }
+    #client-label{ float: left; margin-top: 7px; }
+    
+    #label-to{ float: left; margin-left: 5px; margin-right: 4px; margin-top: 6px; }
+    #to{ float: left; width: 541px; margin-top: 3px; }
+    
+    #bcc{ margin-left: 115px; }
+    
+</style>
+
+<script type="text/javascript" src="/js/jquery-1.6.2.min.js"></script>
+<script type="text/javascript" src="/js/ckeditor/ckeditor.js"></script>
+<script type="text/javascript" src="/js/ckeditor/adapters/jquery.js"></script>
+
+<script type="text/javascript">
+
+  $(document).ready(function(){
+    
+      $('#mySubmit').click(function(){
+          
+          if(validation(1)){ 
+              if(confirm('This will send an email to the website, are you sure you want to continue?')){
+              
+                  $('#main #status').val(1);
+                  $('#main form').submit(); 
+              }
+          }
+      });
+      
+      $('#myButton').click(function(){
+          
+          if(validation(2)){
+          
+              $('#main #status').val(2);
+              $('#main form').submit();
+          }
+      });
+      
+      $('#text').ckeditor(function() {}, { 
+                toolbar : [   [ 'Source','-','Save','NewPage','DocProps','Preview','Print','-','Templates' ],
+                              [ 'Cut','Copy','Paste','PasteText','PasteFromWord','-','Undo','Redo' ],
+                              [ 'Find','Replace','-','SelectAll','-','SpellChecker', 'Scayt' ],
+                              [ 'Form', 'Checkbox', 'Radio', 'TextField', 'Textarea', 'Select', 'Button', 'ImageButton', 'HiddenField' ],
+                              [ 'Bold','Italic','Underline','Strike','Subscript','Superscript','-','RemoveFormat','-','Blockquote','CreateDiv','-','BidiLtr','BidiRtl','-','Link','Unlink','Anchor' ],
+                              [ 'NumberedList','BulletedList','-','Outdent','Indent','-','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock', 'Styles','Format','Font','FontSize','-','TextColor','BGColor' ],
+                              [ 'Image','Flash','Table','HorizontalRule','Smiley','SpecialChar','PageBreak','Iframe' ]],
+                width : '695px',
+                height : '212px',
+                language : 'en',
+                enterMode : CKEDITOR.ENTER_BR,
+                filebrowserBrowseUrl : '/js/ckfinder/ckfinder.html',
+                filebrowserImageBrowseUrl : '/js/ckfinder/ckfinder.html?type=Images',
+                filebrowserFlashBrowseUrl : '/js/ckfinder/ckfinder.html?type=Flash',
+                filebrowserUploadUrl : '/js/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Files',
+                filebrowserImageUploadUrl : '/js/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Images',
+                filebrowserFlashUploadUrl : '/js/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Flash'
+      });
+            
+  });
+  
+  function validation(status)
+  {
+      var valid = true;
+      
+      $('.error').replaceWith('');
+      
+      if(!$('#to').val()){ $("<div class='error'>Field is required</div>").insertAfter("#to"); valid = false; }
+      
+      if(status == 1){
+      
+          if(!$('#subject').val()){ $("<div class='error'>Field is required</div>").insertAfter("#subject"); valid = false; }
+
+          var textEditor = $('#text').ckeditorGet();
+          if(!textEditor.checkDirty()){ $("<div class='error'>Field is required</div>").insertAfter("#cke_text"); valid = false; }   
+      }
+      
+      return valid;
+  }
+ 
+
+</script>
+
+<div id="main">    
+    <div id="left">
+
+        <form method="post" action="">            
+           
+            <div id="form-field">
+                
+                <div style="padding-bottom: 5px; padding-left: 5px;">
+                    <span style="">From (Account Manager):</span>
+                    <select name="accountManager" id="accountManager" style="width: 200px; margin-left: 10px;">
+                        <?php foreach($this->contactManager as $iter):?>
+                              <option value="<?php echo $iter['id']?>" <?php echo $iter['id'] == $this->dataUser['account_manager_id'] ? 'selected' : '';?>><?php echo $iter['name']?></option>
+                        <?php endforeach;?>
+                    </select>
+                    <input type="checkbox" name="bcc" id="bcc" value="1" checked/>
+                    <span id="label-bcc">Bcc email copy to myself</span>
+                </div>
+                
+                <div style="margin-bottom: 10px; padding-left: 5px;">
+                    <span style="font-weight: 600;">Personal Name:</span>
+                    <span style=""><?php echo $this->dataUser['company']; ?></span>
+                </div>
+                
+                <input type="text" name="subject" id="subject" value="" placeholder="Enter Subject"/>
+                <div style="clear: both"></div>   
+                <span id="label-to">To (Comma Separate):</span>
+                <input type="text" name="to" id="to" value="<?php echo $this->dataUser['email']; ?>" placeholder=""/>
+                <div style="clear: both"></div>         
+
+                <textarea name="text" id="text"></textarea>            
+            </div>
+                     
+            <div style="clear: both"></div>
+            <input type="hidden" name="status" id="status" value=""/>
+            <a id="myButton"><span>Save As Note (Don't Email)</span></a>
+            <a id="mySubmit"><span>Submit</span></a>
+            <div style="clear: both"></div>
+            <input type="checkbox" name="client" id="client" value="1"/><span id="client-label">Client's Response</span>
+
+        </form>
+        <?php if(!empty($this->message)):?>
+            <div style="clear: both"></div>
+            <?php echo $this->message;?>
+        <?php endif; ?>
+        
+    </div>
+    <div id="right">
+        
+        <?php foreach($this->data as $iter):?>
+        
+        <div class="itemMail">   
+            <div class="itemHead">
+                <div class="itemAuthor">sent by: <?php echo /*$iter['admin_name'].' / '.*/$iter['manager_name']; ?></div>
+                <div class="itemDate"><?php echo date('M j, Y', strtotime($iter['created'])); ?></div>
+            </div>            
+            <div class="itemSubject"><?php echo $iter['subject']; ?></div>
+            <div class="itemText"><?php echo $iter['text']; ?></div>            
+        </div>
+        
+        <?php endforeach;?>
+        
+    </div>    
+</div>

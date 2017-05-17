@@ -1,0 +1,98 @@
+<script type="text/javascript">
+    $(function() {
+
+        var $loginactivityTable;
+
+        var options = {
+            "bProcessing": true,
+            "bServerSide": true,
+            "sAjaxSource": null,
+            "fnServerParams": function(aoData) {
+
+            },
+            "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+            "iDisplayLength": 50,
+            "aoColumns": [
+                {
+                    "sType": "num-html",
+                    "sTitle": "ID#",
+                    "fnRender": function(obj) {
+                        var id = obj.aData["id"];
+                        return id;
+                    }
+                },
+                {
+                    "sTitle": "IP Address",
+                    "fnRender": function(obj) {
+                        return obj.aData["ip_address"];
+                    }
+                },
+                {
+                    "sTitle": "Activity Timestamp",
+                    "fnRender": function(obj) {
+                        return obj.aData["activity_timestamp"];
+                    }
+                },
+                {
+                    "sTitle": "Activity Type",
+                    "fnRender": function(obj) {
+                        return obj.aData["activity_type"];
+                    }
+                },
+                {
+                    "sTitle": "User",
+                    "fnRender": function(obj) {
+                        return obj.aData["user"];
+                    }
+                }
+            ]
+        };
+
+        options.sAjaxSource = "/administrator/system/data/status/loginactivity";
+        $loginactivityTable = $('#loginactivityTable').dataTable(options);
+
+    });
+</script>
+
+<div style="float:left; width:900px;">
+    <h1>User Login Activity</h1>
+
+    <div>
+        <table class="display" id="loginactivityTable">
+            <thead>
+                <tr>
+                    <th width="5%">ID #</th>
+                    <th width="30%">IP Address</th>
+                    <th width="40%">Activity Timestamp</th>
+                    <th width="10%">Activity Type</th>
+                    <th width="15%">User</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+            <tfoot>
+                <tr>
+                    <th>ID #</th>
+                    <th>IPAddress</th>
+                    <th>ActivityTimestamp</th>
+                    <th>ActivityType</th>
+                    <th>User</th>
+                </tr>
+            </tfoot>
+        </table>	
+    </div>
+
+
+</div>
+
+<script type="text/javascript" src="/font/cufon-yui.js"></script>
+<script	type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script	type="text/javascript" src="/font/Headline_Two_400.font.js"></script>
+<script type="text/javascript">
+    Cufon.replace('h1');
+</script>
+<?php
+//$loginActivities = $this->loginActivities;
+//foreach ($loginActivities as $la){
+//    var_dump($la);
+//}
+?>

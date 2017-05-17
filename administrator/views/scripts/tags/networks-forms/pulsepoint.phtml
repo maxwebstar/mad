@@ -1,0 +1,39 @@
+<div class="container">
+    <?php if(count($this->dataNetworksSizes)): ?>
+        <?php foreach($this->dataNetworksSizes as $size): ?>
+            <?php if($size['network_id']==10): ?>
+                <div class="checkbox">
+                    <label>
+                        <input class="pulse-sizes" data-size="<?php echo $size['id'] ?>" type="checkbox"
+                               name="sizes_10[<?php echo $size['id'] ?>]"
+                            <?php echo isset($this->formValues['sizes_10'][$size['id']]) ? "checked" : "" ?>
+                            >
+                        <?php echo $size['name'] ?>
+                    </label>
+                </div>
+                <div id="pulse-form-<?php echo $size['id'] ?>"
+                     class="<?php echo isset($this->formValues['sizes_10'][$size['id']]) ? "" : "hidden" ?>">
+
+                    <div class="form-group <?php if(isset($this->formErrors['PulsePubID'])) echo "has-error" ?>">
+                        <label for="PulsePubID_<?php echo $size['id'] ?>" class="col-sm-2 control-label">PubID</label>
+                        <div class="col-sm-4">
+                            <input type="text" class="form-control" id="PulsePubID_<?php echo $size['id'] ?>"
+                                   name="<?php echo isset($this->formValues['sizes_10'][$size['id']]) ? "PulsePubID[{$size['id']}]" : "" ?>" placeholder="PubID"
+                                   value="<?php echo !isset($this->formValues['PulsePubID'][$size['id']]) ? "558639" : $this->formValues['PulsePubID'][$size['id']] ?>"
+                                >
+                        </div>
+                    </div>
+                    <div class="form-group <?php if(isset($this->formErrors['PulseTagID'])) echo "has-error" ?>">
+                        <label for="PulseTagID_<?php echo $size['id'] ?>" class="col-sm-2 control-label">TagID</label>
+                        <div class="col-sm-4">
+                            <input type="text" class="form-control" id="PulseTagID_<?php echo $size['id'] ?>"
+                                   name="<?php echo isset($this->formValues['sizes_10'][$size['id']]) ? "PulseTagID[{$size['id']}]" : "" ?>" placeholder="TagID"
+                                   value="<?php echo !isset($this->formValues['PulseTagID'][$size['id']]) ? '' : $this->formValues['PulseTagID'][$size['id']]  ?>"
+                                >
+                        </div>
+                    </div>
+                </div>
+            <?php endif; ?>
+        <?php endforeach; ?>
+    <?php endif; ?>
+</div>

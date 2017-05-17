@@ -1,0 +1,270 @@
+<script type="text/javascript" src="/fancybox2/jquery.fancybox.js"></script>
+<link rel="stylesheet" type="text/css" href="/fancybox2/jquery.fancybox.css" media="screen" />
+<style>
+
+    #mask{
+        position: fixed;
+        height: 100%;
+        width: 100%;
+        display: none;
+        opacity: 0.3;
+        filter: alpha(opacity=30);
+        background-color: #000000;
+        z-index: 9000;
+        left:0;
+        top:0;
+    }
+
+    #loading{
+        position: fixed;
+        display: none;
+        height: 50px;
+        width: 200px;
+        z-index: 10000;
+        border: 1px solid #B7B7B7;
+        border-radius: 4px;
+        background-color: #F4F4F4;
+        left: 43%;
+        top: 44%;
+    }
+
+    #loading span{
+        font-size: 14px;
+        display: block;
+        margin: 15px 0px 0px 62px;
+    }
+
+</style>
+<script type="text/javascript">
+
+    $(function(){
+
+        $( ".datepicker" ).datepicker({
+            showOn:'focus',
+            'dateFormat'  : "yy-mm-dd"
+        })
+
+        var startDate = $('#startDate').val();
+        var endDate = $('#endDate').val();
+
+        var filterOpportunity = $('#filterOpportunity').val();
+        var accounts = $('#accounts').val();
+
+        var closedTable;
+
+        var options =  {
+            "bProcessing": true,
+            "bServerSide": true,
+            "sAjaxSource": null,
+            "fnServerParams": function ( aoData ) {
+                aoData.push( { "name": "filterOpportunity", "value": filterOpportunity }, { "name": "startDate", "value": startDate }, { "name": "endDate", "value": endDate }, { "name": "accounts", "value": accounts } );
+            },
+            "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+            "iDisplayLength": 50,
+            "aoColumns": [
+                {
+                    "sType": "num-html",
+                    "sTitle": "ID#",
+                    "fnRender": function(obj){
+
+                        return obj.aData[0];
+                    }
+                },
+                {
+                    "sTitle": "Website",
+                    "fnRender": function(obj){
+
+                        var website = obj.aData[1];
+                        var re = /^http/;
+                        var href = (re.test(website)) ? website : "http://"+website;
+
+                        if(obj.aData[7] == '1')
+                            return "<a href=\""+href+"\" target=\"_blank\" style=\"color: red;\">" +obj.aData[1] + "</a>";
+                        else return "<a href=\""+href+"\" target=\"_blank\">" +obj.aData[1] + "</a>";
+                    }
+                },
+                {
+                    "sTitle": "Email",
+                    "fnRender": function(obj){
+                        return "<a href=\"mailto:"+obj.aData[2]+"\" target=\"_blank\">" +obj.aData[2] + "</a>";
+                    }
+                },
+                {
+                    "sTitle": "Recruiter",
+                    "fnRender": function(obj){
+                        return obj.aData[3];
+                    }
+                },
+                {
+                    "sTitle": "Date Closed",
+                    "fnRender": function(obj){
+
+                        return obj.aData[4];
+                    }
+                },
+                {
+                    "sTitle": "Status",
+                    "fnRender": function(obj){
+
+                        var reason = '';
+
+                        switch(parseInt(obj.aData[5]))
+                        {
+                            case 7 : reason = 'Won';  break;
+                            case 8 : reason = 'Lost'; break;
+                        }
+
+                        reason += obj.aData[6] ? ' ('+obj.aData[6]+')' : '';
+
+                        return reason ;
+                    }
+                },
+                {
+                    "sTitle": "Opportunity",
+                    "bSortable": false,
+                    "fnRender": function(obj){
+
+                        var id = obj.aData[8];
+
+                        var opp_status = parseInt(obj.aData[5]);
+                        if(opp_status > 0 && opp_status != 7 && opp_status != 8)
+                            return '<a href="#" style="width:60px; background-color: #DFDFDF;" class="sendMasBtn">Open</a>';
+                        else return '<a href="#" real="'+id+'" style="width:60px;" class="sendMasBtn OpenOpportunity">Open</a>';
+
+                    }
+                },
+            ],
+            "fnDrawCallback": function(){
+                display('none');
+            },
+            "aaSorting": [[ 4, "desc" ]]
+        };
+
+        options.sAjaxSource = "/administrator/recruiting/get-ajax-closed-opportunities";
+        closedTable = $('#respondedTable').dataTable(options);
+
+        $('#startDate').change(function () {startDate = $('#startDate').val(); endDate = $('#endDate').val(); display('block'); closedTable.fnDraw();});
+        $('#endDate').change(function () {startDate = $('#startDate').val(); endDate = $('#endDate').val(); display('block'); closedTable.fnDraw();});
+        $('#accounts').change(function(){ accounts = $('#accounts').val(); closedTable.fnClearTable(); display('block'); });
+
+        $('#selectDate').change(function(){
+
+            var period = $('#selectDate option:selected').val();
+            var str = period.split('_');
+
+            startDate = str[0];
+            endDate = str[1];
+
+            $('#startDate').val(startDate);
+            $('#endDate').val(endDate);
+
+            display('block');
+            closedTable.fnDraw();
+        });
+
+        $('#filterOpportunity').change(function(){ filterOpportunity = $('#filterOpportunity').val(); display('block'); closedTable.fnClearTable();  });
+
+        $(".OpenOpportunity").live('click', function(){
+
+            var id = $(this).attr('real');
+
+            $.fancybox({
+                width	: '90%',
+                height	: '75%',
+                href        : '/administrator/recruiting/stage-opportunities/id/'+id+'/reopen/1',
+                autoSize    : false,
+                type	: 'iframe',
+                afterClose  : function(){ display('block'); closedTable.fnClearTable(); }
+            });
+            return false
+        });
+    });
+
+    function display(status)
+    {
+        $('#mask').css('display', status);
+        $('#loading').css('display', status);
+    }
+
+</script>
+
+<h1>Closed Opportunities</h1>
+
+<div class="contUsL" style="float:left; width:900px;">
+
+    <p>
+        <select id="filterOpportunity" style="margin-left: 60px;">
+            <option value="all">All Opportunity</option>
+            <option value="7">7. Won Opportunity Tags Live</option>
+            <option value="8">8. Lost Opportunity</option>
+        </select>
+    </p>
+    <p>
+        <?php $sMonth = date("m"); $sDay = date("d"); $sYear = date("Y"); $sDateNow = date("Y-m-d", mktime(0,0,0,$sMonth,$sDay,$sYear)); $sDateYesterday = date("Y-m-d", mktime(0,0,0,$sMonth,$sDay-1,$sYear));
+        $reportStartDate = date("Y-m-d", strtotime(htmlentities($this->startDate)));
+        $reportEndDate = date("Y-m-d", strtotime(htmlentities($this->endDate))); ?>
+        <select id="selectDate" name="selectDate" style="margin-left: 60px;">
+            <option value="<?php echo $sDateNow.'_'.$sDateNow; ?>" <?php if($reportStartDate == $sDateNow && $reportEndDate == $sDateNow) echo ' selected' ;?>>Today</option>
+            <option value="<?php echo $sDateYesterday.'_'.$sDateYesterday; ?>" <?php if( $reportStartDate == $sDateYesterday && $reportEndDate == $sDateYesterday ) echo ' selected' ;?>>Yesterday</option>
+            <option value="<?php echo date("Y-m-d", mktime(0,0,0,$sMonth,$sDay-7,$sYear)).'_'.$sDateNow ?>" <?php if( $reportStartDate == date("Y-m-d", mktime(0,0,0,$sMonth,$sDay-7,$sYear)) && $reportEndDate == $sDateNow ) echo ' selected' ;?>>Last 7 Days</option>
+            <option value="<?php echo date("Y-m-d", mktime(0,0,0,$sMonth,$sDay-30,$sYear)).'_'.$sDateNow ?>" <?php if( $reportStartDate == date("Y-m-d", mktime(0,0,0,$sMonth,$sDay-30,$sYear)) && $reportEndDate == $sDateNow ) echo ' selected' ;?>>Last 30 Days</option>
+            <option value="<?php echo date("Y-m-d", mktime(0,0,0,$sMonth,1,$sYear)).'_'.$sDateNow ?>" <?php if( $reportStartDate == date("Y-m-d", mktime(0,0,0,$sMonth,1,$sYear)) && $reportEndDate == $sDateNow ) echo ' selected' ;?>>This Month</option>
+            <option value="<?php echo date("Y-m-d", strtotime(htmlentities($this->startDate)));?>_<?php echo date("Y-m-d", strtotime(htmlentities($this->endDate)));?>" selected>Selected Period</option>
+        </select>
+
+        <select id="accounts" style="margin-left: 57px;">
+            <?php if($this->dataAuth->role == 'super'):?>
+                <option value="-1">Show All Accounts</option>
+                <?php foreach($this->contactManager as $iter):?>
+                    <option value="<?php echo $iter['staff_id']?>"   <?php echo $this->manager == $iter['staff_id'] ? 'selected' : ''?>  <?php echo $this->filterAdmin == $iter['mail'] ? 'selected' : ''?>><?php echo $iter['mail'];?></option>
+                <?php endforeach;?>
+            <?php else: ?>
+                <option value="-1">Show All Accounts</option>
+                <?php if(!empty($this->personalManager['staff_id'])):?>
+                    <option value="<?php echo $this->personalManager['staff_id']; ?>"   <?php echo $this->manager == $iter['staff_id'] ? 'selected' : ''?> <?php echo $this->filterAdmin == $iter['mail'] ? 'selected' : ''?>>Show My Account</option>
+                <?php endif;?>
+            <?php endif;?>
+        </select>
+    </p>
+    <p>
+        Start Date: <input type="text" class="datepicker" name="startDate" value="<?php echo $this->startDate ?>" id="startDate" />
+        End Date: <input type="text" class="datepicker" name="endDate" value="<?php echo $this->endDate ?>" id="endDate" />
+    </p>
+    <br/>
+    <table class="display" id="respondedTable">
+        <thead>
+        <tr>
+            <th width="5%">ID #</th>
+            <th width="20%">Site</th>
+            <th width="20%">Email</th>
+            <th width="10%">Recruiter</th>
+            <th width="10%">Date Closed</th>
+            <th width="20%">Status</th>
+            <th width="5%">Opportunity</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+        <tfoot>
+        <tr>
+            <th>ID #</th>
+            <th>Site</th>
+            <th>Email</th>
+            <th>Recruiter</th>
+            <th>Date Closed</th>
+            <th>Status</th>
+            <th>Opportunity</th>
+        </tr>
+        </tfoot>
+    </table>
+
+</div>
+
+<div id="mask"></div>
+<div id="loading"><span>processing...</span></div>
+
+<script type="text/javascript" src="/font/cufon-yui.js"></script>
+<script	type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script	type="text/javascript" src="/font/Headline_Two_400.font.js"></script>
+<script type="text/javascript">
+    Cufon.replace('h1');
+</script>

@@ -1,0 +1,178 @@
+<style type="text/css">
+	#sub_view{background-color: #8e8e8e; border: 1px solid #797979; color: #ffffff; cursor: pointer; float: left; font-size: 16px; height: 26px; width: 100px;}
+	#sub_view:hover{background-color: #dc2323; border: 0 none; padding: 1px;}
+</style>
+<script type="text/javascript">
+	 $(document).ready(function() {
+        $( ".datepicker" ).datepicker({
+                        showOn:'focus',
+                        'dateFormat'  : "yy-mm-dd"
+                        })			 
+	 })
+</script>	
+<h1>Referred Users</h1>
+<br />
+<div class="contUsL" style="width: 750px;">
+<p>From: <input type="text" class="datepicker" name="from" value="<?php echo $this->from ?>" id="from" /> To: <input type="text" class="datepicker" name="to" value="<?php echo $this->to ?>" id="to" /></p>
+<!--
+<p><strong>Year:</strong>
+<?php
+    for($i=2012; $i<=date("Y"); $i++){
+        if($i==date("Y"))
+            echo "<a href='".$this->url(array('year'=>$i, 'month'=>date("n")))."'>$i</a>";
+        else
+            echo "<a href='".$this->url(array('year'=>$i, 'month'=>date("n")))."'>$i</a> | ";
+    }
+?>
+</p>
+<p><strong>Month:</strong>
+<?php
+    for($i=1; $i<=12; $i++){
+        if($i==date("n")){
+            echo "<a href='".$this->url(array('month'=>$i))."'>" .date("F", mktime(0, 0, 0, $i,   date("d"),   date("Y")))."</a>";
+            if(date("Y")==$this->year)
+                break;
+        }else{
+            echo "<a href='".$this->url(array('month'=>$i))."'>" .date("F", mktime(0, 0, 0, $i,   date("d"),   date("Y"))). "</a> | ";
+        }
+    }
+?>
+
+</p>
+-->
+<br>    
+    <select id="filter_referral_user">
+
+        <option value="0">All IDs</option>
+
+        <?php foreach($this->referral as $iter):?>
+
+             <?php if($this->id == $iter['id']):?>
+        
+                   <option value="<?php echo $iter['id']?>" selected><?php echo $iter['id'] .' '. $iter['name']?></option>  
+             
+             <?php else:?>
+             
+                   <option value="<?php echo $iter['id']?>"><?php echo $iter['id'] .' '. $iter['name']?></option> 
+                   
+             <?php endif;?>
+
+        <?php endforeach;?>
+
+    </select>  
+<p><a class="sendMasBtn" href="#" style="float: left; width:130px" id="sub_view">Update Results</a></p>
+<table width="740px" cellpadding="0" cellspacing="0" border="0" class="display" id="table_referral_user">
+
+    <thead>
+        
+        <tr>
+            <th width="45%">Publisher</th>
+            <th width="10%">RefID</th>
+            <th width="20%">Email</th>
+            <th width="35%">Revenue (Total:<span id="total_revenue"></span>)</th>
+            <th width="20%">Login</th>
+        </tr>
+        
+    </thead>
+    <tbody>
+
+        <?php $totalRevenue = 0;
+        
+              foreach ($this->data as $iter): 
+            
+              //$revenue = $iter->getRevenue(); 
+              $revenue = $iter->revenue ? round($iter->revenue, 2) : 0; 
+              $totalRevenue += $revenue; ?>
+
+           <tr>
+               <td>
+                   <?php echo $iter['name'];?>
+                   
+                   <select id="<?php echo 'siteItem_'. $iter['id']; ?>" style="width: auto;">
+                                 
+                       <?php foreach($iter->getArraySite() as $jter):?>
+                      
+                            <option value="<?php echo $jter['SiteID'];?>"><?php echo $jter['SiteName'];?></option>
+                      
+                       <?php endforeach;?>
+                              
+                    </select>
+               </td>
+               <td><?php echo $iter['referral_id'];?></td>
+               <td><?php echo $iter['email'];?></td>
+               <td><?php echo $revenue; ?></td>
+               <td><a href="/administrator/index/auth/id/<?php echo $iter['id'];?>" target="_blank">Login</a></td>
+          </tr>
+       
+        <?php endforeach; ?>
+
+    </tbody>
+        
+</table>
+
+</div>
+
+<script type="text/javascript">
+        
+        jQuery(document).ready(function(){
+              
+             $('#table_referral_user').dataTable({
+                 "bProcessing": true,
+                 "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+                 "iDisplayLength": -1,
+                 "aoColumns": [
+                     null,
+                     null,
+                     null,
+                     null,
+                     null,
+
+                 ]
+             }); 
+             
+             $('#sub_view').click(function(){
+                 
+                 var referral = $('#filter_referral_user').val();
+                 var from = $('#from').val();
+                 var to = $('#to').val();
+                 
+                 window.location.href="/administrator/referral/user/"+referral+"/"+from+"/"+to;                 
+             });
+             
+             $('#total_revenue').html(<?php echo$totalRevenue;?>);
+             
+                        
+        });
+
+        
+</script>
+
+<script type="text/javascript" src="/font/cufon-yui.js"></script>
+<script type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#topMenu a', {hover: true});	
+		Cufon.replace('#topMenu a');
+</script>
+<script type="text/javascript" src="/font/Headline_Two_400.font.js"></script>
+<script type="text/javascript">
+	Cufon.replace('.contInf h3', {hover: true});	
+	Cufon.replace('.contInf h3');
+	Cufon.replace('.contInf h3.white', {color: '#FFF'});	
+	Cufon.replace('.footerBann h5');		
+	Cufon.replace('.footerBann p');	
+	Cufon.replace('.footerBann a', {hover: true});		
+    Cufon.replace('h1');		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Lt_300.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#footCopyr');	
+		Cufon.replace('.contInf p', {hover: true});		
+		Cufon.replace('.contInf p', {color: '#333333'});	
+		Cufon.replace('.contInf p.white', {color: '#FFF'});	
+		Cufon.replace('.fMenu a', {textDecoration: 'underline'});		
+		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Rg_700.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('.fMenu h4');
+</script>

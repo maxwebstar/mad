@@ -1,0 +1,169 @@
+<form action="" method="post" enctype="multipart/form-data" class="sign-up">
+<div class="contUsL" style="width: 700px;">
+    
+
+<p><label>Type file: </label> 
+    <select name="type" id="type">
+        <option value="1">Rubicon Report</option>
+        <option value="2">Optimization Report</option>
+    </select>
+    <?php if($this->formErrors['type']): ?>
+        <ul class="error">
+        <?php foreach($this->formErrors['type'] as $errors): ?>
+            <li><?php echo $errors ?></li>
+        <?php endforeach; ?>
+        </ul>
+    <?php endif; ?>
+</p>    
+    
+    
+    
+<p><label>Csv file: </label> <input type="file" name="csv">
+    <?php if($this->formErrors['csv']): ?>
+        <ul class="error">
+        <?php foreach($this->formErrors['csv'] as $errors): ?>
+            <li><?php echo $errors ?></li>
+        <?php endforeach; ?>
+        </ul>
+    <?php endif; ?>
+</p>    
+
+<p><a href="#" title="" onclick="document.getElementById('subForm').click(); return false;" class="sendMasBtn">Submit</a></p>
+<input type="submit" id="subForm" style="display: none;" />
+    </div>
+</form>
+
+<?php if($this->fileName):?>
+<script type="text/javascript">
+    
+	$(document).ready(function(){
+            
+		$("#contentLoad").html(''); 
+                
+		if(<?php echo $this->type?> == 1){ 
+                    
+                    getAjax('<?php echo $this->fileName ?>', 0);
+                    
+                }else if(<?php echo $this->type?> == 2){ 
+                
+                    ajaxOptimization('<?php echo $this->fileName?>', 0); 
+                }
+	});
+
+function getAjax(fileName, ftell)
+{	
+	$.ajax({
+		url: "/administrator/sites/csvupload/fileName/"+fileName+"/ftell/"+ftell,
+		type: 'GET',
+		beforeSend: function(){
+			$("#get_load").css('display', 'block');
+		},
+		success: function(data){
+			$("#get_load").css('display', 'none');
+			var i = 0;
+			if(data.sites){
+				for(var key in data.sites){
+					if(data.sites[i].error=='OK')
+						$("#contentLoad").append('<p>'+data.sites[i].Zone+', <strong>Date: <strong> '+data.sites[i].Date+', <strong>Size: <strong> '+data.sites[i].Size+', <strong>Impressions: <strong> '+data.sites[i].Impressions+', <strong>Paid Impressions: <strong> '+data.sites[i].Paid_Impressions+', <strong>Revenue: <strong> '+data.sites[i].Revenue+' - <span style="color:green">OK</span></p>');
+					else
+						$("#contentLoad").append('<p>'+data.sites[i].Zone+', <strong>Date: <strong> '+data.sites[i].Date+', <strong>Size: <strong> '+data.sites[i].Size+', <strong>Impressions: <strong> '+data.sites[i].Impressions+', <strong>Paid Impressions: <strong> '+data.sites[i].Paid_Impressions+', <strong>Revenue: <strong> '+data.sites[i].Revenue+' - <span style="color:red">'+data.sites[i].error+'</span></p>');
+					i++;
+				}
+			}
+			if(data.next==1){
+				getAjax(data.fileName, data.ftell);
+			}else{
+				alert("Completed!");
+			}
+		},
+		dataType: 'json'
+	});		
+}
+
+function ajaxOptimization(fileName, ftell)
+{
+    $.ajax({
+		url: '/administrator/ajax/optimization-upload/',
+		type: 'POST',
+                dataType: 'json',
+                data : { file : fileName, ftell : ftell },
+                beforeSend: function(){ $("#get_load").css('display', 'block'); },
+		success: function(response){
+                    
+			$("#get_load").css('display', 'none');
+
+                        if(response.result.sites){
+
+                            if(response.result.type == 'zone'){
+                                          
+                                $.each(response.result.sites, function(key, iter){
+
+                                    if(iter.error == 'OK') $("#contentLoad").append('<p>'+iter.Zone+', <strong>Date: <strong> '+iter.Date+', <strong>Impressions: <strong> '+iter.Impressions+', <strong>Paid Impressions: <strong> '+iter.Paid_Impressions+', <strong>Revenue: <strong> '+iter.Revenue+' - <span style="color:green">OK</span></p>');
+                                    else                   $("#contentLoad").append('<p>'+iter.Zone+', <strong>Date: <strong> '+iter.Date+', <strong>Impressions: <strong> '+iter.Impressions+', <strong>Paid Impressions: <strong> '+iter.Paid_Impressions+', <strong>Revenue: <strong> '+iter.Revenue+' - <span style="color:red">'+iter.error+'</span></p>'); 
+
+                                }); 
+                            
+                            } else {
+                            
+                               $.each(response.result.sites, function(key, iter){
+
+                                    if(iter.error == 'OK') $("#contentLoad").append('<p>'+iter.Zone+', <strong>Date: <strong> '+iter.Date+', <strong>Impressions: <strong> '+iter.Impressions+' - <span style="color:green">OK</span></p>');
+                                    else                   $("#contentLoad").append('<p>'+iter.Zone+', <strong>Date: <strong> '+iter.Date+', <strong>Impressions: <strong> '+iter.Impressions+' - <span style="color:red">'+iter.error+'</span></p>'); 
+
+                               }); 
+                            
+                            }
+
+
+                            if(response.result.next==1) ajaxOptimization(response.result.fileName, response.result.ftell);
+                            else{
+                                    alert("Completed!");
+                            }
+                            
+                        } else alert(response.result.error);
+		},
+                error : function(){ alert('ajax optimization upload error'); }
+		
+	});		
+}
+
+
+</script>	
+<div class="contUsL" style="width: 700px;">
+<img alt="" src="/reporting/ajax-loader.gif" id="get_load" style="display: none">
+<div id="contentLoad">
+</div>
+</div>
+<?php endif;?>
+
+<script type="text/javascript" src="/font/cufon-yui.js"></script>
+<script type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#topMenu a', {hover: true});	
+		Cufon.replace('#topMenu a');
+    Cufon.replace('.error', {color: 'red'});	    
+
+</script>
+<script type="text/javascript" src="/font/Headline_Two_400.font.js"></script>
+<script type="text/javascript">
+	Cufon.replace('.footerBann h5');		
+	Cufon.replace('.footerBann p');	
+	Cufon.replace('.footerBann a', {hover: true});	
+	Cufon.replace('.contactUs h1');		
+    Cufon.replace('h1');				
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Lt_300.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#footCopyr');	
+		Cufon.replace('.fMenu a');		
+		Cufon.replace('.contactUs p');	
+		Cufon.replace('.contUsL label');		
+		Cufon.replace('#location');		
+		Cufon.replace('.contBtn p');			
+		Cufon.replace('.sendMasBtn',{textShadow: '-1px -1px #5F5F5F'});		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Rg_700.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('.fMenu h4');
+		Cufon.replace('.headquaters');		
+</script>    

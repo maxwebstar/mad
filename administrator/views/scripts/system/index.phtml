@@ -1,0 +1,150 @@
+<div style="width:900px;float:left">
+	<script	type="text/javascript" src="/font/cufon-yui.js"></script>
+	<script	type="text/javascript" src="/font/Bebas_400.font.js"></script>
+	<script	type="text/javascript" src="/font/Headline_Two_400.font.js"></script>
+	<script type="text/javascript">
+		$(function(){
+		    Cufon.replace('h1');		
+	
+			$("#restartVarnishButton").click(function(e){
+	
+				e.preventDefault();
+				$(this).html("Restarting...");
+
+				$restartVarnishOutput = $("#restartVarnishOutput");
+				$restartVarnishOutput.show();
+
+				$outputScroll = $restartVarnishOutput.find(".outputScroll");
+				
+				var $pre = $outputScroll.find("pre");
+				var href = $(this).attr("href");
+
+				function appendOutput(data){
+					for (var i in data){
+						$pre.append(data[i]);
+
+						if ($pre.outerHeight() > $outputScroll.outerHeight())
+							$outputScroll.scrollTop($outputScroll.scrollTop()+12);
+					}
+				}
+	
+				$.get(href, { index: 0}, function(res){
+
+					if (!res.error){
+
+						appendOutput(res.data);
+
+						$.get(href, { index: 1}, function(res){
+
+							if (!res.error){
+								appendOutput(res.data);
+							
+								$.get(href, { index: 2}, function(res){
+
+									if (!res.error){
+										appendOutput(res.data);
+									
+										$.get(href, { index: 3}, function(res){
+
+											if (!res.error){
+												appendOutput(res.data);
+												
+												$.get(href, { index: 4}, function(res){
+
+													if (!res.error){
+														appendOutput(res.data);
+														
+														$.get(href, { index: 5}, function(res){
+
+															if (!res.error){
+																appendOutput(res.data);
+																
+																$.get(href, { index: 6}, function(res){
+
+																	if (!res.error){
+																		appendOutput(res.data);
+																		
+																		$.get(href, { index: 7}, function(res){
+
+																			if (!res.error){
+																				appendOutput(res.data);
+																				$pre.append("Restart completed\n\n\n\n");
+																				$("#restartVarnishButton").html("Restarted");
+																				$outputScroll.scrollTop($outputScroll.scrollTop()+72);
+																				setTimeout(function(){
+																					$restartVarnishOutput.hide();
+																				},10000);																			
+																			}
+																		});																			
+																	}
+																});																	
+															}
+														});															
+													}
+												});											
+											}
+										});
+									}
+								});
+							}
+						});
+					}
+				});
+			});
+		});
+	
+	</script>
+	
+	<style>
+		.sendMasBtn, .sendMasBtn:hover {
+			float:none;
+			padding:3px 18px 3px 18px;
+		}
+		
+		.setting {
+			padding:0 0 12px 0;
+		}
+		
+		#restartVarnishOutput {
+			display: none;
+		}
+		
+		.outputScroll {
+			color: #00CC00;
+			overflow: hidden;
+			width:400px;
+			height:200px;
+			padding:6px;
+			background-color:black;
+		}
+		
+		.outputScroll pre {
+			position:relative;
+			
+		}
+	</style>
+
+	<h1>System</h1>
+
+	<div>
+		<div class="setting">
+			View PHP System Information... 
+			<a href="/administrator/system/phpinfo" id="phpinfoButton" title="View PHP System Information " class="sendMasBtn">PHP Info</a>
+		</div>
+	
+		<!--<div class="setting">
+			Restart <a href="http://ads-by.madadsmedia.com/">ads-by.madadsmedia.com</a> Varnish cache servers... 
+			<a href="/administrator/system/restartvarnish" id="restartVarnishButton" title="Restart Varnish cache servers" class="sendMasBtn">Restart</a>
+			<div id="restartVarnishOutput">
+				<div class="outputScroll">
+					<pre>
+Restarting servers...
+</pre>
+				</div>
+			</div>
+		</div>
+		-->
+	</div>
+	
+</div>
+

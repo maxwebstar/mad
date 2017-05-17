@@ -1,0 +1,23 @@
+<script type="text/javascript">
+	$().ready(function() {
+     
+		$('#<?php echo $this->element->getAttrib('id');?>').ckeditor(function() {}, { 
+                        toolbar : [   [ 'Source','-','Save','NewPage','DocProps','Preview','Print','-','Templates' ],
+	                              [ 'Cut','Copy','Paste','PasteText','PasteFromWord','-','Undo','Redo' ],
+                                      [ 'Find','Replace','-','SelectAll','-','SpellChecker', 'Scayt' ],
+                                      [ 'Form', 'Checkbox', 'Radio', 'TextField', 'Textarea', 'Select', 'Button', 'ImageButton', 'HiddenField' ],
+                                      [ 'Bold','Italic','Underline','Strike','Subscript','Superscript','-','RemoveFormat','-','Blockquote','CreateDiv','-','BidiLtr','BidiRtl','-','Link','Unlink','Anchor' ],
+                                      [ 'NumberedList','BulletedList','-','Outdent','Indent','-','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock', 'Styles','Format','Font','FontSize','-','TextColor','BGColor' ],
+                                      [ 'Image','Flash','Table','HorizontalRule','Smiley','SpecialChar','PageBreak','Iframe' ]],
+                        width : '685px',
+                        height : '300px',
+                        language : 'en',
+			filebrowserBrowseUrl : '/js/ckfinder/ckfinder.html',
+		 	filebrowserImageBrowseUrl : '/js/ckfinder/ckfinder.html?type=Images',
+		 	filebrowserFlashBrowseUrl : '/js/ckfinder/ckfinder.html?type=Flash',
+		 	filebrowserUploadUrl : '/js/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Files',
+		 	filebrowserImageUploadUrl : '/js/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Images',
+		 	filebrowserFlashUploadUrl : '/js/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Flash'
+		});
+	});
+</script>

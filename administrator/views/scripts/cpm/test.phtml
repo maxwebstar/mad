@@ -1,0 +1,38 @@
+<style type="text/css">
+    
+    #form-test-tag #mySubmit{ display: block; height: 28px; width: 129px; font-size: 16px; background-color: #8E8E8E; color: #FFFFFF; cursor: pointer; margin-top: 15px; } 
+    #form-test-tag #mySubmit:hover{ background-color: #DE3232; }
+    #form-test-tag #mySubmit span{ float: left; margin: 5px 0px 0px 50px; }
+    
+</style>
+<script type="text/javascript" src="/js/jquery-1.6.2.min.js"></script>
+<script type="text/javascript">
+
+  $(document).ready(function(){
+      
+       $('#mySubmit').click(function(){ $('#form-test-tag').submit(); });     
+  });        
+
+</script>
+
+<?php if(empty($this->message)):?>
+    <center><h4>Submit button at the bottom of the page!</h4></center>
+<?php else:?>
+    <center><?php echo $this->message;?></center>
+<?php endif;?>
+
+<form action="" method="post" id="form-test-tag">
+
+    <?php foreach($this->data as $key => $iter):?> 
+
+          Size: <?php echo $iter->size;?> <input type="checkbox" name="iframe_<?php echo $iter->id;?>" id="iframe_<?php echo $iter->id;?>" value="1" <?php echo $iter->iframe ? 'checked' : '';?>/>Load through iframe tags.
+          <br />
+
+          <script type="text/javascript" src="<?php echo $iter->getFile()?>"></script>
+          <br />
+
+    <?php endforeach;?>
+
+    <a id="mySubmit"><span>Save</span></a>      
+          
+</form>      

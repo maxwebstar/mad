@@ -1,0 +1,193 @@
+<style type="text/css">
+    
+    #report
+    {
+       padding-right: 170px;
+	   background-image: none;
+       border-right: solid 1px #E2E2E2;
+       border-left: solid 1px #E2E2E2;
+    }
+    .contUsL
+    {
+	   margin-left: 50px;
+    }
+    
+    #reportL
+    {
+	   background-image: none;
+       border-right: solid 1px #E2E2E2;
+       border-left: solid 1px #E2E2E2;
+    }
+    
+    #status_title
+    {
+       font-size: 16px;	
+    }
+    
+</style>
+<script type="text/javascript" charset="utf-8">
+		var contact_status_filter;
+        $(document).ready(function() {
+        		window.contact_status_filter = $('#contact_status').val();            
+                var oTable = $('#users').dataTable( {
+                        "bProcessing": true,
+                        "bServerSide": true,
+                        "sAjaxSource": '/administrator/contact/pending-ajax',
+                        "fnServerParams": function ( aoData ) {
+                        	aoData.push( { "name": "filter", "value": window.contact_status_filter } );
+                        },
+                        "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+                        "iDisplayLength": 100
+                        ,
+                        "aoColumns": [
+                            { 
+                              "sTitle": "PID",
+                              "fnRender": function(obj){ return obj.aData[0]; } 
+                            },
+                            { 
+                              "sTitle": "Old Email",
+                              "bSortable": false,
+                              "fnRender": function(obj){ return '<a href="/administrator/contact/view/id/'+obj.aData[8]+'">'+obj.aData[1]+'</a>'; } 
+                            },
+                            { 
+                              "sTitle": "Old Contact Name",
+                              "bSortable": false,
+                              "fnRender": function(obj){ return obj.aData[2]; } 
+                            },
+                            { 
+                              "sTitle": "New Email",
+                              "fnRender": function(obj){ return obj.aData[3]; } 
+                            },
+                            { 
+                              "sTitle": "New Contact Name",
+                              "fnRender": function(obj){ return obj.aData[4]; } 
+                            },
+                            { 
+                              "sTitle": "Request Date",
+                              "fnRender": function(obj){ return $.format.date(new Date(obj.aData[5]), "yyyy MMM, dd"); } 
+                            },
+
+                            { 
+                              "sTitle": "",
+                              "bSortable": false,
+                              "fnRender": function(obj){ return '<a href="/administrator/contact/view/id/'+obj.aData[6]+'">view</a>'; } 
+                            },
+                            { 
+                              "sTitle": "",
+                              "bSortable": false,
+                              "fnRender": function(obj){ return '<a href="/administrator/contact/approve/id/'+obj.aData[7]+'" onclick="return confirm(\'Approve ?\');">approve</a>'; }
+                            },
+                            { 
+                              "sTitle": "",
+                              "bSortable": false,
+                              "fnRender": function(obj){ return '<a href="/administrator/contact/delete/id/'+obj.aData[8]+'" onclick="return confirm(\'Delete ?\');">delete</a>'; }
+                            }
+                                          
+                        ],                                                
+                        "aaSorting": [[ 5, "asc" ]]
+                         
+                } );
+
+                $("#contact_status").change(function()
+                {
+					//alert($(this).val());
+                	window.contact_status_filter = $(this).val();
+                	if(window.contact_status_filter == 'approved')
+                	{
+                		oTable.fnSetColumnVis(1,false);
+                		oTable.fnSetColumnVis(2,false);
+                		oTable.fnSetColumnVis(6,false);
+                		oTable.fnSetColumnVis(7,false);
+                		oTable.fnSetColumnVis(8,false);
+                		oTable.fnClearTable();
+                		oTable.dataTableSettings[0].aoHeader[0][3].cell.innerHTML = 'Email';
+                		oTable.dataTableSettings[0].aoHeader[0][4].cell.innerHTML = 'Contact Name';
+                		oTable.dataTableSettings[0].aoHeader[0][5].cell.innerHTML = 'Approve Date';
+                                
+                        } else {
+                            
+                		oTable.dataTableSettings[0].aoHeader[0][3].cell.innerHTML = 'New Email';
+                		oTable.dataTableSettings[0].aoHeader[0][4].cell.innerHTML = 'New Contact Name';
+                		oTable.dataTableSettings[0].aoHeader[0][5].cell.innerHTML = 'Request Date';
+                		oTable.fnClearTable();
+                		oTable.fnSetColumnVis(1,true);
+                		oTable.fnSetColumnVis(2,true);
+                		oTable.fnSetColumnVis(6,true);
+                		oTable.fnSetColumnVis(7,true);
+                		oTable.fnSetColumnVis(8,true);
+                    }
+                });
+                
+                
+        });
+
+</script>
+<h1>Change Contact Info</h1>
+<div class="contUsL" style="width: 870px;">
+<br /><br />
+<p>
+   <span id="status_title">Status</span><br/>
+   <select id="contact_status" style="margin-left: 3px;" id="filter">
+     <option value="pending" selected>Pending</option>
+     <option value="approved">Approved</option>
+   </select>
+</p><br/>
+<table width="860px" cellpadding="0" cellspacing="0" border="0" class="display" id="users">
+	<thead>
+		<tr>
+                    <th width="5%">PID</th>
+                    <th width="20%">Old Email</th>
+                    <th width="20%">Old Contact Name</th>
+                    <th width="20%">New Email</th>
+                    <th width="20%">New Contact Name</th>
+                    <th width="15%">Request Date</th>
+                    <th width="5%"></th>
+                    <th width="5%"></th>
+                    <th width="5%"></th>
+		</tr>
+	</thead>
+	<tbody></tbody>
+	<tfoot>
+		<tr>
+                    <th>PID</th>
+                    <th>Old Email</th>
+                    <th>Old Contact Name</th>
+                    <th>New Email</th>
+                    <th>New Contact Name</th>
+                    <th>Request Date</th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+		</tr>
+	</tfoot>
+</table>
+</div> 
+<script type="text/javascript" src="/font/cufon-yui.js"></script>
+<script type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#topMenu a', {hover: true});	
+		Cufon.replace('#topMenu a');
+</script>
+<script type="text/javascript" src="/font/Headline_Two_400.font.js"></script>
+<script type="text/javascript">
+	Cufon.replace('.contInf h3', {hover: true});	
+	Cufon.replace('.contInf h3');
+	Cufon.replace('.contInf h3.white', {color: '#FFF'});	
+	Cufon.replace('.footerBann h5');		
+	Cufon.replace('.footerBann p');	
+	Cufon.replace('.footerBann a', {hover: true});		
+    Cufon.replace('h1');		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Lt_300.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#footCopyr');	
+		Cufon.replace('.contInf p', {hover: true});		
+		Cufon.replace('.contInf p', {color: '#333333'});	
+		Cufon.replace('.contInf p.white', {color: '#FFF'});	
+		Cufon.replace('.fMenu a', {textDecoration: 'underline'});		
+		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Rg_700.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('.fMenu h4');
+</script>

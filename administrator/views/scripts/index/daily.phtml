@@ -1,0 +1,159 @@
+<script type="text/javascript" charset="utf-8">
+        $(document).ready(function() {           
+                var oTable = $('#stat').dataTable( {
+                        "bProcessing": true,
+                        "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+                        "iDisplayLength": -1,
+                        "aoColumns": [
+                            null,
+                            { 
+                              "sTitle": "Live Sites", 
+                              "sType": "numeric" 
+                            },
+                            { 
+                              "sTitle": "Live Users", 
+                              "sType": "numeric" 
+                            },
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+ 
+                        ],                                                
+                        "aaSorting": [[ 0, "desc" ]]
+                });                             	
+        });
+
+</script>
+
+<h1>Daily Stats</h1>
+<div class="contUsL" style="width: 750px;">
+
+<h2>Record "Sites" Live: <?php echo $this->live_site['num'].' ('.$this->live_site['date'].')';?></h2> 
+<h2>Record "Users" Live: <?php echo $this->live_user['num'].' ('.$this->live_user['date'].')';?></h2> 
+<p><strong>Year:</strong>
+<?php
+    for($i=2011; $i<=date("Y"); $i++){
+        if($i==date("Y"))
+            echo "<a href='".$this->url(array('year'=>$i, 'month'=>date("n")))."'>$i</a>";
+        else
+            echo "<a href='".$this->url(array('year'=>$i, 'month'=>date("n")))."'>$i</a> | ";
+    }
+?>
+</p>
+<p><strong>Month:</strong>
+<?php
+    for($i=1; $i<=12; $i++){
+        if($i==date("n")){
+            echo "<a href='".$this->url(array('month'=>$i))."'>" .date("F", mktime(0, 0, 0, $i,   date("d"),   date("Y")))."</a>";
+            if(date("Y")==$this->year)
+                break;
+        }else{
+            echo "<a href='".$this->url(array('month'=>$i))."'>" .date("F", mktime(0, 0, 0, $i,   date("d"),   date("Y"))). "</a> | ";
+        }
+    }
+?>
+
+</p>
+
+    
+<table width="650px" cellpadding="0" cellspacing="0" border="0" class="display" id="stat">
+	<thead>
+            <tr>
+                <th width="25%">Date</th>
+                <th width="15%">Live Sites</th>
+                <th width="15%">Live Users</th>
+                
+                <th width="15%">Tags Created</th>
+                <th width="15%">Prev. Live Sites</th>
+                <th width="15%">First Live</th>
+                <th width="15%">Total Live</th>
+                <th width="15%">Inactive Sites</th>
+            </tr>
+	</thead>
+        <tbody>
+            
+            <?php $average['num']['site'] = 0;
+                  $average['num']['user'] = 0;
+                  $average['sum']['site'] = 0;
+                  $average['sum']['user'] = 0;
+            
+                  $total['tag_created'] = 0;
+                  $total['prev_live_sites'] = 0;
+                  $total['first_live'] = 0;
+                  $total['total_live'] = 0;
+                  $total['inactive'] = 0; ?>
+            
+            <?php foreach ($this->data as $item): ?>
+                <?php 
+            		if(!$item['inactive'])
+            			$item['inactive'] = 0;
+            	?>
+                <tr>
+                    <td><?php echo $item['date']?></td>
+                    <td><?php $average['num']['site'] ++; 
+                              $average['sum']['site'] += $item['numSite']; 
+                              echo $item['numSite'];?></td>
+                    <td><?php $average['num']['user'] ++;
+                              $average['sum']['user'] += $item['numUser']; 
+                              echo $item['numUser'];?></td>
+                    
+                    <td><?php $total['tag_created'] += $item['tag_created']; ?>
+                        <a href="/administrator/index/view-tags-create/date/<?php echo $item['date']?>" target="_blank"><?php echo $item['tag_created'];?></a></td>
+                    <td><?php $total['prev_live_sites'] += $item['prev_live_sites']; ?>
+                        <a href="/administrator/index/view-prev-live-site/date/<?php echo $item['date']?>" target="_blank"><?php echo $item['prev_live_sites'];?></a></td>
+                    <td><?php $total['first_live'] += $item['first_live']; ?>
+                        <a href="/administrator/index/view-first-live/date/<?php echo $item['date']?>" target="_blank"><?php echo $item['first_live'];?></a></td>
+                    <td><?php $total['total_live'] += ($item['prev_live_sites'] + $item['first_live']); ?>
+                        <a href="/administrator/index/view-total-live/date/<?php echo $item['date']?>" target="_blank"><?php echo $item['prev_live_sites'] + $item['first_live'];?></a></td>
+                    <td><?php $total['inactive'] += $item['inactive']; ?>
+                        <a href="/administrator/index/view-inactive/date/<?php echo $item['date']?>" target="_blank"><?php echo $item['inactive'];?></a></td>
+                </tr>
+            <?php endforeach;?>
+        </tbody> 
+        <tfoot>
+            <tr>
+                <th>Date</th>
+                <th>average: <?php echo $average['sum']['site'] && $average['num']['site'] ? round($average['sum']['site'] / $average['num']['site']) : 0;?></th> <!--Live Sites-->
+                <th>average: <?php echo $average['sum']['user'] && $average['num']['user'] ? round($average['sum']['user'] / $average['num']['user']) : 0;?></th> <!--Live Users-->
+                <th>total: <?php echo $total['tag_created'];?></th> <!--Tags Created-->
+                <th>total: <?php echo $total['prev_live_sites'];?></th> <!--Prev. Live Sites-->
+                <th>total: <?php echo $total['first_live'];?></th> <!--First Live-->
+                <th>total: <?php echo $total['total_live'];?></th> <!--Total Live -->
+                <th>total: <?php echo $total['inactive'];?></th> <!--Inactive Sites-->
+            </tr>
+	</tfoot>
+</table>
+
+	
+</div> 
+<script type="text/javascript" src="/font/cufon-yui.js"></script>
+<script type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#topMenu a', {hover: true});	
+		Cufon.replace('#topMenu a');
+</script>
+<script type="text/javascript" src="/font/Headline_Two_400.font.js"></script>
+<script type="text/javascript">
+	Cufon.replace('.contInf h3', {hover: true});	
+	Cufon.replace('.contInf h3');
+	Cufon.replace('.contInf h3.white', {color: '#FFF'});	
+	Cufon.replace('.footerBann h5');		
+	Cufon.replace('.footerBann p');	
+	Cufon.replace('.footerBann a', {hover: true});		
+    Cufon.replace('h1');		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Lt_300.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#footCopyr');	
+		Cufon.replace('.contInf p', {hover: true});		
+		Cufon.replace('.contInf p', {color: '#333333'});	
+		Cufon.replace('.contInf p.white', {color: '#FFF'});	
+		Cufon.replace('.fMenu a', {textDecoration: 'underline'});		
+		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Rg_700.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('.fMenu h4');
+</script>

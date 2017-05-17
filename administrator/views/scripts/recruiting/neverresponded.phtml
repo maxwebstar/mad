@@ -1,0 +1,121 @@
+<script type="text/javascript">
+	$(function(){
+
+		var $neverRespondedTable;		
+
+		var options =  {
+	        "bProcessing": true,
+	        "bServerSide": true,
+	        "sAjaxSource": null,
+	        "fnServerParams": function ( aoData ) {  
+
+			},
+	        "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+	        "iDisplayLength": 50,
+	        "aoColumns": [
+	            { 
+	              "sType": "num-html", 
+	              "sTitle": "ID#",
+	              "fnRender": function(obj){ 
+						var id = obj.aData["id"];
+	                    return id;
+	              	}
+	            },
+	            { 
+		              "sTitle": "Website",
+		              "fnRender": function(obj){ 
+			              	var website = obj.aData["website"];
+			              	var re = /^http/;
+							var href = (re.test(website)) ? website : "http://"+website;
+			              
+		                    return "<a href=\""+href+"\" target=\"_blank\">" +obj.aData['website'] + "</a>";
+		              
+	                   }
+	            },
+	            { 
+	                "sTitle": "Email",
+	                "fnRender": function(obj){ 
+	                    return "<a href=\"mailto:"+obj.aData["email"]+"\" target=\"_blank\">" +obj.aData['email'] + "</a>";
+	               		}
+	            },    
+	            { 
+	                "sTitle": "Status",
+	                "fnRender": function(obj){ 
+
+						return obj.aData["status"];	                   	
+	               	}
+	            },    	                    
+	            { 
+	                "sTitle": "Responded",
+	                "fnRender": function(obj){ 
+
+						var id = obj.aData["id"];
+						return "<input class=\"response\" email_id=\""+id+"\" name=\"responded\" type=\"checkbox\" value=\"1\" /> Yes <input class=\"response\" email_id=\""+id+"\" name=\"never_responded\" checked=\"checked\" type=\"checkbox\" value=\"1\" /> Never";	                   	
+	               	}
+	            },            
+	        ],
+	        "fnDrawCallback": function(){
+	    		$(".response").click(function(e){
+
+	    			if ($(this).is(":checked")){
+	    				var email_id = $(this).attr("email_id");
+	    				var response = ($(this).attr("name")=="responded") ? "responded" : "never_responded" ;
+
+	    				if (response == "responded" && $(this).next("input").is(":checked"))
+	    					$(this).next("input").attr("checked",null);
+	    				else if (response == "never_responded" && $(this).prev("input").is(":checked"))
+	    					$(this).prev("input").attr("checked",null);
+	    				
+	    				$.get("/administrator/recruiting/response", { "email_id" : email_id, "response" : response  }, function(res){
+
+	    					if (!res.error)
+	    						$neverRespondedTable.fnClearTable(true);
+	    				});
+	    			}
+	    		});
+	        },
+	        "aaSorting": [[ 0, "asc" ]]
+		};
+
+	    options.sAjaxSource = "/administrator/recruiting/data/status/never_responded";
+	    $neverRespondedTable = $('#neverRespondedTable').dataTable(options);		
+
+	});
+</script>
+
+<div style="float:left; width:900px;">
+	<h1>Recruiting Emailer Never Responded</h1>
+	
+	<div>
+		<table class="display" id="neverRespondedTable">
+			<thead>
+				<tr>
+					<th width="5%">ID #</th>
+					<th width="30%">Site</th>
+					<th width="40%">Email</th>
+					<th width="10%">Status</th>
+					<th width="15%">Responded</th>
+				</tr>
+			</thead>
+			<tbody></tbody>
+			<tfoot>
+				<tr>
+					<th>ID #</th>
+					<th>Site</th>
+					<th>Email</th>
+					<th>Status</th>
+					<th>Responded</th>
+				</tr>
+			</tfoot>
+		</table>	
+	</div>
+
+	
+</div>
+
+<script type="text/javascript" src="/font/cufon-yui.js"></script>
+<script	type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script	type="text/javascript" src="/font/Headline_Two_400.font.js"></script>
+<script type="text/javascript">
+    Cufon.replace('h1');		
+</script>

@@ -1,0 +1,393 @@
+<?php
+    // Content-Type
+    $this->headMeta()->appendHttpEquiv('Content-Type', 'text/html;charset=utf-8');    
+    // doctype
+    echo $this->doctype();        
+?>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <?php
+        // meta tegs
+        echo $this->headMeta();
+    ?>
+    <?php
+        // title
+        echo $this->headTitle();
+    ?>
+    <?php
+        // styles and javascripts
+        $this->headLink()->appendStylesheet($this->baseUrl().'/styles/style.css');
+        $this->headLink()->appendStylesheet($this->baseUrl().'/styles/reset.css');
+        $this->headLink()->appendStylesheet($this->baseUrl().'/styles/jquery-ui-1.8.18.custom.css');
+        $this->headLink()->appendStylesheet($this->baseUrl().'/styles/jquery.jqplot.min.css');
+        $this->headLink()->appendStylesheet($this->baseUrl().'/styles/website_notes.css');
+        $this->headLink()->appendStylesheet($this->baseUrl().'/css/font-awesome.min.css');
+        echo $this->headLink();
+        
+        $this->headScript()->offsetSetFile(1,$this->baseUrl().'/js/jquery-1.6.2.min.js', 'text/javascript');
+        $this->headScript()->offsetSetFile(2,$this->baseUrl().'/js/jquery-ui-1.8.18.custom.min.js', 'text/javascript');
+        $this->headScript()->offsetSetFile(3,$this->baseUrl().'/js/jquery.ulslide.js', 'text/javascript');
+        $this->headScript()->offsetSetFile(4,$this->baseUrl().'/js/excanvas.js', 'text/javascript', array('conditional' => 'lt IE 9'));        
+        $this->headScript()->offsetSetFile(5,$this->baseUrl().'/js/jquery.jqplot.min.js', 'text/javascript');
+
+        $this->headScript()->offsetSetFile(6,$this->baseUrl().'/js/plugins/jqplot.highlighter.min.js', 'text/javascript');
+        $this->headScript()->offsetSetFile(7,$this->baseUrl().'/js/plugins/jqplot.cursor.min.js', 'text/javascript');
+        $this->headScript()->offsetSetFile(8,$this->baseUrl().'/js/plugins/jqplot.dateAxisRenderer.min.js', 'text/javascript');
+
+        $this->headScript()->offsetSetFile(9,$this->baseUrl().'/js/plugins/jqplot.canvasTextRenderer.min.js', 'text/javascript');
+        $this->headScript()->offsetSetFile(10,$this->baseUrl().'/js/plugins/jqplot.canvasAxisTickRenderer.min.js', 'text/javascript');
+        $this->headScript()->offsetSetFile(11,$this->baseUrl().'/js/plugins/jqplot.categoryAxisRenderer.min.js', 'text/javascript');
+        $this->headScript()->offsetSetFile(12,$this->baseUrl().'/js/plugins/jqplot.barRenderer.min.js', 'text/javascript');
+        $this->headScript()->offsetSetFile(13,$this->baseUrl().'/js/plugins/jqplot.pointLabels.min.js', 'text/javascript');
+		$this->headScript()->offsetSetFile(14,$this->baseUrl().'/js/website_notes.js', 'text/javascript');
+        echo $this->headScript();        
+    ?>    
+<link rel="icon" type="image/x-icon" href="/images/favicon.ico" />
+</head>
+<body>
+<div id="wrapper">
+ <div id="mainInsideIn">	
+	<!--header top-->
+    <div id="headerTop">
+    	<div id="hTopInn">
+	    	<div id="logo"><a href="/" title=""><img src="/images/logo_new.png" width="316" height="101" alt="" /></a></div>
+            <div id="topMenu">
+            	<ul>
+                  <?php $dataIdentity = Zend_Auth::getInstance()->getIdentity(); if($dataIdentity): ?>
+                    <li><a href="/" title=""><span>Home</span></a></li>
+                    <?php if($dataIdentity->role == 'admin' || $dataIdentity->role == 'super'):?>
+                        <li><a href="/administrator/dashboard/"><span>Dashboard</span></a></li>
+                    <?php endif;?>
+                	<li <?php if($this->layout()->nav=='report' || $this->layout()->nav=='adcode' || $this->layout()->nav=='contact' || $this->layout()->nav=='password' || $this->layout()->nav=='payment') echo 'class="cur"' ?>><a href="/report/" ><span>My Account</span></a></li>
+                	<li <?php if($this->layout()->nav=='contacts') echo 'class="cur"' ?>><a href="/contact-us/" ><span>Contact Us</span></a></li>
+                  <?php else: ?>                
+                    <li <?php if($this->layout()->nav=='home') echo 'class="cur"' ?> ><a href="/" title=""><span>Home</span></a></li>
+                	<li <?php if($this->layout()->nav=='login') echo 'class="cur"' ?> ><a href="/login/" title=""><span>Login</span></a></li>
+                	<li <?php if($this->layout()->nav=='apply') echo 'class="cur"' ?> ><a href="/registration/" title=""><span> Apply Now</span></a></li>
+                	<li <?php if($this->layout()->nav=='about') echo 'class="cur"' ?> ><a href="/about-us/" title=""><span>Why Us?</span></a></li>
+                	<li <?php if($this->layout()->nav=='contacts') echo 'class="cur"' ?> ><a href="/contact-us/" title=""><span>Contact Us</span></a></li>
+                 <?php endif; ?>                    
+                </ul>
+            </div>
+        </div>
+    </div>
+	<!--//header top-->
+    <!--content-->
+    <div id="content">
+        <?php if(isset($this->layout()->logs)):?>
+        <div id="confirm_dialog">
+		</div>
+    	<div id="note_form">
+    		<span>Select Note Type</span><br/>
+    			<select name="note_type" id="note_type">
+	    			<option value = "0" selected= "true">Overview</option>
+	    			<option value = "1">Optimizations</option>
+    			</select><br/><br/>
+    		<span>Select Site</span><br/>
+    		<select name="site_id" id="site_id">
+	    		<?php foreach($this->sites as $site):?>
+	    			<option value="<?php echo $site['SiteID'];?>"><?php echo $site['SiteName'];?></option>
+	    		<?php endforeach;?>
+    		</select><br/><br/>
+			<span>Note:</span><br/>
+			<input  type="text" name="note" value=""/>
+			<input type="hidden" id="pub_id" value="<?php echo $site['PubID'];?>" />
+		</div>
+		<div id="logs">
+			<span id="add_note">+ Add New Note</span><br/><br/>
+			<div id="logs_tabs">
+				<ul>
+					<li id="first_li"><a href="#tabs-overview">Overview</a></li>
+					<li id="second_li"><a href="#tabs-optimizations">Optimizations</a></li>
+					<li id="third_li"><a href="#tabs-floor-requests">Floor Requests</a></li>
+				</ul>
+				<div id="tabs-overview">
+					<?php foreach($this->layout()->logs['logs'] as $log):?>
+					<?php if(!$log['ServingURL'] AND !$log['SiteURL'] AND !$log['IFrame'] AND !$log['Enabled']  AND !$log['AdminNote']):?>
+						<?php $time = strtotime($log['created']);?>
+						<?php if($time):?>
+				    		<span data-noteid="<?php echo $log['id'];?>" class="delete_log"><?php echo date('m/d/Y H:i',$time);?> (<?php echo $log['SiteName'];?>) - Website Created <br/></span>
+				    	<?php else:?>
+				    		<span data-noteid="<?php echo $log['id'];?>" class="delete_log">(<?php echo $log['SiteName'];?>) - Website Created<br/></span>			    	
+				    	<?php endif;?>
+			 		<?php elseif($log['ServingURL'] == 1):?>
+						<span data-noteid="<?php echo $log['id'];?>" class="delete_log"><?php echo $log['note_type']!=2 ? '<div class="delete_button"></div>' : ''?><?php echo date('m/d/Y H:i',strtotime($log['changed']))?> (<?php echo $log['SiteName'];?> by <?php echo $log['name'];?>) Serving URLs were deleted <br/></span>
+					<?php elseif ($log['ServingURL'] == 2):?>
+						<span data-noteid="<?php echo $log['id'];?>" class="delete_log"><?php echo $log['note_type']!=2 ? '<div class="delete_button"></div>' : ''?><?php echo date('m/d/Y H:i',strtotime($log['changed']))?> (<?php echo $log['SiteName'];?> by <?php echo $log['name'];?>) Serving URLs were added <br/></span>
+					<?php elseif ($log['ServingURL'] == 3):?>
+						<span data-noteid="<?php echo $log['id'];?>" class="delete_log"><?php echo $log['note_type']!=2 ? '<div class="delete_button"></div>' : ''?><?php echo date('m/d/Y H:i',strtotime($log['changed']))?> (<?php echo $log['SiteName'];?> by <?php echo $log['name'];?>) Serving URLs were changed <br/></span>
+					<?php endif;?>
+					<?php if($log['SiteURL'] == 1):?>
+						<span data-noteid="<?php echo $log['id'];?>" class="delete_log"><?php echo $log['note_type']!=2 ? '<div class="delete_button"></div>' : ''?><?php echo date('m/d/Y H:i',strtotime($log['changed']))?> (<?php echo $log['SiteName'];?> by <?php echo $log['name'];?>) Site URLs were deleted <br/></span>
+					<?php elseif ($log['SiteURL'] == 2):?>
+						<span data-noteid="<?php echo $log['id'];?>" class="delete_log"><?php echo $log['note_type']!=2 ? '<div class="delete_button"></div>' : ''?><?php echo date('m/d/Y H:i',strtotime($log['changed']))?> (<?php echo $log['SiteName'];?> by <?php echo $log['name'];?>) Site URLs were added <br/></span>
+					<?php elseif ($log['SiteURL'] == 3):?>
+						<span data-noteid="<?php echo $log['id'];?>" class="delete_log"><?php echo $log['note_type']!=2 ? '<div class="delete_button"></div>' : ''?><?php echo date('m/d/Y H:i',strtotime($log['changed']))?> (<?php echo $log['SiteName'];?> by <?php echo $log['name'];?>) Site URLs were changed <br/></span>
+					<?php endif;?>
+					<?php if($log['IFrame'] == 1):?>
+						<span data-noteid="<?php echo $log['id'];?>" class="delete_log"><?php echo $log['note_type']!=2 ? '<div class="delete_button"></div>' : ''?><?php echo date('m/d/Y H:i',strtotime($log['changed']))?> (<?php echo $log['SiteName'];?> by <?php echo $log['name'];?>) IFrame tags were enabled <br/></span>
+					<?php elseif ($log['IFrame'] == 2):?>
+						<span data-noteid="<?php echo $log['id'];?>" class="delete_log"><?php echo $log['note_type']!=2 ? '<div class="delete_button"></div>' : ''?><?php echo date('m/d/Y H:i',strtotime($log['changed']))?> (<?php echo $log['SiteName'];?> by <?php echo $log['name'];?>) IFrame tags were disabled <br/></span>
+					<?php endif;?>
+					<?php if($log['Enabled'] == 1):?>
+						<span data-noteid="<?php echo $log['id'];?>" class="delete_log"><?php echo $log['note_type']!=2 ? '<div class="delete_button"></div>' : ''?><?php echo date('m/d/Y H:i',strtotime($log['changed']))?> (<?php echo $log['SiteName'];?> by <?php echo $log['name'];?>) Site is active <br/></span>
+					<?php elseif ($log['Enabled'] == 2):?>
+						<span data-noteid="<?php echo $log['id'];?>" class="delete_log"><?php echo $log['note_type']!=2 ? '<div class="delete_button"></div>' : ''?><?php echo date('m/d/Y H:i',strtotime($log['changed']))?> (<?php echo $log['SiteName'];?> by <?php echo $log['name'];?>) Site is denied <br/></span>
+					<?php endif;?>
+					<?php if($log['AdminNote'] != NULL AND strlen($log['name'])):?>
+						<span data-noteid="<?php echo $log['id'];?>" class="delete_log"><?php echo $log['note_type']!=2 ? '<div class="delete_button"></div>' : ''?><?php echo date('m/d/Y H:i',strtotime($log['changed']))?> (<?php echo $log['SiteName'];?> by <?php echo $log['name'];?>) <?php echo $log['AdminNote'];?><br/> </span>
+					<?php elseif($log['AdminNote'] != NULL AND !strlen($log['name'])):?>
+						<span data-noteid="<?php echo $log['id'];?>" class="delete_log"><?php echo $log['note_type']!=2 ? '<div class="delete_button"></div>' : ''?><?php echo date('m/d/Y H:i',strtotime($log['changed']))?> (<?php echo $log['SiteName'];?> ) <?php echo $log['AdminNote'];?> <br/></span>				
+					<?php endif;?>
+				<?php endforeach;?>
+				</div>
+				<div id="tabs-optimizations">
+					<?php foreach($this->layout()->logs['logs'] as $log):?>
+						<?php if($log['AdminNote'] != NULL AND $log['note_type'] == '1'):?>
+							<span data-noteid="<?php echo $log['id'];?>" class="delete_log"><?php echo $log['note_type']!=2 ? '<div class="delete_button"></div>' : ''?><?php echo date('m/d/Y H:i',strtotime($log['changed']))?> (<?php echo $log['SiteName'];?> by <?php echo $log['name'];?>) <?php echo $log['AdminNote'];?> <br/></span>
+						<?php endif;?>
+					<?php endforeach;?>
+				</div>
+				<div id="tabs-floor-requests">
+					<?php foreach($this->layout()->logs['logs'] as $log):?>
+						<?php if($log['AdminNote'] != NULL AND $log['note_type'] == '2'):?>
+							<?php if(strlen($log['name'])):?>
+								<span data-noteid="<?php echo $log['id'];?>" class="delete_log"><?php echo $log['note_type']!=2 ? '<div class="delete_button"></div>' : ''?><?php echo date('m/d/Y H:i',strtotime($log['changed']))?> (<?php echo $log['SiteName'];?> by <?php echo $log['name'];?>) <?php echo $log['AdminNote'];?> <br/></span>
+							<?php elseif(!strlen($log['name'])):?>
+								<span data-noteid="<?php echo $log['id'];?>" class="delete_log"><?php echo $log['note_type']!=2 ? '<div class="delete_button"></div>' : ''?><?php echo date('m/d/Y H:i',strtotime($log['changed']))?> (<?php echo $log['SiteName'];?> ) <?php echo $log['AdminNote'];?> <br/></span>				
+							<?php endif;?>						
+						<?php endif;?>
+					<?php endforeach;?>
+				</div>			
+			</div>
+			<!--
+			-->
+		</div> 	
+   	<?php endif;?>
+            <!--<?php if($this->layout()->deniImpress>5000): ?>
+                <a href="/denied-urls" style="background-color:#FF0000; border:1px solid #FF0000; display:block; width:950px; color:#FFF; font-weight:bold; font-size:16px; text-align:center; padding:3px; margin-top:2px;">You have impressions appearing on domains that haven't been approved. Please visit "Denied URLs" for more info.</a>
+            <?php else: ?>-->
+                <a href="/contact-us" style="background-color:#FF0000; border:1px solid #FF0000; display:block; width:950px; color:#FFF; font-weight:bold; font-size:16px; text-align:center; padding:3px; margin-top:2px;">Seeing Public Service Ads? Please contact us with all domains/ad serving URLs to have them approved. </a>
+                <!--<a href="/contact-us" style="background-color:#0099FF; border:1px solid #0099FF; display:block; width:950px; color:#FFF; font-weight:bold; font-size:16px; text-align:center; padding:3px; margin-top:2px;">Have a Mobile Optimized Site? Contact us to be included into our Mobile Ads Beta program. </a>-->
+            <?php endif; ?>
+        <?php if($this->layout()->PaymentError==1): ?>
+            <a href="/payment" style="background-color:#D73A3A; border:1px solid #D73A3A; display:block; width:950px; color:#FFF; font-weight:bold; font-size:16px; text-align:center; padding:3px; margin-bottom:2px;">Please update your payment profile in order to receive payments.</a>        
+        <?php endif; ?>        <!--<?php if($this->layout()->CPMs!=1): ?>
+            <a href="/contact-us" style="background-color:#EA7015; border:1px solid #EA7015; display:block; width:950px; color:#FFF; font-weight:bold; font-size:16px; text-align:center; padding:3px;">Our new optimization system increases CPMs upwards of 100% - Contact us to be invited. </a>        		 
+			<?php endif; ?>-->
+
+        <?php if($this->layout()->pdfError):?>
+            <a href="/w-9" style="background-color:#F4C400; border:1px solid #F4C400; display:block; width:950px; color:#FFF; font-weight:bold; font-size:16px; text-align:center; padding:3px; margin-top:2px;">Please Complete Your W-9 In Order To Receive Your Payments </a>
+        <?php endif;?>    
+    	
+            <!--
+        	<?php if($this->layout()->CPMs!=1 && $this->layout()->invite['inviteAdx']): ?>
+            
+                      <?php if($this->layout()->invite['request'] == 1):?>
+            
+                          <a style="margin: 2px 0px 2px 0px; cursor: pointer; background-color:#EA7015; border:1px solid #EA7015; display:block; width:950px; color:#FFF; font-weight:bold; font-size:16px; text-align:center; padding:3px;">Our new optimization system increases CPMs upwards of 100% - Your application has been submitted. </a>        		 
+            
+                      <?php elseif($this->layout()->invite['request'] == 2):?>    
+                          
+                      <?php else:?> 
+            
+                          <?php if($this->layout()->invite['url']):?>
+                            <a onclick="window.open('<?php echo $this->layout()->invite['url'];?>'); location.href='/invite-request';" style="margin: 2px 0px 2px 0px; cursor: pointer; background-color:#EA7015; border:1px solid #EA7015; display:block; width:950px; color:#FFF; font-weight:bold; font-size:16px; text-align:center; padding:3px;">Our new optimization system increases CPMs upwards of 100% - Contact us to be invited. </a>        		 
+                          <?php else:?>
+                            <a href="/contact-us" style="margin: 2px 0px 2px 0px; background-color:#EA7015; border:1px solid #EA7015; display:block; width:950px; color:#FFF; font-weight:bold; font-size:16px; text-align:center; padding:3px;">Our new optimization system increases CPMs upwards of 100% - Contact us to be invited. </a>        		 
+                          <?php endif;?>  
+                        
+                      <?php endif;?>  
+                <?php endif; ?>    
+            -->
+			
+						<!--
+						<a href="#" style="background-color:#EA7015; border:1px solid #EA7015; display:block; width:950px; color:#FFF; font-weight:bold; font-size:16px; text-align:center; padding:3px;">Some websites are experiencing a reporting delay.  Data will be updated as soon as it becomes available.</a>        		 
+						-->
+
+            
+            <div id="report" style="width: 980px;">
+        	<!--LEFT COLLUM-->
+            <div id="reportL">
+            	<ul>
+                	<li <?php if($this->layout()->nav=='report') echo 'class="cur"' ?> ><a href="/report/" title=""><span>Earnings</span></a></li>
+                    <?php if(Zend_Auth::getInstance()->getIdentity()->role == "super"): ?>
+                        <li <?php if($this->layout()->nav=='reportBeta') echo 'class="cur"' ?>><a href="/report/beta/" title=""><span>Earnings (Beta)</span></a></li>
+                    <?php endif; ?>
+                    <li <?php if($this->layout()->nav=='adcode') echo 'class="cur"' ?> ><a href="/adcode/" title="" class="addCode"><span>Ad Code</span></a></li>
+                	<li <?php if($this->layout()->nav=='contact') echo 'class="cur"' ?> ><a href="/contact/" title="" class="contInfLink"><span>Contact Info</span></a></li>  
+                	<li <?php if($this->layout()->nav=='password') echo 'class="cur"' ?> ><a href="/password/" title="" class="passw"><span>Password</span></a></li>  
+                	<li <?php if($this->layout()->nav=='payments') echo 'class="cur"' ?>><a href="/payments/" title=""><span>Payments</span></a></li> 
+                    <?php if(Zend_Auth::getInstance()->getIdentity()->role == "admin" || Zend_Auth::getInstance()->getIdentity()->role == "super"): ?>
+                	<li <?php if($this->layout()->nav=='paymentsBeta') echo 'class="cur"' ?>><a href="/payments-beta/" title=""><span>Payments (Beta)</span></a></li> 
+					<?php endif; ?>                	                 	
+                	<li <?php if($this->layout()->nav=='payment') echo 'class="cur"' ?>><a href="/payment/" title="" class="paymProf"><span>Payment Profile</span></a></li>  
+                	<li <?php if($this->layout()->nav=='newSite') echo 'class="cur"' ?> ><a href="/new-site/" title="" class="addCode"><span>Add New Site</span></a></li>
+                	<?php 
+                		$auth = Zend_Auth::getInstance()->getIdentity();
+	                	$sitesModel = new Application_Model_DbTable_Sites();
+				        $sql = $sitesModel->select()->setIntegrityCheck(false)
+				                            ->from(array('s' => 'sites'),array(
+				                                's.SiteID AS id'))
+				                            ->joinLeft('tags', 'tags.site_id=s.SiteID', array(
+				                            					'tags.type AS type'))
+				                            ->where("s.PubID = ?", $auth->id)
+				                            ->where('s.status = 3');
+				        $dataSites = $sitesModel->fetchAll($sql);
+				        $allCount = 0;
+				        $burstCount = 0;
+				        $burstSites = false;
+				        if($dataSites){
+					        foreach($dataSites as $site){					        
+					        	if($site->type==6)
+					        		$burstCount++;
+								$allCount++;
+					        }
+					        if($allCount==$burstCount)
+					        	$burstSites = true;
+				        }else{
+					        $burstSites = true;
+				        }
+                	?>
+                	<?php if($burstSites===false): ?>
+                    <li <?php if($this->layout()->nav=='minimumcpm') echo 'class="cur"' ?> ><a href="/minimum-cpm" title=""><span>Minimum CPM</span></a></li>
+                    <?php endif; ?>
+                    <?php if(Zend_Auth::getInstance()->getIdentity()->role == "admin" || Zend_Auth::getInstance()->getIdentity()->role == "super"): ?>
+                    <li <?php if($this->layout()->nav=='denied') echo 'class="cur"' ?> ><a href="/denied-urls" title=""><span>Denied URLs </span></a></li>
+                           <?php if (Zend_Auth::getInstance()->getIdentity()->role == "admin" || Zend_Auth::getInstance()->getIdentity()->role == "super"): ?>  
+                            <li <?php if($this->layout()->nav=='banned') echo 'class="cur"' ?> ><a href="/banned-urls" title=""><span>Banned URLs </span></a></li>                    
+                           <?php endif; ?>
+                    <?php endif; ?>        
+                              
+                    <?php if(isset($_SESSION['admin_id'])): ?>
+                    <br />
+                    <li><a href="/administrator/index/back"><span>Back To Admin</span></a></li>
+                    <?php endif; ?>        
+                    
+                </ul>
+                
+					
+					<?php if(count($this->layout()->news)):?>
+					<script>
+					$(document).ready(function()
+					{
+						$("#view_all_news").click(function()
+						{
+							$('<div class=\'news_dialog\'>').load('/viewallnews').dialog({
+								title: 'All news',
+								resizable: false,
+								width: 500,
+								modal: true,
+								close: function( event, ui ) 
+								{
+									$('.ui-dialog, .news_dialog').remove();
+								}
+								});
+							return false;
+						});
+					});
+					</script>
+						<?php foreach($this->layout()->news as $news_item):?>
+							<div class="publisher" style="padding-right:2px;">
+								<div class="notice">Notice (<?php echo date('m/d/Y',strtotime($news_item['date']));?>):</div>
+								<span style="font-weight: bold;"><?php echo $news_item['title']?><br/></span>
+								<?php echo $news_item['text'];?>
+							</div>
+						<?php endforeach;?>
+						<a href="#" id="view_all_news" style="font-size: 16px; color: red; margin-left: 20px; margin-top: 20px; text-decoration: underline;">View all news</a>
+					<?php endif;?>
+
+                <div class="publisher" style="padding-right:2px;">
+                	<div class="notice">Like/Follow Us:</div>
+					<div style="border-bottom:1px solid #CCC; margin:5px 0;"></div>
+					<iframe src="//www.facebook.com/plugins/like.php?href=https%3A%2F%2Fwww.facebook.com%2FMadAdsMediaLP&amp;width=100&amp;height=21&amp;colorscheme=light&amp;layout=button_count&amp;action=like&amp;show_faces=true&amp;send=false" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:100px; height:21px;" allowTransparency="true"></iframe> 
+					<div style="border-bottom:1px solid #CCC; margin-bottom:5px;"></div>
+					<a target="_blank" rel="nofollow" title="MadAds Media on Twitter" href="http://www.twitter.com/MadAdsMedia" style="border: 0px none transparent; font-size:12px;"><img width="20" height="20" alt="" src="/images/twitter-icon.png" align="absmiddle"> Follow Us</a>
+					<div style="border-bottom:1px solid #CCC; margin:5px 0;"></div>
+					And receive the latest updates regarding new changes and ad sizes.
+					</p>
+                </div>
+
+                <div class="publisher">
+                	<h4>Publisher: <span><?php echo Zend_Auth::getInstance()->getIdentity()->name ?></span></h4>
+                    <p class="publMail"><a href="#" title=""><?php echo Zend_Auth::getInstance()->getIdentity()->email ?></a></p>
+                    <a href="/logout/" title="" class="logOut"><span>LogOut</span></a>
+                </div>
+                <div class="publisher">
+                	<h4><strong>Next Payment:</strong></h4>
+                	<br>
+                    <p class="publMail" style="font-size: 16px;"><?php echo $this->layout()->nextPaymentSum; ?></p>
+                    <?php echo $this->layout()->nextPaymentDate ? 'Issued by '.$this->layout()->nextPaymentDate : ''; ?>
+                </div>
+                <div class="advSmall"><a href="#" title=""><img src="/images/advSmall.png" width="160" height="207" alt="" /></a></div>
+                <!--<div class="advSmall"><a href="#" title=""><img src="/images/advSmall.png" width="160" height="207" alt="" /></a></div>
+                <div class="advSmall"><a href="#" title=""><img src="/images/advSmall.png" width="160" height="207" alt="" /></a></div> -->                               
+            </div>
+        	<!--//LEFT COLLUM-->  
+
+        <?php echo $this->layout()->content; ?>
+        </div>
+    </div>
+    <!--//content-->    
+  <div id="footerBlock"></div>
+ </div>
+</div>
+<div id="footerMain">
+ <div id="footer">
+ 	<div id="footTop">
+    	<div class="fMenu">
+        	<h4>Pages</h4>
+            <ul>
+            	<li><a href="/" title="">Home</a></li>
+            	<li><a href="/about-us/" title="">About Us</a></li>
+            	<li><a href="/contact-us/" title="">Contact Us</a></li>                                
+            	<li><a href="/faq/" title="">FAQ</a></li>                                
+            	<li><a href="/careers/" title="">Careers</a></li>                                
+            </ul>
+        </div>
+        
+    	<div class="fMenu">
+        	<h4>Publishers</h4>
+            <ul>
+            	<li><a href="/registration/" title="">Apply Now</a></li>
+                <li><a href="/terms-of-service">Terms of Service</a></li>
+            </ul>
+        </div>  
+        
+    	<div class="fMenu">
+        	<h4>Follow Us</h4>
+			<a href="http://www.facebook.com/MadAdsMediaLP" title="MadAds Media on Facebook" class="socLink" rel="nofollow"><img src="/images/faceBook.png" width="40" height="40" alt="" /></a>
+			<a href="http://www.twitter.com/MadAdsMedia" title="MadAds Media on Twitter" class="socLink" rel="nofollow"><img src="/images/twitt.png" width="40" height="40" alt="" /></a>
+        </div>
+        
+    	<div class="fMenu" style="margin-left:-10px; width:230px;">
+			<a href="http://www.instantssl.com" title="Secured by Comodo" rel="nofollow" class="socLink"><img src="/images/comodo_secure_100x85_transp.png" alt="" width="90" /></a>
+			<a href="http://www.gigenet.com/318.html" title="Proudly Hosted by Gigenet" rel="nofollow" target="_blank">Proudly hosted by: <img src="/images/gigenet-logo.png" alt="" width="90" /></a>
+        </div>
+        
+        <div class="footerBann">
+        	<h5>Have a question?</h5>
+            <p>24-7 Support is here to answer!</p>
+            <a href="/contact-us/" title="">Contact Us</a>
+        </div>      
+      
+    </div>
+    
+	<div id="footCopyr">&copy;2011-<?php echo date("Y"); ?> Mad Ads Media LP - All rights reserved.</div>
+ </div>
+</div>
+
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-26708249-2']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</body>
+</html>

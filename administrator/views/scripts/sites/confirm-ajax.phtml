@@ -1,0 +1,563 @@
+<link href="/styles/jquery.multiselect.css" media="screen" rel="stylesheet" type="text/css" >
+<link href="/styles/jquery.multiselect.filter.css" media="screen" rel="stylesheet" type="text/css" >
+<script type="text/javascript" src="/js/jquery-ui-1.9.2.custom.min.js"></script>
+<script type="text/javascript" src="/js/jquery.multiselect.js"></script>
+<script type="text/javascript" src="/js/jquery.multiselect.filter.js"></script>
+<script type="text/javascript" src="/js/validate.1.9.0.js"></script>
+<style type="text/css">
+
+    #linkAdditionalSiteAdd a
+    {
+        cursor: pointer; 
+        color: blue; 
+        padding-left: 127px;
+    }
+    #linkAdditionalSiteMinus a
+    {
+        cursor: pointer; 
+        color: red; 
+        padding-left: 127px;
+    }
+
+    #form label.error{
+        color: red;
+        font-family: Arial,Helvetica,sans-serif;
+        font-size: 12px;
+        width: 370px;
+        clear: both;
+        padding-top: 15px;
+    }
+
+    #form p{
+        clear: both;
+    }
+
+    .addPrice{
+        cursor: pointer;    
+    }
+
+    .minusPrice a{
+        cursor: pointer;
+        color: red;
+        display: none;
+        padding-left: 127px;
+    }
+
+    #showResult{ display: none; }
+
+    #showResult table{
+        width: 700px;
+        border-collapse: collapse;
+        border: 1px #B7B7B7 solid;
+    }
+
+    #showResult table tr td{
+
+        border: 1px #B7B7B7 solid;
+        font-size: 14px;
+        font-family: Arial,Helvetica,sans-serif;
+        padding: 5px;
+        width: 50%;
+    }
+
+    #showResult table tr th{
+
+        border: 1px #B7B7B7 solid;
+        font-size: 16px;
+        font-family: Arial,Helvetica,sans-serif;
+        padding: 5px;
+        width: 50%;
+        text-align: center;
+    }
+
+    #showResult table tr td.ok{ color: green; }
+    #showResult table tr td.error{ color: red; }
+    .hiddenFields {display: none;}
+</style>    
+<script>
+
+        var arrSize = <?php echo Zend_Json::encode($this->size);?>;
+        var GLOBAL_SITE_NAME = null;
+        var GLOBAL_PUB_ID = null;
+        var GLOBAL_SITE_ID = null;
+        var GLOBAL_PUB_SITE_ID = null;
+        var GLOBAL_PUB_PUB_ID = null;
+
+        $(document).ready(function(){
+
+                $( ".datepicker" ).live('click', function(){
+                        $(this).datepicker({
+                                showOn:'focus',
+                                'dateFormat'  : "yy-mm-dd"
+                                }).focus();				
+                });
+
+                $("#userSearch").multiselect({
+                           multiple: false,
+                           header: "Select an option",
+                           noneSelectedText: "Select an Option",
+                           selectedList: 1
+                }).multiselectfilter();		
+
+                $("#createSiteUi").click(function() {
+                    if ($(this).prop('checked') == true) {
+                        $("#publisherIdSection").css('display', 'block');
+                        $("#publisherId").val($("#publisherId option:first").val());
+                        clearData();
+                    } else {
+                        $("#publisherIdSection").css('display', 'none');
+                        $("#publisherId").val($("#publisherId option:first").val());
+                        clearData();
+                    }
+                });
+
+                $("#publisherId").change(function(){
+                    clearData();
+                    GLOBAL_PUB_PUB_ID = $(this).val();
+                    GLOBAL_SITE_ID = <?php echo $this->siteID ?>;
+                    getSiteData(<?php echo $this->siteID ?>, GLOBAL_PUB_PUB_ID);
+                });
+
+                $("#form").validate({
+
+                       onkeyup : false,
+                       rules : {  user : {required: true},
+                                  SiteName : {required: true, uniqueSiteName: true},
+                                  SiteURL : {required: true},
+                                  publisherId : {required: true, number: {depends: function(element){return $("#createSiteUi").is(":checked");}}}
+                                },
+
+                       messages : { user : { required: "SELECT USER" },
+                                    SiteName : { required: "ENTER SITE NAME" },
+                                    SiteURL : { required: "ENTER SITE URL", url: "THIS VALUE MUST URL ( example http:// or https:// )" },
+                                    publisherId : { required: "SELECT publisherId" }
+                                   },
+
+                       errorPlacement: function(error, element) {
+                                if (element.attr("name") == "user") error.insertAfter($("#userSearch"));
+                                if (element.attr("name") == "SiteName") error.insertAfter($("input[name=SiteName]"));
+                                if (element.attr("name") == "SiteURL") error.insertAfter($("input[name=SiteURL]"));
+                                if (element.attr("name") == "publisherId") error.insertAfter($("select[name=publisherId]"));
+                       }
+                 });  
+
+                 $.validator.addMethod('uniqueSiteName', function(value, element, param){ return checkSiteName(value); }, 'THIS DOMAIN ALREADY BELONG TO PUBLISHER');
+        });
+
+        function checkSiteName(name)
+        {
+            var result = false;
+            
+            name = name.replace('https://', '');   
+            name = name.replace('http://', '');
+            name = name.replace('www.', '');
+
+            $.ajax({ url : '/administrator/ajax/validator-site-name-exist',
+                     data : { siteName : name, PubID : <?php echo $this->user['id']?> },
+                     type : "POST",
+                     async: false,
+                     dataType : "json",
+
+             success : function(response) { if(response.result == false) result = true  
+
+             }, error : function(){ alert('ajax request for site name validator return error'); }});
+
+             return result;
+        }
+
+        function validURL(str){
+
+              var pattern = new RegExp('/(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/'); 
+
+              if(!pattern.test(str)) { return false; } 
+              else                   { return true;  }
+        }
+
+
+        function getMain()
+        {
+            var user = $('#userSearch').val();
+            var siteType = $('#type').val();
+            var SiteName = $('#SiteName').val();
+            var SiteURL = $('#SiteURL').val();
+
+            save(user, siteType, SiteName, SiteURL);
+        }
+
+
+        function save(user, siteType, SiteName, SiteURL)
+        {                        
+            SiteName = SiteName.replace('https://', '');   
+            SiteName = SiteName.replace('http://', '');
+            SiteName = SiteName.replace('www.', '');
+            
+            var SiteCategory = $('#SiteCategory').val();
+
+            $.ajax({ url : '/administrator/ajax/confirm-site',
+                     data : { user : user, siteType : siteType, SiteName : SiteName, SiteURL : SiteURL, SiteCategory : SiteCategory, SiteID : <?php echo $this->siteID;?> },
+                     type : "POST",
+                     async: true, 
+                     dataType : "json",
+
+             success : function(response) { 
+
+                    $('#showResult table tbody').append('<tr><td>'+SiteName+'</td><td class="ok">ok</td></tr>');
+
+                    $('#showResult table tfoot th').html('complete');
+                    $('#showResult .contUsL').append('<p><a title="" onclick="redirect();" class="sendMasBtn">OK</a></p>');
+
+
+             }, error : function(){ $('#showResult table tbody').append('<tr><td>'+SiteName+'</td><td class="error">error</td></tr>'); 
+                                    $('#showResult table tfoot th').html('Please try again');
+
+                                    alert('ajax request for save site in DB return error'); }});  
+
+             $('#form').hide('slow');
+             $('#showResult').show('slow');                
+
+
+        }
+
+
+        function mySubmit()
+        {                       
+            var validMain = $("#form").valid();  
+
+            if(validMain && $("#createSiteUi").prop('checked') == true && GLOBAL_PUB_SITE_ID){
+                getMain();
+            }else if(validMain && $("#createSiteUi").prop('checked') == true){
+                addSite();
+            }else if(validMain && $("#createSiteUi").prop('checked') == false){
+                getMain();
+            }
+        }
+
+        function redirect()
+        {
+            document.location.href='/administrator/tags';
+        }
+
+        function tempPassback(id, obj)
+        {
+            if($(obj).is(':checked')){
+
+                    $.each(arrSize, function(key, iter){
+                         $('#creative_passbacks_'+iter['file_name']+'-'+id).val('<a target="_blank" href="http://vosmd.com/click/?s=51&amp;c=80071"><img border="0" src="http://ads-by.madadsmedia.com/images/hosted/ezgc-'+getTempFile(iter['file_name'])+'.gif"></a>'); 
+                    });                    
+            }else{
+
+                    $.each(arrSize, function(key, iter){
+                        $('#creative_passbacks_'+iter['file_name']+'-'+id).val('');
+                    });
+            }
+        }
+
+        function getTempFile(size)
+        {
+            var result = '';
+
+            switch(size){
+                case '728x90' : result = '728'; break;
+                case '300x250': result = '300'; break;
+                case '160x600': result = '160'; break;
+                case '120x600': result = '120'; break;
+                case '468x60' : result = '468'; break;
+                default       : break;    
+            }
+
+            return result;
+        }
+
+        function clearData()
+        {
+            GLOBAL_SITE_NAME = null;
+            GLOBAL_PUB_ID = null;
+            GLOBAL_SITE_ID = null;
+            GLOBAL_PUB_SITE_ID = null;
+            GLOBAL_PUB_PUB_ID = null;
+
+            $(".hiddenFields").css('display', 'none');
+
+            $("#statusGetUser").css('display', 'none');
+            $("#statusGetUser").css('color', 'black');
+            $("#statusGetUser").html('Get site data... <img src="/images/ui-anim_basic_16x16.gif" />');
+
+            $("#statusAdd").css('display', 'none');
+            $("#statusAdd").css('color', 'black');
+            $("#statusAdd").html('Save... <img src="/images/ui-anim_basic_16x16.gif" />');
+
+        }
+
+        function getSiteData(SiteID, pubmaticID){
+            $.ajax({
+                'url'			:  '/administrator/pubmatic/get-site-data/id/'+SiteID+'/pubmaticID/'+pubmaticID,
+                'dataType'		:  'json',
+                'beforeSend'	:	function(){
+                    $("#statusGetUser").css('display', 'block');
+                },
+                'error'			:	function(XMLHttpRequest, textStatus, errorThrown){
+                    $("#statusGetUser").css('color', 'red');
+                    $("#statusGetUser").html('Get site data... ERROR: '+textStatus);
+                },
+                'success'		:   function(data){
+                    if(data.error){
+                        $("#statusGetUser").css('color', 'red');
+                        $("#statusGetUser").html('Get site data... ERROR: '+data.error);
+                    }else if(data.status=='OK'){
+                        if(data.PubmaticSiteID){
+                            $("#statusGetUser").css('color', 'green');
+                            $("#statusGetUser").html(data.message);
+                            GLOBAL_SITE_NAME = $("#SiteName").val();
+                            GLOBAL_PUB_ID = data.PubID;
+                            GLOBAL_SITE_ID = data.SiteID;
+                            GLOBAL_PUB_SITE_ID = data.PubmaticSiteID;
+                        }else{
+                            $("#statusGetUser").css('color', 'green');
+                            $("#statusGetUser").html('Get site data... OK');
+                            $("#domainName").val($("#SiteURL").val());
+                            $("#siteUrl").val('http://'+$("#SiteName").val());
+                            $("#PubID").val(data.PubID);
+                            $("#SiteID").val(data.SiteID);
+                            GLOBAL_SITE_NAME = $("#SiteName").val();
+                            GLOBAL_PUB_ID = data.PubID;
+                            GLOBAL_SITE_ID = data.SiteID;
+                            $(".hiddenFields").css('display', 'block');
+                        }
+                    }else{
+                        alert("Application ERROR!!!");
+                    }
+                }
+            });
+            return false;
+        }
+
+        function addSite()
+        {
+            var isDefault = 0;
+            var isCoppaCompliant = 0;
+
+            if($("#isDefault").prop('checked')==true || $("#isDefault").prop('checked')=='checked')
+                isDefault = 1;
+
+            if($("#isCoppaCompliant").prop('checked')==true || $("#isCoppaCompliant").prop('checked')=='checked')
+                isCoppaCompliant = 1;
+
+            $.ajax({
+                'url'			:  '/administrator/pubmatic/add-pub-site/',
+                'data'			:  'SiteID='+GLOBAL_SITE_ID+'&PubID='+GLOBAL_PUB_ID+'&publisherId='+$("#publisherId").val()+'&domainName='+$("#domainName").val()+'&siteUrl='+$("#siteUrl").val()+'&verticalId='+$("#verticalId").val()+'&microVerticalId='+$("#microVerticalId").val()+'&monthlyImpressions='+$("#monthlyImpressions").val()+'&platform='+$("#platform").val()+'&privacyPolicyUrl='+$("#privacyPolicyUrl").val()+'&isDefault='+isDefault+'&isCoppaCompliant='+isCoppaCompliant,
+                'type'			:  'POST',
+                'dataType'		:  'json',
+                'beforeSend'	:	function(){
+                    $("#statusAdd").css('color', 'black');
+                    $("#statusAdd").html('Save... <img src="/images/ui-anim_basic_16x16.gif" />');
+                    $("#statusAdd").css('display', 'block');
+                },
+                'error'			:	function(XMLHttpRequest, textStatus, errorThrown){
+                    $("#statusAdd").css('color', 'red');
+                    $("#statusAdd").html('Save... ERROR: '+textStatus);
+                },
+                'success'		:   function(data){
+                    if(data.error){
+                        $("#statusAdd").css('color', 'red');
+                        $("#statusAdd").html('Save... ERROR: '+data.error);
+                    }else if(data.status=='OK'){
+                        $("#statusAdd").css('color', 'green');
+                        $("#statusAdd").html('Save... OK');
+                        $("#createForm").css('display', 'none');
+                        GLOBAL_PUB_SITE_ID = data.siteId;
+                        getMain();
+                    }else{
+                        alert("Application ERROR!!!");
+                    }
+                }
+            });
+            return false;
+        }
+</script>
+
+<form action="" method="post" class="sign-up" id="form" onSubmit="return false;">
+<div class="contUsL" style="width: 700px;">
+
+       <p>
+            <label>User: </label>
+            <select name="user" id="userSearch">
+                     <option value="<?php echo $this->user['id'] ?>" selected disabled="disabled"><?php echo "#".$this->user['id'].": ".$this->user['name']." (".$this->user['company'].")" ?></option>
+            </select>
+       </p>
+        <input type="hidden" name="type" id="type" value="1">
+        <p>
+            <label>Category:</label>
+            <select name="SiteCategory" id="SiteCategory">
+                <?php foreach($this->category as $iter):?>
+                       <option value="<?php echo $iter['key']?>" <?php echo ($iter['key'] == $this->site['category']) ? 'selected' : '';?>><?php echo $iter['value']?></option> 
+                <?php endforeach;?>
+            </select>
+        </p>
+        <p>
+            <label>Site Name: </label>
+            <input type="text" name="SiteName" id="SiteName" value="<?php echo $this->site['SiteName'] ?>" />
+        </p> 
+        <p>
+            <label>SiteURL: </label>
+            <textarea rows="5" cols="50" name="SiteURL" id="SiteURL"><?php echo strtolower($this->site['SiteURL']); ?></textarea>
+        </p>
+    <p>
+        <label>Create Site in Pubmatic UI</label>
+        <input type="checkbox" name="createSiteUi" id="createSiteUi" checked>
+    </p>
+
+    <p id="statusGetUser" style="display:none">Get site data... <img src="/images/ui-anim_basic_16x16.gif" /></p>
+    <p id="statusAdd" style="display:none">Save... <img src="/images/ui-anim_basic_16x16.gif" /></p>
+
+    <p id="publisherIdSection"><label>publisherId: </label>
+        <select name="publisherId" id="publisherId">
+            <option>Select publisherId</option>
+            <option value="63240"> - Tier 1 (RJ.Muldoon - 63240)</option>
+            <option value="49542"> - Tier 2 (Pat.Darms - 49542)</option>
+            <option value="68582"> - Tier 3 (YieldGo - 68582)</option>
+            <option value="93536"> - Tier 4 (93536)</option>
+        </select>
+    </p>
+    <p class="hiddenFields"><label>Platform: </label>
+        <select name="platform" id="platform">
+            <option value="2">MOBILE_WEB</option>
+            <option value="4">MOBLIE_APP_IOS</option>
+            <option value="5">MOBLIE_APP_ANDROID</option>
+            <option value="1" selected="selected">WEB</option>
+        </select>
+    </p>
+    <p class="hiddenFields"><label>Site / App Domain: </label> <input type="text" id="domainName" name="domainName" value="http://" /></p>
+    <p class="hiddenFields"><label>Site / App Identifier: </label> <input type="text" id="siteUrl" name="siteUrl" value="http://" /></p>
+    <p class="hiddenFields"><label>Primary Vertical: </label>
+        <select name="verticalId" id="verticalId">
+            <option>Select Vertical</option>
+            <option value="1">Not Applicable</option>
+            <option value="2">Automotive</option>
+            <option value="3">Business and Finance</option>
+            <option value="8">Education</option>
+            <option value="9">Employment and Career</option>
+            <option value="10">Entertainment and Leisure</option>
+            <option value="12">Gaming</option>
+            <option value="14">Health and Fitness</option>
+            <option value="16">Home and Garden</option>
+            <option value="18">Men's Interest</option>
+            <option value="21">Music</option>
+            <option value="23">News</option>
+            <option value="24">Parenting and Family</option>
+            <option value="27">Real Estate</option>
+            <option value="28">Reference</option>
+            <option value="29">Food and Dining</option>
+            <option value="31">Shopping</option>
+            <option value="32">Social Networking</option>
+            <option value="33">Sports</option>
+            <option value="34">Technology</option>
+            <option value="36">Travel</option>
+            <option value="38">Women's Interest</option>
+        </select>
+    </p>
+    <p class="hiddenFields"><label>Secondary Vertical: </label>
+        <select name="microVerticalId" id="microVerticalId">
+            <option>Select Vertical</option>
+            <option value="1">Not Applicable</option>
+            <option value="2">Automotive</option>
+            <option value="3">Business and Finance</option>
+            <option value="8">Education</option>
+            <option value="9">Employment and Career</option>
+            <option value="10">Entertainment and Leisure</option>
+            <option value="12">Gaming</option>
+            <option value="14">Health and Fitness</option>
+            <option value="16">Home and Garden</option>
+            <option value="18">Men's Interest</option>
+            <option value="21">Music</option>
+            <option value="23">News</option>
+            <option value="24">Parenting and Family</option>
+            <option value="27">Real Estate</option>
+            <option value="28">Reference</option>
+            <option value="29">Food and Dining</option>
+            <option value="31">Shopping</option>
+            <option value="32">Social Networking</option>
+            <option value="33">Sports</option>
+            <option value="34">Technology</option>
+            <option value="36">Travel</option>
+            <option value="38">Women's Interest</option>
+        </select>
+    </p>
+    <p class="hiddenFields"><label>Monthly Ad Impressions: </label>
+        <select name="monthlyImpressions" id="monthlyImpressions">
+            <option>Select Monthly Ad Impressions</option>
+            <option value="1000">< 10,000</option>
+            <option value="10000">> 10,000</option>
+            <option value="100000">> 100,000</option>
+            <option value="1000000">> 1M</option>
+            <option value="10000000">> 10M</option>
+            <option value="100000000">> 100M</option>
+            <option value="1000000000">> 1B</option>
+        </select>
+    </p>
+    <p class="hiddenFields"><label>Privacy Policy Url: </label> <input type="text" id="privacyPolicyUrl" name="privacyPolicyUrl" value="" /></p>
+    <p class="hiddenFields"><label>Set as Default: </label> <input style="width: 14px;" type="checkbox" id="isDefault" name="isDefault" value="1" /></p>
+    <p class="hiddenFields"><label>Subject to COPPA: </label> <input style="width: 14px;" type="checkbox" id="isCoppaCompliant" name="isCoppaCompliant" value="1" /></p>
+    <p><a onclick="mySubmit()" class="sendMasBtn link">Save</a></p>
+
+</div>
+</form>
+
+<div id="showResult">
+    <div class="contUsL" style="width: 700px;">
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th colspan="2">Report</th>
+                </tr>
+                <tr>
+                    <th>Site</th>
+                    <th>Result</th>
+                </tr>
+            </thead>
+
+            <tbody></tbody>
+
+            <tfoot>
+                <tr>
+                    <th colspan="2">loading... please wait</th>
+                </tr>
+            </tfoot>
+
+        </table>
+
+    </div>
+</div>
+
+<script type="text/javascript" src="/font/cufon-yui.js"></script>
+<script type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script type="text/javascript">
+                Cufon.replace('#topMenu a', {hover: true});	
+                Cufon.replace('#topMenu a');
+    Cufon.replace('.error', {color: 'red'});	    
+
+</script>
+<script type="text/javascript" src="/font/Headline_Two_400.font.js"></script>
+<script type="text/javascript">
+        Cufon.replace('.footerBann h5');		
+        Cufon.replace('.footerBann p');	
+        Cufon.replace('.footerBann a', {hover: true});	
+        Cufon.replace('.contactUs h1');		
+    Cufon.replace('h1');				
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Lt_300.font.js"></script>
+<script type="text/javascript">
+                Cufon.replace('#footCopyr');	
+                Cufon.replace('.fMenu a');		
+                Cufon.replace('.contactUs p');	
+                Cufon.replace('.contUsL label');		
+                Cufon.replace('#location');		
+                Cufon.replace('.contBtn p');			
+                Cufon.replace('.sendMasBtn',{textShadow: '-1px -1px #5F5F5F'});		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Rg_700.font.js"></script>
+<script type="text/javascript">
+                Cufon.replace('.fMenu h4');
+                Cufon.replace('.headquaters');		
+</script>    

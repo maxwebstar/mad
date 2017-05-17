@@ -1,0 +1,122 @@
+<style type="text/css">    
+    #main{ display: block; width: 700px; float: left; padding: 10px; }
+    #main #label-subject{ float: left; width: 100px; }
+    #main #subject { float: left; width: 600px; }    
+    #main #label-text{ float: left; width: 100px; margin-top: 7px; }
+    #main #text { float: left; width: 600px; height: 300px; margin-top: 7px; }
+    #main #mySubmit{ display: block; float: left; height: 28px; width: 129px; font-size: 16px; background-color: #8E8E8E; color: #FFFFFF; cursor: pointer; margin-top: 7px; margin-left: 570px; }
+    #main #mySubmit span{ float: left; margin: 5px 0px 0px 50px; }     
+    #radioStatus{ display: block; margin-left: 100px; margin-bottom: 5px; border: 1px solid #DBDFE6; padding-bottom: 2px; padding-top: 2px; }
+    #radioStatus span{ margin-right: 10px; }
+        #right{ display: block; float: left; width: 530px; margin-left: 15px; overflow: scroll; height: 549px; overflow-x: hidden; border: 1px solid #D3D3D3; padding-top: 4px; padding-left: 4px; }
+    
+    #right .itemMail{ display: block; float: left; width: 510px; }
+    .itemMail .itemHead{ float: left; background: #D3D3D3; padding: 1px 5px 2px; width: 500px; }
+    .itemMail .itemDate{ display: block; float: right; width: 150px; text-align: right; }
+    .itemMail .itemAuthor{ display: block; float: left; width: 320px; }
+    .itemMail .itemSubject{ display: block; float: left; width: 500px; padding: 0px 4px 0px 4px; border: 1px solid #D3D3D3; margin: 0px 0px 2px 0px; }
+    .itemMail .itemText{ display: block; float: left; width: 500px; padding: 0px 4px 0px 4px; border: 1px solid #D3D3D3; margin: 2px 0px 7px 0px; }    
+         
+</style>
+
+<script type="text/javascript" src="/js/jquery-1.6.2.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function(){
+      
+      <?php if($this->mailed):?>             
+          $('input[name="status"]').filter('[value="2"]').attr('checked', true);         
+      <?php else:?>          
+          $('input[name="status"]').filter('[value="1"]').attr('checked', true);      
+      <?php endif;?>
+
+      $('input[name="status"]').filter('[value="2"]').click(function()
+   	  {
+	  		$("#form-field").css('display','none');
+      });
+
+      $('input[name="status"]').filter('[value="1"]').click(function()
+      {
+    		$("#form-field").css('display','block');
+      });       
+
+
+      var message = "Hello <?php echo $this->data['SiteName']?> Team,<br /><br />\r\n\r\nI hope all has been well.  I was taking a look at your account and noticed the tags for <?php echo $this->data['SiteName'];?> appear to no longer be delivering.  Is there anything I can help you with in order to get the tags running again?  If the CPM is the issue, I'd like to work with someone from your team to help reach your desired goal.  Please let me know, as I'm here to assist any way I can.<br /><br />\r\n\r\nI look forward to hearing back from you.<br /><br />\r\n\r\nThanks,<br />";
+      $('#main #subject').val('<?php echo $this->data['SiteName']?> & MadAdsMedia');
+      $('#main textarea').val(message);
+      
+      $('#mySubmit').click(function(){
+          
+          $('#main form').submit();
+      });
+      
+      $('input[name="status"]').change(function()
+      {          
+          var status = $('input[name="status"]:checked').val();                 
+      });
+            
+  });
+  
+
+</script>
+
+
+
+
+
+<div id="main">    
+    <div id="left" style="width: 700px;">
+	    <div id="one-window" style="width: 700px;">
+		
+		<form method="post" action="">            
+            <div style="padding-bottom: 5px; padding-left: 5px;">
+                <span style="">From (Account Manager):</span>
+                <select name="accountManager" id="accountManager" style="width: 200px; margin-left: 10px;">
+                    <?php foreach($this->contactManager as $iter):?>
+                          <option value="<?php echo $iter['id']?>" <?php echo $iter['id'] == $this->data['account_manager_id'] ? 'selected' : '';?>><?php echo $iter['name']?></option>
+                    <?php endforeach;?>
+                </select>
+				<p>User name: <strong><?php echo $this->data['name'] ?></strong></p>
+            </div>			
+			<div id="radioStatus">
+				<input name="status" value="1" type="radio"/><span>Email Website</span>
+				<input name="status" value="2" type="radio"/><span>Mark as notified</span>
+			</div>            
+			<div id="form-field">            
+				<label id="label-subject">Subject:</label>
+				<input type="text" name="subject" id="subject" value="<?php echo $this->data['SiteName'];?> & MadAdsMedia"/>
+				<div style="clear: both"></div>  
+				<label id="label-text">Message:</label>
+				<textarea name="text" id="text">
+				</textarea>            
+			</div>                     
+			<div style="clear: both"></div>
+			<a id="mySubmit"><span>Submit</span></a>
+		</form>
+		    <span style="position: relative; top: 10px;">
+		    <?php if(!empty($this->message)):?>
+			<?php echo $this->message;?>
+			<?php endif; ?>
+			</span>
+		    
+		</div>
+        
+    </div>    
+</div>
+    <div id="right">
+        
+        <?php foreach($this->mail_data as $iter):?>
+        
+        <div class="itemMail">   
+            <div class="itemHead">
+                <div class="itemAuthor">sent by: <?php echo /*$iter['admin_name'].' / '.*/$iter['author']; ?></div>
+                <div class="itemDate"><?php echo date('M j, Y', strtotime($iter['created'])); ?></div>
+            </div>
+            <?php if(strlen($iter['subject'])):?>            
+            	<div class="itemSubject"><?php echo $iter['subject']; ?></div>
+            <?php endif;?>
+            <div class="itemText"><?php echo $iter['text']; ?></div>            
+        </div>
+        
+        <?php endforeach;?>
+        
+    </div>

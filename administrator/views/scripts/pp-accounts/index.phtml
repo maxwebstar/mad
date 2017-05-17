@@ -1,0 +1,51 @@
+<h2 class="text-center">PulsePoints API accounts</h2>
+<a href="/administrator/pp-accounts/add" class="btn btn-success" role="button">Add new account</a>
+<br><br>
+<table class="table table-striped table-bordered table-condensed table-responsive" id="accounts" cellspacing="0" width="100%">
+    <thead>
+    <tr>
+        <td>User name</td>
+        <td>Acct Num</td>
+        <td>Token</td>
+        <td>Actions</td>
+    </tr>
+    </thead>
+    <tfoot>
+    <tr>
+        <td>User name</td>
+        <td>Acct Num</td>
+        <td>Token</td>
+        <td>Actions</td>
+    </tr>
+    </tfoot>
+    <tbody></tbody>
+</table>
+
+<script>
+    $(document).ready(function(){
+        var table = $("#accounts").DataTable({
+            "processing": true,
+            "serverSide": true,
+            "autoWidth" : false,
+            "lengthMenu": [ 10, 25, 50, 75, 100 ],
+            "pageLength": 50,
+            "ajax": {
+                "url" : "/administrator/pp-accounts/ajax-get",
+                "type": "POST"
+            },
+            "order": [[ 0, "asc" ]],
+            "columns": [
+                { "data" : "user_name" },
+                { "data" : "acc_num" },
+                { "data" : "token" },
+                {
+                    "data" : "id",
+                    "render" : function(data, type, full, meta){
+                        return '<a class="btn btn-primary" href="/administrator/pp-accounts/edit/id/'+data+'" role="button">Edit</a> '+
+                                '<a class="btn btn-danger" href="/administrator/pp-accounts/del/id/'+data+'" role="button">Delete</a>';
+                    }
+                }
+            ]
+        });
+    })
+</script>

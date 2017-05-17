@@ -1,0 +1,439 @@
+
+<style type="text/css">
+    
+    .subAplBtn{ cursor: pointer; }
+    #error_term{ display: none; }
+    
+</style>
+<link href="/fancybox/jquery.fancybox-1.3.4.css" media="screen" rel="stylesheet" type="text/css" />
+
+<script type="text/javascript" src="/fancybox/jquery.fancybox-1.3.4.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        $("#country").change(function(){
+            if($(this).val()==237){
+                $("#stateTxt").css('display', 'none');
+                $("#stateTxt").attr('name', '');
+                $("#stateTxt").val('');
+                $("#stateSel").css('display', 'block');
+                $("#stateSel").attr('name', 'state');
+                $("#stateSel").val('');
+                
+                $("#ssn").css('display', 'block');
+            }else{
+                $("#stateTxt").css('display', 'block');
+                $("#stateTxt").attr('name', 'state');
+                $("#stateTxt").val('');
+                $("#stateSel").css('display', 'none');  
+                $("#stateSel").attr('name', '');   
+                $("#stateSel").val('');  
+                
+                $("#ssn").css('display', 'none');  
+                $("#ssn input[name='ssn']").val('');       
+            }
+        })
+        
+        $("input[type='radio'][name='type']").click(function(){
+            if($(this).val()==3){
+                $("#privacyPolicyField").css('display', 'none');
+                $("#dailyVisitsField").css('display', 'none');
+                $("#followersField").css('display', 'block');
+            }else{
+                $("#privacyPolicyField").css('display', 'block');
+                $("#dailyVisitsField").css('display', 'block');
+                $("#followersField").css('display', 'none');                
+            }
+        })
+        
+        if($('#term:checked').val() != 1) $().css('display', 'block');
+    })
+    
+    
+    function mySubmit()
+    {        
+        if($('#term:checked').val() == 1) $('#subForm').click(); 
+        else                              $('#error_term').css('display', 'block');
+    }
+    
+    function viewTerm()
+    {
+        if($('#term:checked').val() == 1)
+        {         
+            $.fancybox({
+                    'width'	: '75%',
+                    'height': '75%',
+                    'href'  : '/term',
+                    'autoScale'     : false,
+                    'transitionIn'  : 'none',
+                    'transitionOut'	: 'none',
+                    'type'		: 'iframe'
+            });  
+
+            $('#error_term').css('display', 'none');
+        }
+    }
+    
+</script>
+
+    <?php if($this->message): ?>
+        <?php echo $this->message ?>
+            <!-- Google Code for MadAdsMedia.com Application Conversion Page -->
+            <script type="text/javascript">
+                /* <![CDATA[ */
+                var google_conversion_id = 1008598665;
+                var google_conversion_language = "en";
+                var google_conversion_format = "3";
+                var google_conversion_color = "ffffff";
+                var google_conversion_label = "kR09CJeX4AIQif334AM";
+                var google_conversion_value = 1.00;
+                var google_conversion_currency = "USD";
+                var google_remarketing_only = false;
+                /* ]]> */
+            </script>
+            <script type="text/javascript" src="//www.googleadservices.com/pagead/conversion.js">
+            </script>
+            <noscript>
+                <div style="display:inline;">
+                    <img height="1" width="1" style="border-style:none;" alt="" src="//www.googleadservices.com/pagead/conversion/1008598665/?value=1.00&amp;currency_code=USD&amp;label=kR09CJeX4AIQif334AM&amp;guid=ON&amp;script=0"/>
+                </div>
+            </noscript>    					        
+    <?php else: ?>
+      <h1 class="applTitle">Publisher Application Form</h1>
+      <p  class="topSlog">Please answer the questions below to apply to the Mad Ads Media publisher network.</p>    
+      <!--applicationn form-->
+	  <div class="application">
+      	<div class="applInn">
+        	
+            <div class="applInfo">
+                                 
+        		<form method="post" action="">
+                    <h3>Publisher Information</h3>
+                <p class="firstP"><label>Email: </label><input type="email" name="email" value="<?php echo $this->formValues['email'] ?>" /></p>
+                <?php if($this->formErrors['email']): ?>
+                    <ul class="error">
+                    <?php foreach($this->formErrors['email'] as $errors): ?>
+                        <li><?php echo $errors ?></li>
+                    <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>                               
+
+                <p><label>URL: </label><input type="text" name="url" value="<?php echo $this->formValues['url'] ?>" /></p>
+                <?php if($this->formErrors['url']): ?>
+                <ul class="error">
+                    <?php foreach($this->formErrors['url'] as $errors): ?>
+                        <li><?php echo $errors ?></li>
+                    <?php endforeach; ?>
+                </ul>
+                <?php endif; ?>
+
+                <p><label>Password: </label><input type="password" name="password" /></p>
+                <?php if($this->formErrors['password']): ?>
+                    <ul class="error">
+                    <?php foreach($this->formErrors['password'] as $errors): ?>
+                        <li><?php echo $errors ?></li>
+                    <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>
+                
+                <p><label>Verify Password: </label><input type="password" name="passwordConfirm" /></p>
+                <?php if($this->formErrors['passwordConfirm']): ?>
+                    <ul class="error">
+                    <?php foreach($this->formErrors['passwordConfirm'] as $errors): ?>
+                        <li><?php echo $errors ?></li>
+                    <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>
+                <p><label>Desired Ad Types: </label>
+                    <select name="desired_types">
+                        <option value="1" <?php echo $this->formValues['desired_types']==1 ? 'selected' : '' ?>>Banner Ads Only</option>
+                        <option value="2" <?php echo $this->formValues['desired_types']==2 ? 'selected' : '' ?>>Video Ads Only</option>
+                        <option value="3" <?php echo $this->formValues['desired_types']==3 ? 'selected' : '' ?>>Banner & Video Ads</option>
+                    </select></p>
+                <?php if($this->formErrors['desired_types']): ?>
+                    <ul class="error">
+                        <?php foreach($this->formErrors['desired_types'] as $errors): ?>
+                            <li><?php echo $errors ?></li>
+                        <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>
+
+                    <!--
+                    <p><label>Company Name: </label><input type="text" name="company" value="<?php echo $this->formValues['company'] ?>" /></p>
+                    <?php if($this->formErrors['company']): ?>
+                        <ul class="error">
+                        <?php foreach($this->formErrors['company'] as $errors): ?>
+                            <li><?php echo $errors ?></li>
+                        <?php endforeach; ?>
+                        </ul>
+                    <?php endif; ?>
+                    -->
+                <!--
+                <p><label>Contact Name: </label><input type="text" name="name" value="<?php echo $this->formValues['name'] ?>" /></p>
+                <?php if($this->formErrors['name']): ?>
+                    <ul class="error">
+                    <?php foreach($this->formErrors['name'] as $errors): ?>
+                        <li><?php echo $errors ?></li>
+                    <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>                        
+                -->
+                <!--
+                <p><label>Phone Number: </label><input type="text" name="phone" value="<?php echo $this->formValues['phone'] ?>" /></p>
+                <?php if($this->formErrors['phone']): ?>
+                    <ul class="error">
+                    <?php foreach($this->formErrors['phone'] as $errors): ?>
+                        <li><?php echo $errors ?></li>
+                    <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>                                       
+                -->
+                <!--
+                <p><label>Time Zone: </label>
+                    <select name="zone">
+                        <option>Please Select...</option>
+                        <?php foreach($this->zones as $item): ?>
+                        <option value="<?php echo $item['key'] ?>" <?php echo $item['key']==$this->formValues['zone'] ? 'selected' : '' ?> ><?php echo $item['value'] ?></option>
+                        <?php endforeach; ?>
+                    </select></p>
+                <?php if($this->formErrors['zone']): ?>
+                    <ul class="error">
+                    <?php foreach($this->formErrors['zone'] as $errors): ?>
+                        <li><?php echo $errors ?></li>
+                    <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>                                               
+                -->
+                <!--
+                <p><label>Country: </label> 
+                    <select name="country" id="country">
+                        <option>Please Select...</option>
+                        <?php foreach($this->country as $item): ?>
+                        <option value="<?php echo $item['key'] ?>" <?php echo $item['key']==$this->formValues['country'] ? 'selected' : '' ?> ><?php echo $item['value'] ?></option>
+                        <?php endforeach; ?>
+                    </select></p>
+                <?php if($this->formErrors['country']): ?>
+                    <ul class="error">
+                    <?php foreach($this->formErrors['country'] as $errors): ?>
+                        <li><?php echo $errors ?></li>
+                    <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>                                                       
+                -->
+                <!--
+                <p><label>State: </label>
+                <input type="text" <?php echo $this->formValues['country']==237 ? "name=\"\" style=\"display:none;\"" : "name=\"state\" style=\"display:block;\""  ?> id="stateTxt" value="<?php echo $this->formValues['state'] ?>" />
+                <select id="stateSel" <?php echo $this->formValues['country']==237 ? "name=\"state\" style=\"display:block;\"" : "name=\"\" style=\"display:none;\""  ?>>
+                        <?php foreach($this->state as $item): ?>
+                        <option value="<?php echo $item['key'] ?>" <?php echo $item['key']==$this->formValues['state'] ? 'selected' : '' ?> ><?php echo $item['value'] ?></option>
+                        <?php endforeach; ?>        
+                </select></p>
+                <?php if($this->formErrors['state']): ?>
+                    <ul class="error">
+                    <?php foreach($this->formErrors['state'] as $errors): ?>
+                        <li><?php echo $errors ?></li>
+                    <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>                        
+                -->
+                <!--<p id="ssn" style="display: <?php echo $this->formValues['country']==237 ? 'block' : 'none' ?>;"><label>SSN or EIN: </label><input type="text" name="ssn" value="<?php echo $this->formValues['ssn'] ?>" />
+                <?php if($this->formErrors['ssn']): ?>
+                    <ul class="error">
+                    <?php foreach($this->formErrors['ssn'] as $errors): ?>
+                        <li><?php echo $errors ?></li>
+                    <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>                                                               
+                </p>-->
+                <!--
+                <div class="aboutSite">
+                
+                    <h3>About Your Site</h3>
+        
+                <p class="firstP"><label style="width: 100px;">Site Type: </label>
+                    <label class="checkBox" style="width: 100px;"><input type="radio" name="type" class="checkBoxInp"  value="1" <?php echo $this->formValues['type']==1 ? 'checked' : '' ?> />Web Site</label>
+                    <label class="checkBox" style="width: 115px;"><input type="radio" name="type" class="checkBoxInp" value="2" <?php echo $this->formValues['type']==2 ? 'checked' : '' ?> />Application</label>             
+                    <label class="checkBox" style="width: 135px;"><input type="radio" name="type" class="checkBoxInp"  value="3" <?php echo $this->formValues['type']==3 ? 'checked' : '' ?> />Tumblr Account</label>
+                </p>
+                <?php if($this->formErrors['type']): ?>
+                    <ul class="error">
+                    <?php foreach($this->formErrors['type'] as $errors): ?>
+                        <li><?php echo $errors ?></li>
+                    <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>           
+        
+
+                <p><label>Title: </label><input type="text" name="title" value="<?php echo $this->formValues['title'] ?>" /></p>
+                <?php if($this->formErrors['title']): ?>
+                    <ul class="error">
+                    <?php foreach($this->formErrors['title'] as $errors): ?>
+                        <li><?php echo $errors ?></li>
+                    <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>                                                                                       
+                
+                <p><label>Description: </label><input type="text" name="description" value="<?php echo $this->formValues['description'] ?>" /></p>
+                <?php if($this->formErrors['description']): ?>
+                    <ul class="error">
+                    <?php foreach($this->formErrors['description'] as $errors): ?>
+                        <li><?php echo $errors ?></li>
+                    <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>                                                                                               
+                
+                <p><label>Keywords: </label><input type="text" name="keywords" value="<?php echo $this->formValues['keywords'] ?>" /></p>
+                <?php if($this->formErrors['keywords']): ?>
+                    <ul class="error">
+                    <?php foreach($this->formErrors['keywords'] as $errors): ?>
+                        <li><?php echo $errors ?></li>
+                    <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>                                                                                                       
+                
+        
+                <p><label>Category: </label>
+                    <select name="category">
+                        <option>Please Select...</option>
+                        <?php foreach($this->category as $item): ?>
+                        <option value="<?php echo $item['key'] ?>" <?php echo $item['key']==$this->formValues['category'] ? 'selected' : '' ?> ><?php echo $item['value'] ?></option>
+                        <?php endforeach; ?>
+                    </select></p>
+                <?php if($this->formErrors['category']): ?>
+                    <ul class="error">
+                    <?php foreach($this->formErrors['category'] as $errors): ?>
+                        <li><?php echo $errors ?></li>
+                    <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>                                                                                                               
+                
+        
+                <p id="privacyPolicyField" style="display: <?php echo $this->formValues['type']==3 ? 'none' : 'block' ?>;"><label>Privacy Policy: </label>
+                    <label class="checkBox"><input type="radio" name="privacy" class="checkBoxInp" value="0" <?php echo $this->formValues['privacy']==0 ? 'checked' : '' ?> />No</label>
+                    <label class="checkBox"><input type="radio" name="privacy" class="checkBoxInp" value="1" <?php echo $this->formValues['privacy']==1 ? 'checked' : '' ?> />Yes</label>
+                
+                <?php if($this->formErrors['privacy']): ?>
+                    <ul class="error">
+                    <?php foreach($this->formErrors['privacy'] as $errors): ?>
+                        <li><?php echo $errors ?></li>
+                    <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>   
+                </p> 
+                                                                                                                                                   
+                <p id="dailyVisitsField" style="display: <?php echo $this->formValues['type']==3 ? 'none' : 'block' ?>;"><label>Daily Visits: </label><input type="text" name="daily" value="<?php echo $this->formValues['daily'] ?>" />
+                <?php if($this->formErrors['daily']): ?>
+                    <ul class="error">
+                    <?php foreach($this->formErrors['daily'] as $errors): ?>
+                        <li><?php echo $errors ?></li>
+                    <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>                   
+                </p>
+                
+                <p id="followersField" style="display: <?php echo $this->formValues['type']==3 ? 'block' : 'none' ?>;"><label>Followers: </label><input type="text" name="followers" value="<?php echo $this->formValues['followers'] ?>" />
+                <?php if($this->formErrors['followers']): ?>
+                    <ul class="error">
+                    <?php foreach($this->formErrors['followers'] as $errors): ?>
+                        <li><?php echo $errors ?></li>
+                    <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>  
+                -->
+
+                
+                <p>
+                    <label for="term" style="width: 425px;">I agree to the Terms Of Service/Publisher Guidelines</label>
+                    <input type="checkbox" value="1" name="term" id="term" style="width: 25px;" onChange="viewTerm();" value="1" <?php echo $this->formValues['term'] == 1 ? 'checked="checked"' : ''; ?> />
+                </p>
+                <div id="error_term">
+                    <ul class="error">
+                         <li>Please check (Terms Of Service/Publisher Guidelines)</li>
+                    </ul>
+                </div>
+                
+
+                
+	                <div><a onclick="mySubmit()" class="subAplBtn">Submit Application</a></div>
+                        <input type="submit" id="subForm" style="display: none;" />
+                </form>
+
+                <!-- </div>-->
+
+            </div>
+            <!-- publish appl. right side-->
+            <div class="applSideR">
+            	<h3>Why Mad Ads Media?</h3>
+                <ul>
+                	<li><a href="#" title="">Optimization Technology to drive maximum yield</a></li>
+                	<li><a href="#" title="">Over 100 partners competing for your inventory</a></li>
+                	<li><a href="#" title="">Wide Range of Campaigns (CPM, CPC, CPA, CPL)</a></li>
+                	<li><a href="#" title="">We work with the top brands</a></li>
+                	<li><a href="#" title="">100% fill rate. No impression goes unsold</a></li>
+                	<li><a href="#" title="">Team of experienced ad optimization professionals</a></li>
+                </ul>
+                
+                <div class="applRbox">
+                	<h3>Contact Us</h3>
+                    <p>Have any questions before joining?</p>
+                    <p>Feel free to use the <a href="/contact-us/" title="">contact form</a> or email us at:</p>
+                    <p><a href="mailto:support@madadsmedia.com" title="">support@madadsmedia.com</a></p>
+                </div>
+                
+            </div>
+            <!--// publish appl. right side-->            
+            
+        </div>
+        <div class="applBot">&nbsp;</div>
+      </div>	
+      <!--//applicationn form-->        
+
+    <?php endif; ?>
+<script type="text/javascript" src="/font/cufon-yui.js"></script>
+<script type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#topMenu a', {hover: true});	
+		Cufon.replace('#topMenu a');
+    Cufon.replace('.error', {color: 'red'});	
+</script>
+<script type="text/javascript" src="/font/Headline_Two_400.font.js"></script>
+<script type="text/javascript">
+	Cufon.replace('.footerBann h5');		
+	Cufon.replace('.footerBann p');	
+	Cufon.replace('.footerBann a', {hover: true});	
+	Cufon.replace('#content h1');		
+				
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Lt_300.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#footCopyr');	
+		Cufon.replace('.fMenu a', {textDecoration: 'underline'});		
+		Cufon.replace('.topSlog');	
+		Cufon.replace('.applInfo label');	
+		Cufon.replace('.subAplBtn',{textShadow: '-1px -1px #5F5F5F'});
+		Cufon.replace('.applSideR li a');		
+		Cufon.replace('.applRbox p');		
+		Cufon.replace('.applRbox p a');				
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Rg_700.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('.fMenu h4');
+		Cufon.replace('.applInn h3');		
+		
+</script>
+<script type="text/javascript">
+$(document).ready(function() {
+Cufon.set("fontFamily", "Proxima_Nova_Lt_300.font.js");
+	$(".subAplBtn").hover(
+		function(){
+		$(this).addClass('subAplBtnHov');
+		Cufon.refresh();		
+		Cufon.replace('.subAplBtnHov', {textShadow: '-1px -1px #A21A1A'});	
+		}, 
+	  function () {
+		$(this).removeClass('subAplBtnHov');
+		Cufon.refresh();			
+		Cufon.replace('.subAplBtnHov', {textShadow: '-1px -1px #5F5F5F'});	
+	  }
+	);
+});
+</script>

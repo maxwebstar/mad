@@ -1,0 +1,24 @@
+<script	type="text/javascript" src="/font/cufon-yui.js"></script>
+<script	type="text/javascript" src="/font/Headline_Two_400.font.js"></script>
+<script type="text/javascript">
+	$(function(){
+	    Cufon.replace('h1.phpinfo');		
+	});
+
+</script>
+<style>
+	#content h1:not(.phpinfo) {
+		font-size:18px;
+		line-height:32px;
+	}
+
+</style>
+<div class="contentContainer">
+	<h1 class="phpinfo">PHP Info</h1>
+
+	<?php 
+	phpinfo();
+	?>
+</div>
+
+

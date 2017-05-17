@@ -1,0 +1,165 @@
+<style type="text/css">
+
+    #one-window { display: block; float: left; width: 550px; margin-right: 10px; }
+    #one-window #myButton{ display: block; float: left; height: 28px; width: 179px; font-size: 16px; background-color: #8E8E8E; color: #FFFFFF; cursor: pointer; margin-top: 7px; margin-left: 10px; }
+    #one-window #myButton:hover{ background-color: #CC0000; }
+    #one-window #myButton span{ float: left; margin: 5px 0px 0px 40px; }
+    #one-window form textarea { width: 550px; height: 310px; }
+
+    #blockHeader{ display: block; float: left; margin-bottom: 10px; margin-top: 10px; width: 550px; }
+    #blockHeader input[name='subject']{ width: 490px; }
+    #blockType{ display: block; float: left; margin-bottom: 10px; }
+    #blockMessage{ display: block; float: left; }
+    #main{ display: block; width: 1300px; float: left; padding: 10px; }
+
+    #main #left{ display: block; float: left; width: 700px; }
+    #main #right{ display: block; float: left; width: 530px; margin-left: 15px; overflow: scroll; height: 549px; overflow-x: hidden; border: 1px solid #D3D3D3; padding-top: 4px; padding-left: 4px; }
+
+    #right .itemMail{ display: block; float: left; width: 510px; }
+    .itemMail .itemHead{ float: left; background: #D3D3D3; padding: 1px 5px 2px; width: 500px; }
+    .itemMail .itemDate{ display: block; float: right; width: 150px; text-align: right; }
+    .itemMail .itemAuthor{ display: block; float: left; width: 320px; }
+    .itemMail .itemSubject{ display: block; float: left; width: 500px; padding: 0px 4px 0px 4px; border: 1px solid #D3D3D3; margin: 0px 0px 2px 0px; }
+    .itemMail .itemText{ display: block; float: left; width: 500px; padding: 0px 4px 0px 4px; border: 1px solid #D3D3D3; margin: 2px 0px 7px 0px; }
+
+    #main #label-subject{ float: left; width: 100px; }
+    #main #subject { float: left; width: 696px; margin-bottom: 2px; padding-left: 5px; }
+
+    #main #label-text{ float: left; width: 100px; margin-top: 7px; }
+    #main #text { float: left; width: 600px; height: 300px; margin-top: 7px; }
+
+    #main #reach_out {
+        background-color: #8e8e8e;
+        color: #ffffff;
+        cursor: pointer;
+        display: block;
+        float: left;
+        font-size: 16px;
+        height: 28px;
+        margin-left: 167px;
+        position: relative;
+        top: 7px;
+        width: 329px;
+    }
+
+    #main #reach_out:hover{ background-color: #DC2323; }
+    #main #reach_out span{ float: left; margin: 4px 0px 0px 46px; }
+
+    #main #mySubmit{ display: block; height: 28px; float: right; margin-top: 7px; margin-right: 10px; width: 169px; font-size: 16px; background-color: #8E8E8E; color: #FFFFFF; cursor: pointer; position: relative; }
+    #main #mySubmit:hover{ background-color: #DC2323; }
+    #main #mySubmit span{ float: left; margin: 4px 0px 0px 46px; }
+
+    #radioStatus{ display: block; margin-left: 100px; margin-bottom: 5px; border: 1px solid #DBDFE6; padding-bottom: 2px; padding-top: 2px; }
+    #radioStatus span{ margin-right: 10px; }
+
+    #messageActiveUser{ display: block; font-weight: 600; font-size: 16px;  margin-bottom: 20px; margin-left: 100px; }
+    #cke_text{ margin-left: 0px; margin-top: 5px; }
+
+    .error{ color: #CF2B2B; font-weight: 600; font-size: 16px; display: block; }
+
+</style>
+
+<script type="text/javascript" src="/js/jquery-1.9.1.js"></script>
+<script type="text/javascript">
+
+    $(document).ready(function(){
+
+        $('input[name="letterType"]').change(function(){ setTextarea($('input[name="letterType"]:checked').val()); });
+
+        setTextarea(1);
+
+        $('#mySubmit').click(function(){
+
+            $('#mail-status').val(1);
+            $('#one-window form').submit();
+        });
+
+        $('#myButton').click(function(){
+
+            $('#mail-status').val(0);
+            $('#one-window form').submit();
+        });
+
+
+    });
+
+    function setTextarea(type)
+    {
+        if(type == 1){ var text1  = 'Hello,<br /><br />\r\n\r\n';
+            text1 += 'After reviewing your website, <?php echo ucwords(str_replace(array('http://', 'https://', 'www.'), '', $this->data->url));?>, we have found it&apos;s in violation of one or more of our Terms of Service. As a result, the ad tags have been disabled, and the site is no longer eligible for participation in the MadAdsMedia publisher network.<br />\r\n';
+            text1 += 'If you feel this is a mistake, please feel free to respond to this email.<br /><br />\r\n\r\n';
+            text1 += 'Regards,<br />\r\n-MadAdsMedia Team';
+
+            $('#one-window textarea').val(text1); }
+
+        else if(type == 2){ var text2  = 'Hello,<br /><br />\r\n\r\n';
+            text2 += 'We are contacting you today with some unfortunate news.  Unfortunately, our advertisers have deemed the traffic quality for <?php echo ucwords(str_replace(array('http://', 'https://', 'www.'), '', $this->data->url));?> to not be high enough to continue participating in our publisher network.  As a result, the ad tags for this site have been disable to prevent ads from serving further.  Please note that this step was taken to maintain the quality of the MadAdsMedia publisher network and to protect the interests of our advertisers.<br /><br />\r\n\r\n';
+            text2 += '<b>Should our advertisers not request a refund on your traffic, the earnings generated by this site will still be paid out on time.</b><br /><br />\r\n\r\n';
+            text2 += 'If you have any questions, please feel free to respond to this email.<br /><br />\r\n\r\n';
+            text2 += 'Regards,<br />\r\nMadAdsMedia Team';
+
+            $('#one-window textarea').val(text2); }
+    }
+
+</script>
+
+
+<div id="main">
+    <div id="left">
+        <div id="one-window">
+
+            <?php if(empty($this->message)):?>
+
+                <form method="post" action="" enctype="multipart/form-data">
+
+                    <div id="blockHeader">
+                        <label><strong>To:</strong> <?php echo $this->data->email;?></label><br />
+                        <label><strong>Subject:</strong></label>
+                        <input type="text" name="subject" value="<?php echo ucwords(str_replace(array('http://', 'https://', 'www.'), '', $this->data->url));?> Disabled"/>
+                    </div>
+                    <div id="blockType">
+                        <input type="radio" name="letterType" value="1" checked/>
+                        <label id="">ToS Violation</label>
+                        &nbsp;
+                        &nbsp;
+                        &nbsp;
+                        <input type="radio" name="letterType" value="2"/>
+                        <label id="">Poor Performance</label>
+                    </div>
+                    <div id="blockMessage">
+                        <textarea name="text" placeholder="enter reason"></textarea>
+                        <a id="mySubmit"><span>Send Email</span></a>
+                        <a id="myButton"><span>Don't Send Email</span></a>
+                    </div>
+                    <input type="hidden" name="mail-status" id="mail-status" value=""/>
+
+                </form>
+
+            <?php else:?>
+
+                <h4><?php echo $this->message;?></h4>
+
+            <?php endif;?>
+
+        </div>
+
+    </div>
+    <div id="right">
+
+        <?php foreach($this->mail_data as $iter):?>
+
+            <div class="itemMail">
+                <div class="itemHead">
+                    <div class="itemAuthor">sent by: <?php echo /*$iter['admin_name'].' / '.*/$iter['author']; ?></div>
+                    <div class="itemDate"><?php echo date('M j, Y', strtotime($iter['created'])); ?></div>
+                </div>
+                <?php if(strlen($iter['subject'])):?>
+                    <div class="itemSubject"><?php echo $iter['subject']; ?></div>
+                <?php endif;?>
+                <div class="itemText"><?php echo $iter['text']; ?></div>
+            </div>
+
+        <?php endforeach;?>
+
+    </div>
+</div>

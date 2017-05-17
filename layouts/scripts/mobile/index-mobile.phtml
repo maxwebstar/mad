@@ -1,0 +1,43 @@
+<!DOCTYPE html> 
+<html> 
+<head> 
+    <?php
+        // title
+        echo $this->headTitle();
+    ?>
+	<meta name="viewport" content="width=device-width, initial-scale=1"> 
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <?php
+        // styles and javascripts
+        $this->headLink()->appendStylesheet($this->baseUrl().'/styles/jquery.mobile-1.2.0.css');
+        
+        echo $this->headLink();
+
+        $this->headScript()->appendFile($this->baseUrl().'/js/jquery-1.8.2.min.js', 'text/javascript');
+        $this->headScript()->appendFile($this->baseUrl().'/js/mobile-init.js', 'text/javascript');
+        $this->headScript()->appendFile($this->baseUrl().'/js/jquery.mobile-1.2.0.min.js', 'text/javascript');
+
+        echo $this->headScript();        
+    ?>  
+</head> 
+<body> 
+
+<div data-role="page">
+
+	<div data-role="header">
+		<h1>Test mobile</h1>
+	</div><!-- /header -->
+
+	<div data-role="content">	
+		<a href="/login/" data-role="button" data-icon="arrow-r" data-iconpos="right">Login</a> 	
+                <a href="/registration/" data-role="button" data-icon="arrow-r" data-iconpos="right">Registration</a> 	
+                <a href="/contact-us/" data-role="button" data-icon="arrow-r" data-iconpos="right">Contact Us</a> 	
+	</div><!-- /content -->
+
+        <div data-role="footer">
+            <h4>You're using Madadsmedia mobile. <a href="/full/" data-ajax="false">Switch to standart</a></h4> 
+	</div><!-- /footer -->        
+</div><!-- /page -->
+
+</body>
+</html>

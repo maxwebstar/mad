@@ -1,0 +1,57 @@
+<table cellpadding="0" cellspacing="0" id="reportTbl">		
+<tr>			
+    <th width="10%">Month</th>			
+    <th width="12%">Revenue</th>			
+    <th width="12%">Minimum Payment</th>			
+    <th width="15%">$ Carried Over</th>		
+    <th width="15%">Total Due</th>
+    <?php if(isset($this->total_revenue)):?>
+    <th width="15%">Total Revenue</th>
+    <?php endif;?>	
+    <th class="lastTh" width="40%">Status</th>	
+</tr>																
+<?php if($this->payments):?>
+	<?php $counter=0;?>
+	<?php $nexttimestap = 0;?>
+	<?php foreach ($this->payments as $payment):?>
+        <?php if($payment['date']): ?>
+	<?php 
+		$date = explode("-", $payment['date']);
+		//echo "!!!!".$payment['date'];
+		$timestamp = mktime(0,0,0,$date[1],$date[2],$date[0]);
+			
+		//$nexttimestap = $timestamp+3888000;
+		$nexttimestap = mktime(0,0,0,$date[1]+2,15,$date[0]);
+		
+		if($payment['paid']==1){
+			$paid = 'Paid';
+		}elseif($payment['paymentProf']==0){
+            $paid = '<a href="/payment">Missing Payment Profile</a>';
+        }elseif($payment['total']>=$payment['paymentMinimum']){
+			$paid = 'Pending (Issuing '.date("F 15, Y", $nexttimestap).')';
+		}else{
+			$paid = '<a href="/payment">Minimum Not Met</a>';
+		}
+		
+		$counter++;
+	?>
+	<tr>
+		<td><?php echo date("F", $timestamp)?></td>
+		<td>$<?php echo number_format($payment['revenue'], 2)?></td>
+		<td>$<?php echo $payment['paymentMinimum']?></td>
+		<td>$<?php echo number_format($payment['carried'], 2)?></td>
+		<td>$<?php echo number_format($payment['total'], 2)?></td>
+		<?php if(isset($this->total_revenue)):?>
+			<?php $total_revenue = 0;?>
+			<?php foreach($this->total_revenue as $row):?>
+				<?php $total_revenue += $row['revenue'];?>
+			<?php endforeach;?>
+			<td><?php echo number_format($total_revenue,2);?></td>
+		<?php endif;?>
+		<td><?php echo $paid ?></td>
+	</tr>
+        <?php endif; ?>
+	<?php endforeach;?>
+<?php endif;?>
+
+</table>

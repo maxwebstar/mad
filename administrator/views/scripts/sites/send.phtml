@@ -1,0 +1,126 @@
+<style type="text/css">
+    
+    
+    #main{ display: block; width: 1024px; }
+    #main #left{ display: block; float: left; width: 350px; margin-right: 10px; }
+    #main #left #mySubmit{ display: block; float: left; height: 28px; width: 129px; font-size: 16px; background-color: #8E8E8E; color: #FFFFFF; cursor: pointer; margin-top: 7px; }
+    #main #left #mySubmit span{ float: left; margin: 5px 0px 0px 50px; }
+    #main #left form textarea { width: 350px; height: 210px; }
+    #main #left #label-reason { display: block; float: left; font-size: 17px; margin:  10px 33px 0px; }
+    #main #right{ display: block; float: left; width: 550px; }
+    
+    #main #right table { border: 1px solid #DBDFE6; }
+    #main #right table #label-mail {}
+    #main #right table #value-mail { width: 650px; border: 1px solid #DBDFE6; padding: 5px; }
+    #main #right table #label-subject {}
+    #main #right table #value-subject { width: 650px; border: 1px solid #DBDFE6; padding: 5px; }
+    #main #right table #label-body { vertical-align: top; padding-top: 5px; }
+    #main #right table #value-body { width: 650px; border: 1px solid #DBDFE6; padding: 5px; }
+    
+    
+</style>
+
+<script type="text/javascript" src="/js/jquery-1.6.2.min.js"></script>
+<script type="text/javascript">
+var type1 = "Hello,<br /><br />After a recent review of your website, <?php echo $this->data->SiteName?>, we have found it's in violation of one or more of our Terms of Service.  Please correct the following immediately, in order to avoid tag deactivation.<span class=\"space\"><br /></span><b id=\"reason-target\"></b><span class=\"space\"><br /></span>If you have any questions, or if you've corrected the metioned violation(s), please feel respond to this email.<br /><br />Regards,<br />The MadAds Media Publisher Team";
+var type2 = "Hello,<br /><br />After reviewing your website, <?php echo $this->data->SiteName?>, we have found it's in violation of one or more of our Terms of Service. As a result, the ad tags have been disabled, and the site is no longer eligible for participation in the MadAds Media publisher network.<span class=\"space\"><br /></span><b id=\"reason-target\"></b><span class=\"space\"><br /></span>If you feel this is a mistake, please feel free to respond to this email.<br /><br />Regards,<br />The MadAds Media Publisher Team";
+var resone = "Please either delete this page, or remove our ads from it (as well as any similar pages):<br><?php echo $this->url ?>";
+var title1 = "<?php echo $this->data->SiteName?> Warning";
+var title2 = "<?php echo $this->data->SiteName?> Disabled";
+  $(document).ready(function(){
+      
+      if($('input[name=type]:checked', '#myForm').val()==1){
+          $("#value-body").html(type1);
+          $("#value-subject").html(title1); 
+      }else{
+          $("#value-body").html(type2);
+          $("#value-subject").html(title2);          
+      }
+      
+      $('#left #reason').keyup(function(){ 
+     
+           var value = $('#left #reason').val();
+           
+        $('#right #reason-target').html(value.replace(/\n/g,"<br>"));
+           
+           if(value.length) $('.space').html('<br /><br />');
+           else             $('.space').html('<br />');  
+               
+      });
+      
+      $('#mySubmit').click(function(){
+          
+          $('#subject').val($('#value-subject').html());
+          $('#text').val($('#value-body').html());
+          
+          $('#left form').submit();
+      });
+      
+    $(".radioType").click(function(){
+        if($(this).val()==1){
+            $("#value-subject").html(title1); 
+            $("#value-body").html(type1);
+            var value = $('#left #reason').val();
+            $('#right #reason-target').html(value.replace(/\n/g,"<br>"));
+           if(value.length) $('.space').html('<br /><br />');
+           else             $('.space').html('<br />');              
+        }else{
+            $("#value-subject").html(title2); 
+            $("#value-body").html(type2);
+            var value = $('#left #reason').val();
+            $('#right #reason-target').html(value.replace(/\n/g,"<br>"));            
+           if(value.length) $('.space').html('<br /><br />');
+           else             $('.space').html('<br />');              
+        }
+    })
+    
+    $('.space').html('<br /><br />');  
+    $('#left #reason').val(resone);
+    $('#right #reason-target').html(resone);
+  });        
+
+</script>
+
+<?php if(empty($this->message)):?>
+
+<div id="main">
+    
+    <div id="left">
+
+        <form method="post" action="" id="myForm">
+            <input class="radioType" type="radio" name="type" value="1" checked="checked" /> Send Email Only<br>
+            <input class="radioType" type="radio" name="type" value="2" /> Send Email & Disable<br><br>
+            
+            <textarea name="reasen" id="reason" placeholder="enter reason"></textarea>
+            <label for="reason" id="label-reason">Send email by Reason:</label><a id="mySubmit"><span>OK</span></a>    
+            
+            <input type="hidden" name="subject" id="subject" value=""/>
+            <input type="hidden" name="text" id="text" value=""/>
+
+        </form>
+        
+    </div>
+    <div id="right">
+        
+        <table>
+            
+            <tr>
+                <td id="label-mail">To:</td>
+                <td id="value-mail"><?php echo $this->data->email;?></td>
+            </tr>
+            <tr>
+                <td id="label-subjet">Subject:</td>
+                <td id="value-subject"></td>
+            </tr>
+            <tr>
+                <td id="label-body">Body:</td>
+                <td id="value-body"></td>
+            </tr>            
+            
+        </table>
+        
+    </div>
+    
+</div>    
+
+<?php else:?><?php echo $this->message;?><?php endif; ?>

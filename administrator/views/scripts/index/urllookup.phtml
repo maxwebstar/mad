@@ -1,0 +1,518 @@
+<?php $staffID = $this->staffID; 
+set_time_limit(0);
+?>
+<script type="text/javascript">
+    $.fn.dataTableExt.oPagination.listbox = {
+        /*
+         * Function: oPagination.listbox.fnInit
+         * Purpose:  Initalise dom elements required for pagination with listbox input
+         * Returns:  -
+         * Inputs:   object:oSettings - dataTables settings object
+         *             node:nPaging - the DIV which contains this pagination control
+         *             function:fnCallbackDraw - draw function which must be called on update
+         */
+        "fnInit": function(oSettings, nPaging, fnCallbackDraw) {
+            var nInput = document.createElement('select');
+            var nPage = document.createElement('span');
+            var nOf = document.createElement('span');
+            nOf.className = "paginate_of";
+            nPage.className = "paginate_page";
+            if (oSettings.sTableId !== '') {
+                nPaging.setAttribute('id', oSettings.sTableId + '_paginate');
+            }
+            nInput.style.display = "inline";
+            nPage.innerHTML = "Page ";
+            nPaging.appendChild(nPage);
+            nPaging.appendChild(nInput);
+            nPaging.appendChild(nOf);
+            $(nInput).change(function(e) { // Set DataTables page property and redraw the grid on listbox change event.
+                window.scroll(0, 0); //scroll to top of page
+                if (this.value === "" || this.value.match(/[^0-9]/)) { /* Nothing entered or non-numeric character */
+                    return;
+                }
+                var iNewStart = oSettings._iDisplayLength * (this.value - 1);
+                if (iNewStart > oSettings.fnRecordsDisplay()) { /* Display overrun */
+                    oSettings._iDisplayStart = (Math.ceil((oSettings.fnRecordsDisplay() - 1) / oSettings._iDisplayLength) - 1) * oSettings._iDisplayLength;
+                    fnCallbackDraw(oSettings);
+                    return;
+                }
+                oSettings._iDisplayStart = iNewStart;
+                fnCallbackDraw(oSettings);
+            }); /* Take the brutal approach to cancelling text selection */
+            $('span', nPaging).bind('mousedown', function() {
+                return false;
+            });
+            $('span', nPaging).bind('selectstart', function() {
+                return false;
+            });
+        },
+        /*
+         * Function: oPagination.listbox.fnUpdate
+         * Purpose:  Update the listbox element
+         * Returns:  -
+         * Inputs:   object:oSettings - dataTables settings object
+         *             function:fnCallbackDraw - draw function which must be called on update
+         */
+        "fnUpdate": function(oSettings, fnCallbackDraw) {
+            if (!oSettings.aanFeatures.p) {
+                return;
+            }
+            var iPages = Math.ceil((oSettings.fnRecordsDisplay()) / oSettings._iDisplayLength);
+            var iCurrentPage = Math.ceil(oSettings._iDisplayStart / oSettings._iDisplayLength) + 1; /* Loop over each instance of the pager */
+            var an = oSettings.aanFeatures.p;
+            for (var i = 0, iLen = an.length; i < iLen; i++) {
+                var spans = an[i].getElementsByTagName('span');
+                var inputs = an[i].getElementsByTagName('select');
+                var elSel = inputs[0];
+                if (elSel.options.length != iPages) {
+                    elSel.options.length = 0; //clear the listbox contents
+                    for (var j = 0; j < iPages; j++) { //add the pages
+                        var oOption = document.createElement('option');
+                        oOption.text = j + 1;
+                        oOption.value = j + 1;
+                        try {
+                            elSel.add(oOption, null); // standards compliant; doesn't work in IE
+                        } catch (ex) {
+                            elSel.add(oOption); // IE only
+                        }
+                    }
+                    spans[1].innerHTML = " of " + iPages;
+                }
+                elSel.value = iCurrentPage;
+            }
+        }
+    };
+    $(document).ready(function() {
+
+        var $blockedurlsTable;
+
+        var options = {
+            "bProcessing": true,
+            "bServerSide": true,
+            "sAjaxSource": "/administrator/index/blockedurls",
+            "sPaginationType": "listbox",
+            "fnServerParams": function(aoData) {
+
+            },
+            "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+            "iDisplayLength": 50,
+            "aoColumns": [
+                {
+                    "sType": "num-html",
+                    "sTitle": "Site ID",
+                    "fnRender": function(obj) {
+                        var id = "<a href=\"http://madadsmedia.com/administrator/sites/view/id/"+obj.aData["SiteID"]+"\">"+obj.aData["SiteName"]+"</a>";
+                        return id;
+                    }
+                },
+                {
+                    "sTitle": "Ad Size",
+                    "bSortable": false,
+                    "fnRender": function(obj) {
+                        return obj.aData["AdSize"];
+                    }
+                },
+                {
+                    "sTitle": "iframe",
+                    "bSortable": false,
+                    "fnRender": function(obj) {
+                        return obj.aData["iframe"];
+                    }
+                },
+                {
+                    "sTitle": "URL",
+                    "sType": 'numeric',
+                    "fnRender": function(obj) {
+                        return obj.aData["url"];
+                    }
+                },
+                {
+                    "sTitle": "URL Full",
+                    "fnRender": function(obj) {
+                        return obj.aData["url_full"];
+                    }
+                },
+                {
+                    "sTitle": "Source",
+                    "fnRender": function(obj) {
+                        return "<div style=\"width: 200px; word-wrap:break-word;\">"+obj.aData["src"]+"</div>";
+                    }
+                },
+                {
+                    "sTitle": "Source Full",
+                    "fnRender": function(obj) {
+                        return "<div style=\"width: 200px; word-wrap:break-word;\">"+obj.aData["src_full"]+"</div>";
+                    }
+                },
+                {
+                    "sTitle": "Num",
+                    "fnRender": function(obj) {
+                        return obj.aData["num"];
+                    }
+                },
+                {
+                    "sTitle": "Updated",
+                    "fnRender": function(obj) {
+                        return obj.aData["updated"];
+                    }
+                },
+                {
+                    "sTitle": "Query Date",
+                    "fnRender": function(obj) {
+                        return obj.aData["query_date"];
+                    }
+                }
+            ]
+        };
+        $blockedurlsTable = $('#blocked-urls').dataTable(options);
+
+        var $unnaprovedurls;
+
+        var options = {
+            "bProcessing": true,
+            "bServerSide": true,
+            "sAjaxSource": "/administrator/index/unnaprovedurls",
+            "sPaginationType": "listbox",
+            "fnServerParams": function(aoData) {
+
+            },
+            "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+            "iDisplayLength": 50,
+            "aoColumns": [
+                {
+                    "sType": "num-html",
+                    "sTitle": "Site ID",
+                    "bSortable": false,
+                    "fnRender": function(obj) {
+                        var id = "<a href=\"http://madadsmedia.com/administrator/sites/view/id/"+obj.aData["SiteID"]+"\">"+obj.aData["SiteName"]+"</a>";
+                        return id;
+                    }
+                },
+                {
+                    "sTitle": "Ad Size",
+                    "bSortable": false,
+                    "fnRender": function(obj) {
+                        return obj.aData["AdSize"];
+                    }
+                },
+                {
+                    "sTitle": "Query Date",
+                    "fnRender": function(obj) {
+                        return obj.aData["query_date"];
+                    }
+                },
+                {
+                    "sTitle": "iframe",
+                    "sType": 'numeric',
+                    "bSortable": false,
+                    "fnRender": function(obj) {
+                        return obj.aData["iframe"];
+                    }
+                },
+                {
+                    "sTitle": "URL",
+                    "fnRender": function(obj) {
+                        return obj.aData["url"];
+                    }
+                },
+                {
+                    "sTitle": "URL Full",
+                    "fnRender": function(obj) {
+                        return "<div style=\"width: 200px; word-wrap:break-word;\">"+obj.aData["url_full"]+"</div>";
+                    }
+                },
+                {
+                    "sTitle": "Source",
+                    "bSortable": false,
+                    "fnRender": function(obj) {
+                        return obj.aData["src"];
+                    }
+                },
+                {
+                    "sTitle": "Source Full",
+                    "fnRender": function(obj) {
+                        return "<div style=\"width: 200px; word-wrap:break-word;\">"+obj.aData["src_full"]+"</div>";
+                    }
+                },
+                {
+                    "sTitle": "Num",
+                    "fnRender": function(obj) {
+                        return obj.aData["num"];
+                    }
+                }
+            ]
+        };
+        $unnaprovedurls = $('#unnaprovedurls').dataTable(options);
+        
+        var $approvedservingurls;
+
+        var options = {
+            "bProcessing": true,
+            "bServerSide": true,
+            "sAjaxSource": "/administrator/index/approvedservingurls",
+            "sPaginationType": "listbox",
+            "fnServerParams": function(aoData) {
+
+            },
+            "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+            "iDisplayLength": 50,
+            "aoColumns": [
+                {
+                    "sType": "num-html",
+                    "sTitle": "Site ID",
+                    "fnRender": function(obj) {
+                        var id = "<a href=\"http://madadsmedia.com/administrator/sites/view/id/"+obj.aData["SiteID"]+"\">"+obj.aData["SiteName"]+"</a>";
+                        return id;
+                    }
+                },
+                {
+                    "sTitle": "Ad Size",
+                    "bSortable": false,
+                    "fnRender": function(obj) {
+                        return obj.aData["AdSize"];
+                    }
+                },
+                {
+                    "sTitle": "Query Date",
+                    "fnRender": function(obj) {
+                        return obj.aData["query_date"];
+                    }
+                },
+                {
+                    "sTitle": "URL",
+                    "sType": 'numeric',
+                    "fnRender": function(obj) {
+                        return obj.aData["url"];
+                    }
+                },
+                {
+                    "sTitle": "Num",
+                    "fnRender": function(obj) {
+                        return obj.aData["num"];
+                    }
+                }
+            ]
+        };
+        $approvedservingurls = $('#approvedservingurls').dataTable(options);
+        
+        var $approvediframe;
+
+        var options = {
+            "bProcessing": true,
+            "bServerSide": true,
+            "sAjaxSource": "/administrator/index/approvediframe",
+            "sPaginationType": "listbox",
+            "fnServerParams": function(aoData) {
+
+            },
+            "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+            "iDisplayLength": 50,
+            "aoColumns": [
+                {
+                    "sType": "num-html",
+                    "sTitle": "Site ID",
+                    "fnRender": function(obj) {
+                        var id = "<a href=\"http://madadsmedia.com/administrator/sites/view/id/"+obj.aData["SiteID"]+"\">"+obj.aData["SiteName"]+"</a>";
+                        return id;
+                    }
+                },
+                {
+                    "sTitle": "Ad Size",
+                    "bSortable": false,
+                    "fnRender": function(obj) {
+                        return obj.aData["AdSize"];
+                    }
+                },
+                {
+                    "sTitle": "Query Date",
+                    "fnRender": function(obj) {
+                        return obj.aData["query_date"];
+                    }
+                },
+                {
+                    "sTitle": "URL",
+                    "sType": 'numeric',
+                    "fnRender": function(obj) {
+                        return obj.aData["url"];
+                    }
+                },
+                {
+                    "sTitle": "URL Full",
+                    "sType": 'numeric',
+                    "fnRender": function(obj) {
+                        return obj.aData["url_full"];
+                    }
+                },
+                {
+                    "sTitle": "Source",
+                    "sType": 'numeric',
+                    "fnRender": function(obj) {
+                        return obj.aData["src"];
+                    }
+                },
+                {
+                    "sTitle": "Num",
+                    "bSortable": false,
+                    "fnRender": function(obj) {
+                        return obj.aData["num"];
+                    }
+                }
+            ]
+        };
+        $approvediframe = $('#approvediframe').dataTable(options);
+        
+        var $approvedwebsites;
+
+        var options = {
+            "bProcessing": true,
+            "bServerSide": true,
+            "sAjaxSource": "/administrator/index/approvedwebsites",
+            "sPaginationType": "listbox",
+            "fnServerParams": function(aoData) {
+
+            },
+            "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+            "iDisplayLength": 50,
+            "aoColumns": [
+                {
+                    "sType": "num-html",
+                    "sTitle": "Pub ID",
+                    "fnRender": function(obj) {
+                        return "<a href=\"http://madadsmedia.com/administrator/index/view/id/"+obj.aData["PubID"]+"\">"+obj.aData["PubID"]+"</a>";
+                    }
+                },
+                {
+                    "sTitle": "Site ID",
+                    "fnRender": function(obj) {
+                        return "<a href=\"http://madadsmedia.com/administrator/sites/view/id/"+obj.aData["SiteID"]+"\">"+obj.aData["SiteName"]+"</a>";
+                        
+                    }
+                },
+                {
+                    "sTitle": "Site Name",
+                    "fnRender": function(obj) {
+                        return obj.aData["SiteName"];
+                    }
+                },
+                {
+                    "sTitle": "Site URL",
+                    "sType": 'text',
+                    "fnRender": function(obj) {
+                        return obj.aData["SiteURL"];
+                    }
+                },
+                {
+                    "sTitle": "Last Live",
+                    "sType": 'numeric',
+                    "fnRender": function(obj) {
+                        return obj.aData["last_live"];
+                    }
+                },
+                {
+                    "sTitle": "Tag Name",
+                    "sType": 'numeric',
+                    "fnRender": function(obj) {
+                        return obj.aData["tag_name"];
+                    }
+                },
+                {
+                    "sTitle": "Alexa Rank",
+                    "fnRender": function(obj) {
+                        return obj.aData["alexaRank"];
+                    }
+                }
+                ,
+                {
+                    "sTitle": "Alexa Rank Update",
+                    "fnRender": function(obj) {
+                        return obj.aData["alexaRank_update"];
+                    }
+                },
+                {
+                    "sTitle": "Impressions 1 Day ago",
+                    "fnRender": function(obj) {
+                        return obj.aData["impressions_1day_ago"];
+                    }
+                },
+                {
+                    "sTitle": "Impressions 2 Days ago",
+                    "fnRender": function(obj) {
+                        return obj.aData["impressions_2day_ago"];
+                    }
+                }
+            ]
+        };
+        $approvedwebsites = $('#approvedwebsites').dataTable(options);
+        
+        $("#tabs").tabs();
+    });
+
+</script>
+
+
+<?php
+$search = $this->search;
+$fullsearch = $this->fullsearch;
+?>
+
+<div style="float:left; width:900px;">
+    <h1>URL Lookup</h1>
+    <p style="font-size: large;">You Must Specify a Search!</p>
+    <div style="border:1px solid #CCCCCC; background-color:#EEEEEE; padding:3px; width:70%; margin:5px 0; margin-left: 10px;"><b style="color:#CB0008">Warning:</b> Full search may take a long time to load, if ever. Do not refresh long loading pages as the previous requests will not stop executing on refresh. It will stack the requests and slow the server.</div>
+    <h2>Current Search: <?= $search ?></h2>
+    <form action="urllookup">
+        Change: <input name="search" style="border: 1px solid;" type="text" value="<?= $search ?>"/>
+        Full Search?: 
+        <select name="fullsearch">
+            <option value="0" <?php if (!$fullsearch){ ?><?= "selected"; ?><?php } ?>>No</option>
+            <option value="1" <?php if ($fullsearch){ ?><?= "selected"; ?><?php } ?>>Yes</option>
+        </select>
+        <input type="submit" value="submit">
+    </form>
+    <div>
+        <?php if ($search != ""){ ?>
+        <div class="contUsL" style="width: 750px;">
+            <div id="tabs">
+                <ul>
+                    <li><a href="#tabs-1">Blocked URLS</a></li>
+                    <?php if ($fullsearch){ ?><li><a href="#tabs-2">Unapproved URLS</a></li><?php } ?>
+                    <li><a href="#tabs-3">Approved Serving URLS</a></li>
+                    <?php if ($fullsearch){ ?><li><a href="#tabs-4">Approved Serving URLs (iframes)</a></li><?php } ?>
+                    <li><a href="#tabs-5">Approved Websites</a></li>
+                </ul>
+                <div id="tabs-1">    
+                    <table width="740px" id="blocked-urls">
+                    </table>
+                </div>
+                <?php if ($fullsearch){ ?>
+                <div id="tabs-2">
+                    <table width="740px" cellpadding="0" cellspacing="0" border="0" class="display" id="unnaprovedurls">
+                    </table>
+                </div>
+                <?php } ?>
+
+                <div id="tabs-3">    
+                    <table width="740px" cellpadding="0" cellspacing="0" border="0" class="display" id="approvedservingurls">
+                    </table>
+                </div>
+                <?php if ($fullsearch){ ?>
+                <div id="tabs-4"> 
+                    <table width="740px" cellpadding="0" cellspacing="0" border="0" class="display" id="approvediframe">
+                    </table>
+                </div>
+                <?php } ?>
+                <div id="tabs-5">    
+                    <table width="740px" cellpadding="0" cellspacing="0" border="0" class="display" id="approvedwebsites">
+                    </table>
+                </div>
+            </div>     
+        </div>
+      </div>
+        <?php } ?>
+</div>
+        <script type="text/javascript" src="/font/cufon-yui.js"></script>
+        <script	type="text/javascript" src="/font/Bebas_400.font.js"></script>
+        <script	type="text/javascript" src="/font/Headline_Two_400.font.js"></script>
+        <script type="text/javascript">
+            Cufon.replace('h1');
+        </script>

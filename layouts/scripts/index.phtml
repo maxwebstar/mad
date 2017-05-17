@@ -1,0 +1,229 @@
+<?php
+    // Content-Type
+    $this->headMeta()->appendHttpEquiv('Content-Type', 'text/html;charset=utf-8');    
+    // doctype
+    echo $this->doctype();        
+?>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <?php
+        // meta tegs
+        echo $this->headMeta();
+    ?>
+    <?php
+        // title
+        echo $this->headTitle();
+    ?>
+    <?php
+        // styles and javascripts
+        $this->headLink()->appendStylesheet($this->baseUrl().'/styles/style.css');
+        $this->headLink()->appendStylesheet($this->baseUrl().'/styles/reset.css');
+        $this->headLink()->appendStylesheet($this->baseUrl().'/styles/counter.css');
+        
+        echo $this->headLink();
+        
+
+        $this->headScript()->appendFile($this->baseUrl().'/js/jquery-1.4.2.min.js', 'text/javascript');
+        $this->headScript()->appendFile($this->baseUrl().'/js/flipcounter.js', 'text/javascript');
+        
+        echo $this->headScript();        
+    ?>  
+<link rel="icon" type="image/x-icon" href="/images/favicon.ico" />
+<?php 
+$config = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', 'flipcounter');
+$startSec = strtotime($config->dateStart);
+$currentTime = (time()-$startSec)*$config->perSec;
+?>    
+<script type="text/javascript">        
+    $(document).ready(function(){
+		var counter = new flipCounter('AdRequestsCounter', {
+			value: <?php echo $config->startCount+$currentTime ?>,
+			pace: 1000,
+			inc: <?php echo $config->perSec ?>,
+			auto: true
+		}, 23, 24, 27); //19.5, 32, 26.5);
+    })
+</script>      
+</head>
+<body>
+<div id="wrapper">
+ <div id="mainInsideIn">	
+	<!--header top-->
+    <div id="headerTop">
+    	<div id="hTopInn">
+	    	<div id="logo"><a href="/" title=""><img src="/images/logo_new.png" width="316" height="101" alt="" /></a></div>
+            <div id="topMenu">
+            	<ul>
+                  <?php $dataIdentity = Zend_Auth::getInstance()->getIdentity(); if($dataIdentity): ?>
+                        <li class="cur" ><a href="/" title=""><span>Home</span></a></li>
+                    <?php if($dataIdentity->role == 'admin' || $dataIdentity->role == 'super'):?>
+                        <li><a href="/administrator/dashboard/"><span>Dashboard</span></a></li>
+                    <?php endif;?>
+                	<li><a href="/report/" title=""><span>My Account</span></a></li>
+                	<li><a href="/contact-us/" title=""><span>Contact Us</span></a></li>
+                  <?php else: ?>
+                    <li class="cur" ><a href="/" title=""><span>Home</span></a></li>
+                	<li><a href="/login/" title=""><span>Login</span></a></li>
+                	<li><a href="/registration/" title=""><span> Apply Now</span></a></li>
+                	<li><a href="/about-us/" title=""><span>Why Us?</span></a></li>
+                	<li><a href="/contact-us/" title=""><span>Contact Us</span></a></li>
+                 <?php endif; ?>
+                </ul>
+            </div>
+        </div>
+    </div>
+	<!--//header top-->
+    <!--header--> 
+    <div id="header">
+    	<div id="headInn"><img src="/images/headImg.png" width="966" height="475" alt="" /></div>
+        <div id="adsServed" style="float: left; margin-left: 36%;"><h3>Impressions Served: &nbsp;</h3></div><div id="AdRequestsCounter"></div>
+    </div>        
+    <!--//header-->    
+    <!--content-->
+    					<?php if(count($this->news)):?>
+					<script>
+					$(document).ready(function()
+					{
+						$("#view_all_news").click(function()
+						{
+							$('<div class=\'news_dialog\'>').load('/viewallnews').dialog({
+								title: 'All news',
+								resizable: false,
+								width: 500,
+								modal: true,
+								close: function( event, ui ) 
+								{
+									$('.ui-dialog, .news_dialog').remove();
+								}
+								});
+							return false;
+						});
+					});
+					</script>
+						<?php foreach($this->news as $news_item):?>
+							<div class="publisher" style="padding-right:2px;">
+								<div class="notice">Notice (<?php echo date('m/d/Y',strtotime($news_item['date']));?>):</div>
+								<span style="font-weight: bold;"><?php echo $news_item['title']?><br/></span>
+								<?php echo $news_item['text'];?>
+							</div>
+						<?php endforeach;?>
+						<a href="#" id="view_all_news" style="font-size: 16px; color: red; margin-left: 20px; margin-top: 20px; text-decoration: underline;">View all news</a>
+					<?php endif;?>
+    <div id="content">
+
+        <?php echo $this->layout()->content; ?>
+
+    </div>
+    <!--//content-->    
+  <div id="footerBlock"></div>
+ </div>
+</div>
+<div id="footerMain">
+ <div id="footer">
+ 	<div id="footTop">
+    	<div class="fMenu">
+        	<h4>Pages</h4>
+            <ul>
+            	<li><a href="/" title="">Home</a></li>
+            	<li><a href="/about-us/" title="">About Us</a></li>
+            	<li><a href="/contact-us/" title="">Contact Us</a></li>                                
+            	<li><a href="/faq/" title="">FAQ</a></li>                                
+            	<li><a href="/careers/" title="">Careers</a></li>                                
+            </ul>
+        </div>
+        
+    	<div class="fMenu">
+        	<h4>Publishers</h4>
+            <ul>
+            	<li><a href="/registration/" title="">Apply Now</a></li>
+            	<li><a href="/https-ads" title="">HTTPS/SSL Ads</a></li>
+            </ul>
+        </div>  
+        
+    	<div class="fMenu">
+        	<h4>Follow Us</h4>
+			<a href="http://www.facebook.com/MadAdsMediaLP" title="MadAds Media on Facebook" class="socLink" rel="nofollow"><img src="/images/faceBook.png" width="40" height="40" alt="" /></a>
+			<a href="http://www.twitter.com/MadAdsMedia" title="MadAds Media on Twitter" class="socLink" rel="nofollow"><img src="/images/twitt.png" width="40" height="40" alt="" /></a>
+        </div>
+        
+    	<div class="fMenu" style="margin-left:-10px; width:230px;">
+			<a href="http://www.instantssl.com" title="Secured by Comodo" rel="nofollow" class="socLink"><img src="/images/comodo_secure_100x85_transp.png" alt="" width="90" /></a>
+			<a href="http://www.gigenet.com/318.html" title="Proudly Hosted by Gigenet" rel="nofollow" target="_blank">Proudly hosted by: <img src="/images/gigenet-logo.png" alt="" width="90" /></a>
+        </div>
+            
+        <div class="footerBann">
+        	<h5>Have a question?</h5>
+            <p>24-7 Support is here to answer!</p>
+            <a href="/contact-us/" title="">Contact Us</a>
+        </div>      
+      
+    </div>
+    
+	<div id="footCopyr">&copy;2011-<?php echo date("Y"); ?> Mad Ads Media LP - All rights reserved.</div>
+ </div>
+</div>
+
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-26708249-2']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+<script type="text/javascript" src="/font/cufon-yui.js"></script>
+<script type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#topMenu a', {hover: true});	
+		Cufon.replace('#topMenu a');
+</script>
+<script type="text/javascript" src="/font/Headline_Two_400.font.js"></script>
+<script type="text/javascript">
+	Cufon.replace('.contInf h3', {hover: true});	
+	Cufon.replace('.contInf h3');
+	Cufon.replace('.contInf h3.white', {color: '#FFF'});	
+	Cufon.replace('.footerBann h5');		
+	Cufon.replace('.footerBann p');	
+	Cufon.replace('.footerBann a', {hover: true});
+    Cufon.replace('#adsServed h3');				
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Lt_300.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#footCopyr');	
+		Cufon.replace('.contInf p', {hover: true});		
+		Cufon.replace('.contInf p', {color: '#333333'});	
+		Cufon.replace('.contInf p.white', {color: '#FFF'});	
+		Cufon.replace('.fMenu a', {textDecoration: 'underline'});		
+		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Rg_700.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('.fMenu h4');
+</script>
+<script type="text/javascript">
+$(document).ready(function() {
+Cufon.set("fontFamily", "Headline_Two_400.font.js");
+	$(".contInf").hover(
+		function(){
+		$(this).children("h3").addClass('white');
+		$(this).children("p").addClass('white');		
+		Cufon.refresh();		
+		Cufon.replace('.white', {color: '#FFFFFF'});	
+		}, 
+	  function () {
+		$(this).children("h3").removeClass('white');
+		$(this).children("p").removeClass('white');		
+		Cufon.refresh();			
+		Cufon.replace('.contInf h3', {color: '#DC2323'});	
+		Cufon.replace('.contInf p', {color: '#333333'});			
+	  }
+	);
+});
+</script>
+<!--OLD-->
+</body>
+</html>

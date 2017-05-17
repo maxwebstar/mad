@@ -1,0 +1,29 @@
+<?php if($this->saved == true):?>
+<p>Template successfully saved</p>
+<?php else:?>
+<style>
+#mySubmit{ display: block; float: left; height: 28px; width: 129px; font-size: 16px; background-color: #8E8E8E; color: #FFFFFF; cursor: pointer; margin-top: 50px; margin-left: 160px; }
+form p{ margin-top: 15px; }
+form p label{ display: inline-block; width: 85px; font-weight: 800; }
+form p input{ margin-right: 5px; }
+</style>
+<span style="font-weight: 800;">Subject: </span><?php echo $this->template->name ?>
+<br /><br />
+<span style="font-weight: 800;">Template: </span><br/>
+<form method="post">
+	<textarea name="content" style="width: 448px; height: 300px; "><?php echo $this->template->content;?></textarea>
+	<br/>
+        
+        <p>
+        <label>By Default: </label>
+        <?php if($this->template->base):?>
+            <input type="checkbox" name="base" id="base" value="0" disabled checked/>
+            <span>You can edit another template, for change default value.</span>
+        <?php else:?>
+            <input type="checkbox" name="base" id="base" value="1"/>
+        <?php endif;?>
+        </p>
+        
+	<input id="mySubmit" type="submit" name="Submit" value="Save">
+</form>
+<?php  endif;?>

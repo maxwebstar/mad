@@ -1,0 +1,120 @@
+<script type="text/javascript" charset="utf-8">
+        $(document).ready(function() {           
+                var oTable = $('#users').dataTable( {
+                        "bProcessing": true,
+                        "bServerSide": true,
+                        "sAjaxSource": '/administrator/index/ajax-denied',
+                        "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+                        "iDisplayLength": 100,
+                        "aoColumns": [
+                            { 
+                              "sTitle": "Name",
+                              "fnRender": function(obj){ return obj.aData[0]; } 
+                            },
+                            { 
+                              "sTitle": "Company",
+                              "fnRender": function(obj){ return obj.aData[1]; } 
+                            },
+                            { 
+                              "sTitle": "Website",
+                              "fnRender": function(obj){ return obj.aData[2]; } 
+                            },
+                            { 
+                                "sTitle": "AlexaRank",
+                                "fnRender": function(obj){ return obj.aData[3]; } 
+                            },
+                            { 
+                              "sTitle": "Created",
+                              "fnRender": function(obj){ 
+								return obj.aData[4];
+								}
+                            },
+                            { 
+                              "sTitle": "Denied Date",
+                              "fnRender": function(obj){
+                                    if(obj.aData[5])
+	                              	    return obj.aData[5];
+                                    else
+                                        return '';
+	
+                              	} 
+                            },
+                            { 
+                                "sTitle": "Denied by",
+                                "fnRender": function(obj){ return obj.aData[6]; } 
+                            },
+                            { 
+                              "bSortable": false,
+                              "fnRender": function(obj){ return '<a href="/administrator/index/view/id/'+obj.aData[7]+'">View</a>'; } 
+                            },
+                            { 
+                              "bSortable": false,
+                              "fnRender": function(obj){ return '<a href="#" onClick="location.href=\'/administrator/index/auth/id/'+obj.aData[8]+'\'">Login</a>'; } 
+                            }
+                        ],                                                
+                        "aaSorting": [[ 4, "desc" ]]
+                } );
+        } );
+</script>
+    <h1>Denied Users</h1>
+<div class="contUsL" style="width: 750px;">
+<table width="740px" cellpadding="0" cellspacing="0" border="0" class="display" id="users">
+	<thead>
+		<tr>
+                    <th width="30%">Name</th>
+                    <th width="15%">Company</th>
+                    <th width="20%">Website</th>
+                    <th width="20%">AlexaRank</th>
+                    <th width="15%">Created</th>
+                    <th width="15%">Denied Date</th>
+                    <th width="15%">Denied By</th>
+                    <th width="5%"></th>
+                    <th width="5%"></th>
+		</tr>
+	</thead>
+	<tbody></tbody>
+	<tfoot>
+		<tr>
+                    <th>Name</th>
+                    <th>Company</th>
+                    <th>Website</th>
+                    <th>AlexaRank</th>
+                    <th>Created</th>
+                    <th>Denied Date</th>
+                    <th>Denied By</th>
+                    <th></th>
+                    <th></th>
+		</tr>
+	</tfoot>
+</table>
+</div>    
+<script type="text/javascript" src="/font/cufon-yui.js"></script>
+<script type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#topMenu a', {hover: true});	
+		Cufon.replace('#topMenu a');
+</script>
+<script type="text/javascript" src="/font/Headline_Two_400.font.js"></script>
+<script type="text/javascript">
+	Cufon.replace('.contInf h3', {hover: true});	
+	Cufon.replace('.contInf h3');
+	Cufon.replace('.contInf h3.white', {color: '#FFF'});	
+	Cufon.replace('.footerBann h5');		
+	Cufon.replace('.footerBann p');	
+	Cufon.replace('.footerBann a', {hover: true});		
+    Cufon.replace('h1');		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Lt_300.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#footCopyr');	
+		Cufon.replace('.contInf p', {hover: true});		
+		Cufon.replace('.contInf p', {color: '#333333'});	
+		Cufon.replace('.contInf p.white', {color: '#FFF'});	
+		Cufon.replace('.fMenu a', {textDecoration: 'underline'});		
+		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Rg_700.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('.fMenu h4');
+</script>
+    

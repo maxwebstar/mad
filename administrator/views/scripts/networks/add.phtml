@@ -1,0 +1,148 @@
+<h2 class="text-center">Add new network</h2>
+<?php if(count($this->formErrors)): ?>
+    <div class="alert alert-danger" role="alert">
+        <ul>
+        <?php foreach($this->formErrors as $error): ?>
+            <?php foreach($error as $item): ?>
+                <li><?php echo $item; ?></li>
+            <?php endforeach; ?>
+        <?php endforeach; ?>
+        </ul>
+    </div>
+<?php endif; ?>
+<form method="post" class="form-horizontal">
+    <div class="form-group <?php if(isset($this->formErrors['name'])) echo "has-error" ?>">
+        <label for="name" class="col-sm-2 control-label">Name</label>
+        <div class="col-sm-4">
+            <input type="text" class="form-control" id="name" name="name" value="<?php echo $this->formValues['name'] ?>" placeholder="Name">
+        </div>
+    </div>
+    <div class="form-group <?php if(isset($this->formErrors['short_name'])) echo "has-error" ?>">
+        <label for="short_name" class="col-sm-2 control-label">Short name</label>
+        <div class="col-sm-4">
+            <input type="text" class="form-control" id="short_name" name="short_name" value="<?php echo $this->formValues['short_name'] ?>" placeholder="Short name">
+        </div>
+    </div>
+    <div class="form-group <?php if(isset($this->formErrors['parent_id'])) echo "has-error" ?>">
+        <label for="parent_id" class="col-sm-2 control-label">Parent Network</label>
+        <div class="col-sm-4">
+            <select class="form-control" name="parent_id">
+                <option value="0"></option>
+                <?php foreach($this->dataNetworks as $network): ?>
+                    <option value="<?php echo $network['id'] ?>" <?php echo $network['id']==$this->formValues['parent_id'] ? "selected" : "" ?>><?php echo $network['name'] ?></option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+    </div>
+    <div class="form-group <?php if(isset($this->formErrors['sizes_id'])) echo "has-error" ?>">
+        <div class="col-sm-offset-2 col-sm-8">
+            <div class="panel panel-default">
+                <div class="panel-heading">Sizes settings</div>
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>Sizes</th>
+                        <th>Only by the request</th>
+                        <th>Only for primary network</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <?php foreach($this->dataSizes as $size): ?>
+                        <?php
+                        if(in_array($size['id'], $this->formValues['sizes_id'])===true)
+                            $disabled = false;
+                        else
+                            $disabled = true;
+                        ?>
+                        <tr>
+                            <td>
+                                <div class="checkbox">
+                                    <label>
+                                        <input class="sizes_id" type="checkbox" value="<?php echo $size['id'] ?>" name="sizes_id[]" <?php echo $disabled ? "" : "checked" ?>> <?php echo $size['name'] ?>
+                                    </label>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="checkbox <?php echo $disabled ? "disabled" : "" ?>" id="size-request-box-<?php echo $size['id'] ?>">
+                                    <label>
+                                        <input type="checkbox" class="size_request" id="size-request-<?php echo $size['id'] ?>" name="size_request[]" value="<?php echo $size['id'] ?>" autocomplete="off" <?php echo in_array($size['id'], $this->formValues['size_request']) ? "checked" : "" ?> <?php echo $disabled ? "disabled" : "" ?>>
+                                    </label>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="checkbox <?php echo $disabled || !in_array($size['id'], $this->formValues['size_request']) ? "disabled" : "" ?>" id="only-primary-box-<?php echo $size['id'] ?>">
+                                    <label>
+                                        <input type="checkbox" id="only-primary-<?php echo $size['id'] ?>" name="only_primary[]" value="<?php echo $size['id'] ?>" autocomplete="off" <?php echo in_array($size['id'], $this->formValues['only_primary']) ? "checked" : "" ?> <?php echo $disabled || !in_array($size['id'], $this->formValues['size_request']) ? "disabled" : "" ?>>
+                                    </label>
+                                </div>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="form-group <?php if(isset($this->formErrors['active'])) echo "has-error" ?>">
+        <div class="col-sm-offset-2 col-sm-4">
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" value="1" name="active" <?php echo $this->formValues['active']==1 || !isset($this->formValues) ? "checked" : "" ?>> Active
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="form-group <?php if(isset($this->formErrors['position'])) echo "has-error" ?>">
+        <label for="position" class="col-sm-2 control-label">Position</label>
+        <div class="col-sm-4">
+            <input type="text" class="form-control" id="position" name="position" value="<?php echo $this->formValues['position'] ? $this->formValues['position']: 0 ?>" placeholder="0">
+        </div>
+    </div>
+    <div class="form-group <?php if(isset($this->formErrors['show'])) echo "has-error" ?>">
+        <div class="col-sm-offset-2 col-sm-4">
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" value="1" name="show" <?php echo $this->formValues['show']==1 || !isset($this->formValues) ? "checked" : "" ?>> Show
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+            <button type="submit" class="btn btn-success">Save</button>
+            <a class="btn btn-danger" href="/administrator/networks" role="button">Cancel</a>
+        </div>
+    </div>
+</form>
+
+<script>
+    $(document).ready(function(){
+        $(".sizes_id").change(function(){
+            if($(this).is(":checked")){
+                $("#size-request-"+$(this).val()).removeAttr('disabled');
+                $("#size-request-box-"+$(this).val()).removeClass('disabled');
+
+                if($("#size-request-"+$(this).val()).is(":checked")){
+                    $("#only-primary-"+$(this).val()).removeAttr('disabled');
+                    $("#only-primary-box-"+$(this).val()).removeClass('disabled');
+                }
+            }else{
+                $("#size-request-"+$(this).val()).attr('disabled', true);
+                $("#size-request-box-"+$(this).val()).addClass  ('disabled');
+
+                $("#only-primary-"+$(this).val()).attr('disabled', true);
+                $("#only-primary-box-"+$(this).val()).addClass  ('disabled');
+            }
+        });
+
+        $(".size_request").change(function(){
+            if($(this).is(":checked")){
+                $("#only-primary-"+$(this).val()).removeAttr('disabled');
+                $("#only-primary-box-"+$(this).val()).removeClass('disabled');
+            }else{
+                $("#only-primary-"+$(this).val()).attr('disabled', true);
+                $("#only-primary-box-"+$(this).val()).addClass  ('disabled');
+            }
+        });
+    })
+</script>

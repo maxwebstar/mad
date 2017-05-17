@@ -1,0 +1,87 @@
+
+<?php 
+if (count($this->data)> 0):
+?>
+<script type="text/javascript" src="/font/cufon-yui.js"></script>
+<script type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script type="text/javascript">
+	$(function(){
+
+		Cufon.replace('h2',{textShadow: '-1px -1px #5F5F5F', fontSize : '16px'});	
+		
+	});
+
+</script>
+<style>
+
+	.siteContainer {
+		padding: 15px;
+		overflow:hidden;
+	}
+	
+	h2 {
+		padding: 0 0 12px 0;
+	}
+	
+	.siteData {
+		padding: 0 0 12px 0;
+	}
+	
+	label {
+		font-weight:bold;
+	}
+
+
+</style>
+
+<div class="siteContainer">
+	<h2><?=$this->data['site']?></h2>
+
+	<div class="siteData">
+		<p>Status: <?=($this->data['approved'])?"Approved":(($this->data['denied'])?"Denied":"Pending")?></p>
+		<p>Site Url: <a href="<?=$this->data['site_url']?>" target="_blank"><?=$this->data['site_url']?></a></p>
+		<p>Site ID: <?=$this->data['site_id']?></p>
+		<p>Category: <?=$this->data['category']?></p>
+		<p>Alexa Rank: <?=number_format($this->data['alexa_rank'])?></p>
+	</div>	
+	
+	<div class="siteData">
+		<?
+		$left = array_slice($this->data, 0, floor(count($this->data)/2));
+		$right = array_slice($this->data, floor(count($this->data)/2) + 1, count($this->data));
+		$alreadyDisplayed = array("approved","denied","site","site_url","site_id","category","site_channel_(primary)","alexa_rank");
+		?>
+		<div style="float: left; width: 50%">
+		<?
+		foreach ($left as $key=>$value):
+			if (!in_array($key, $alreadyDisplayed)):
+				$value = (($key!="site_id" && is_numeric($value) && (int)$value)?number_format($value,2):$value);
+				$value = (preg_match("/[.]00$/",$value)) ? str_replace(".00","",$value) : $value;
+			?>
+			<div><label><?=ucwords(str_replace("_", " ", $key))?></label>: <?=$value?></div>
+		<?php 
+			endif;
+		endforeach;
+		?>
+		</div>	
+		<div style="float: left; width: 50%">
+		<?
+		foreach ($right as $key=>$value):
+			if (!in_array($key, $alreadyDisplayed)):
+				$value = (($key!="site_id" && is_numeric($value) && (int)$value)?number_format($value,2):$value);
+				$value = (preg_match("/[.]00$/",$value)) ? str_replace(".00","",$value) : $value;
+			?>
+			<div><label><?=ucwords(str_replace("_", " ", $key))?></label>: <?=$value?></div>
+		<?php 
+			endif;
+		endforeach;
+		?>
+		</div>	
+	</div>
+	<div class="clear"></div>
+</div>
+<?
+else :
+	echo "No data to display";
+endif; 
+?>

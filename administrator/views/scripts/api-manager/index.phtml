@@ -1,0 +1,280 @@
+<h2 class="text-center">API Manager</h2>
+<div id="ajax-alert" class="alert alert-dismissible fade in hidden" role="alert">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <p id="text-alert"></p>
+</div>
+<div>
+    <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active"><a href="#rubicon" aria-controls="rubicon" role="tab" data-toggle="tab">Rubicon</a></li>
+        <li role="presentation"><a href="#pubmatic" aria-controls="pubmatic" role="tab" data-toggle="tab">Pubmatic</a></li>
+        <li role="presentation"><a href="#popads" aria-controls="popads" role="tab" data-toggle="tab">PopAds</a></li>
+    </ul>
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="rubicon">
+            <br>
+            <form class="form-horizontal" method="post">
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">Select or enter report ID</label>
+                    <div class="col-sm-4">
+                        <div class="input-group">
+                            <div class="input-group-btn">
+                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <span class="caret"></span>
+                                    <span class="sr-only">Toggle Dropdown</span>
+                                </button>
+                                <ul class="dropdown-menu" id="select-vals">
+                                    <li><a href="#" data-id="99375032">99375032 (Current Date)</a></li>
+                                    <li><a href="#" data-id="99375242">99375242 (Previous 3 days)</a></li>
+                                </ul>
+                            </div>
+                            <input type="text" name="report_id" id="report_id" value="" class="form-control" aria-label="" placeholder="Report ID">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-4">
+                        <button type="button" id="rubicon-subm" class="btn btn-success">Submit</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div role="tabpanel" class="tab-pane" id="pubmatic">
+            <br>
+            <div class="form-group">
+                <div class="btn-group">
+                    <button type="button" class="btn btn-success pubm-button">Get...</button>
+                    <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span class="caret"></span>
+                        <span class="sr-only">Toggle Dropdown</span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a href="#" id="get-current">current date</a></li>
+                        <li><a href="#" id="get-prev">previous date</a></li>
+                    </ul>
+                </div>
+            </div>
+            <p><strong>OR Select a date manually:</strong></p>
+            <form class="form-inline" method="post">
+                <div class="form-group">
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="from-date" placeholder="From date">
+                        <span class="input-group-addon" id="picker-from"><i class="fa fa-calendar" aria-hidden="true"></i></span>
+                    </div>
+                </div>
+                -
+                <div class="form-group">
+                    <div class="input-group">
+                        <input type="email" class="form-control" id="to-date" placeholder="To date">
+                        <span class="input-group-addon" id="picker-to"><i class="fa fa-calendar" aria-hidden="true"></i></span>
+                    </div>
+
+                </div>
+                <button type="button" id="pubm-subm" class="btn btn-success">Submit</button>
+            </form>
+            <br>
+        </div>
+        <div role="tabpanel" class="tab-pane" id="popads">
+            <br>
+            <form class="form-inline" method="post">
+                <div class="form-group">
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="from-date-pop" placeholder="From date">
+                        <span class="input-group-addon" id="picker-from-pop"><i class="fa fa-calendar" aria-hidden="true"></i></span>
+                    </div>
+                </div>
+                -
+                <div class="form-group">
+                    <div class="input-group">
+                        <input type="email" class="form-control" id="to-date-pop" placeholder="To date">
+                        <span class="input-group-addon" id="picker-to-pop"><i class="fa fa-calendar" aria-hidden="true"></i></span>
+                    </div>
+
+                </div>
+                <button type="button" id="pop-subm" class="btn btn-success">Submit</button>
+            </form>
+            <br>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function(){
+        var widgetFrom = $( "#from-date" ).datepicker({
+            dateFormat: "yy-mm-dd",
+            maxDate: -2,
+            changeMonth: true,
+            changeYear: true
+        });
+
+        var widgetTo = $( "#to-date" ).datepicker({
+            dateFormat: "yy-mm-dd",
+            maxDate: -2,
+            changeMonth: true,
+            changeYear: true
+        });
+
+        var widgetFromPop = $( "#from-date-pop" ).datepicker({
+            dateFormat: "yy-mm-dd",
+            changeMonth: true,
+            changeYear: true
+        });
+
+        var widgetToPop = $( "#to-date-pop" ).datepicker({
+            dateFormat: "yy-mm-dd",
+            changeMonth: true,
+            changeYear: true
+        });
+
+        $("#picker-from").on('click', function(){
+            widgetFrom.datepicker('show');
+        })
+
+        $("#picker-to").on('click', function(){
+            widgetTo.datepicker('show');
+        })
+
+        $("#picker-from-pop").on('click', function(){
+            widgetFromPop.datepicker('show');
+        })
+
+        $("#picker-to-pop").on('click', function(){
+            widgetToPop.datepicker('show');
+        })
+
+        $("#select-vals li a").on('click', function(){
+            var reportID = $(this).attr('data-id');
+            $("#report_id").val(reportID);
+        })
+
+        $("#rubicon-subm").on('click', function(){
+            $.ajax({
+                url:"/administrator/api-manager/set-rubicon",
+                method:"POST",
+                data:{report_id: $("#report_id").val()},
+                dataType:"json",
+                error:function(){
+                    alertInfo('<strong>Error:</strong> ajax error.', 2);
+                },
+                success:function(data){
+                    if(data.status=='ok'){
+                        alertInfo('<strong>Success:</strong> the report will be processed during several minutes', 1);
+                    }
+                },
+                beforeSend:function(){
+                    $("#ajax-alert").addClass('hidden');
+                    if($("#report_id").val()==''){
+                        alertInfo('<strong>Error:</strong> wrong reportID.', 2);
+                        return false;
+                    }
+
+                    $("#rubicon-subm").attr('disabled', true).html('<i class="fa fa-spinner fa-spin" aria-hidden="true"></i> Submit');
+                },
+                complete:function(){
+                    $("#rubicon-subm").attr('disabled', false).html('Submit');
+                }
+            });
+        });
+
+        $("#pubm-subm, #get-current, #get-prev").on('click', function(){
+            var start = null;
+            var finish = null;
+            var buttonObj = $(this);
+            $.ajax({
+                url:"/administrator/api-manager/set-pubm",
+                method:"POST",
+                data:{start: start, finish: finish},
+                dataType:"json",
+                error:function(){
+                    alertInfo('<strong>Error:</strong> ajax error.', 2);
+                },
+                success:function(data){
+                    if(data.status=='ok'){
+                        alertInfo('<strong>Success:</strong> the report will be processed during several minutes', 1);
+                    }
+                },
+                beforeSend:function(xhr, s){
+                    if(buttonObj.prop('id')=="pubm-subm"){
+                        start = $("#from-date").val();
+                        finish = $("#to-date").val();
+                        $("#pubm-subm").attr('disabled', true).html('<i class="fa fa-spinner fa-spin" aria-hidden="true"></i> Submit');
+                    }else if(buttonObj.prop('id')=="get-current"){
+                        start = '<?php echo $this->dateCurr ?>';
+                        finish = '<?php echo $this->dateCurr ?>';
+                        $(".pubm-button").attr('disabled', true).html('<i class="fa fa-spinner fa-spin" aria-hidden="true"></i> Get...');
+                    }else if(buttonObj.prop('id')=="get-prev"){
+                        start = '<?php echo $this->datePrev ?>';
+                        finish = '<?php echo $this->datePrev ?>';
+                        $(".pubm-button").attr('disabled', true).html('<i class="fa fa-spinner fa-spin" aria-hidden="true"></i> Get...');
+                    }
+
+                    if(!start && !finish){
+                        alertInfo('<strong>Error:</strong> wrong date.', 2);
+                        $("#pubm-subm").attr('disabled', false).html('Submit');
+                        $(".pubm-button").attr('disabled', false).html('Get...');
+                        return false;
+                    }
+                    s.data = "start="+start+"&finish="+finish;
+
+                    $("#ajax-alert").addClass('hidden');
+                },
+                complete:function(){
+                    $("#pubm-subm").attr('disabled', false).html('Submit');
+                    $(".pubm-button").attr('disabled', false).html('Get...');
+                }
+            });
+        });
+
+        $("#pop-subm").on('click', function(){
+            var start = null;
+            var finish = null;
+            $.ajax({
+                url:"/administrator/api-manager/set-pop",
+                method:"POST",
+                data:{start: start, finish: finish},
+                dataType:"json",
+                error:function(){
+                    alertInfo('<strong>Error:</strong> ajax error.', 2);
+                },
+                success:function(data){
+                    if(data.status=='ok'){
+                        alertInfo('<strong>Success:</strong> the report will be processed during several minutes', 1);
+                    }
+                },
+                beforeSend:function(xhr, s){
+                    start = $("#from-date-pop").val();
+                    finish = $("#to-date-pop").val();
+                    $("#pop-subm").attr('disabled', true).html('<i class="fa fa-spinner fa-spin" aria-hidden="true"></i> Submit');
+
+                    if(!start && !finish){
+                        alertInfo('<strong>Error:</strong> wrong date.', 2);
+                        $("#pop-subm").attr('disabled', false).html('Submit');
+                        return false;
+                    }
+                    s.data = "start="+start+"&finish="+finish;
+
+                    $("#ajax-alert").addClass('hidden');
+                },
+                complete:function(){
+                    $("#pop-subm").attr('disabled', false).html('Submit');
+                }
+            });
+        });
+
+        $(".close").on('click', function(){
+            $("#ajax-alert").addClass('hidden');
+            return false;
+        })
+    });
+
+function alertInfo($mes, $status){
+    if($status==1){
+        $("#ajax-alert").removeClass('alert-danger').addClass('alert-success').removeClass('hidden');
+    }else if($status==2){
+        $("#ajax-alert").removeClass('alert-success').addClass('alert-danger').removeClass('hidden');
+    }else{
+        $("#ajax-alert").removeClass('alert-success').removeClass('alert-danger').removeClass('hidden');
+    }
+
+    $("#text-alert").html($mes);
+}
+</script>

@@ -1,0 +1,84 @@
+<div class="container">
+    <?php if(count($this->dataNetworksSizes)): ?>
+        <?php foreach($this->dataNetworksSizes as $size): ?>
+            <?php if($size['network_id']==8): ?>
+                <div class="checkbox">
+                    <label>
+                        <input class="pubmatic-sizes" data-size="<?php echo $size['id'] ?>" type="checkbox"
+                               name="sizes_8[<?php echo $size['id'] ?>]"
+                            <?php echo isset($this->formValues['sizes_8'][$size['id']]) ? "checked" : "" ?>
+                            >
+                        <?php echo $size['name'] ?>
+                    </label>
+                </div>
+                <div id="pubmatic-form-<?php echo $size['id'] ?>"
+                     class="<?php echo isset($this->formValues['sizes_8'][$size['id']]) ? "" : "hidden" ?>">
+
+                <div class="form-group <?php if(isset($this->formErrors['kPubID'])) echo "has-error" ?>">
+                    <label for="kPubID_<?php echo $size['id'] ?>" class="col-sm-2 control-label">pubID=</label>
+                    <div class="col-sm-4">
+                        <input type="text" class="form-control" id="kPubID_<?php echo $size['id'] ?>"
+                               name="<?php echo isset($this->formValues['sizes_8'][$size['id']]) ? "kPubID[{$size['id']}]" : "" ?>" placeholder="kPubID"
+                               value="<?php echo !isset($this->formValues['kPubID'][$size['id']]) ? "49542" : $this->formValues['kPubID'][$size['id']] ?>"
+                        >
+                    </div>
+                </div>
+                <div class="form-group <?php if(isset($this->formErrors['kSiteID'])) echo "has-error" ?>">
+                    <label for="kSiteID_<?php echo $size['id'] ?>" class="col-sm-2 control-label">siteId=</label>
+                    <div class="col-sm-4">
+                        <input type="text" class="form-control" id="kSiteID_<?php echo $size['id'] ?>"
+                               name="<?php echo isset($this->formValues['sizes_8'][$size['id']]) ? "kSiteID[{$size['id']}]" : "" ?>" placeholder="kSiteID"
+                               value="<?php echo !isset($this->formValues['kSiteID'][$size['id']]) ? '' : $this->formValues['kSiteID'][$size['id']]  ?>"
+                        >
+                    </div>
+                </div>
+                <div class="form-group <?php if(isset($this->formErrors['kadID'])) echo "has-error" ?>">
+                    <label for="kadID_<?php echo $size['id'] ?>" class="col-sm-2 control-label">kadId=</label>
+                    <div class="col-sm-4">
+                        <input type="text" class="form-control" id="kadID_<?php echo $size['id'] ?>"
+                               name="<?php echo isset($this->formValues['sizes_8'][$size['id']]) ? "kadID[{$size['id']}]" : "" ?>" placeholder="kadID"
+                               value="<?php echo !isset($this->formValues['kadID'][$size['id']]) ? '' : $this->formValues['kadID'][$size['id']]  ?>"
+                        >
+                    </div>
+                </div>
+                <div class="form-group <?php if(isset($this->formErrors['kadWidth'])) echo "has-error" ?>">
+                    <label for="kadWidth_<?php echo $size['id'] ?>" class="col-sm-2 control-label">kadWidth=</label>
+                    <div class="col-sm-4">
+                        <input type="text" class="form-control" id="kadWidth_<?php echo $size['id'] ?>"
+                               name="<?php echo isset($this->formValues['sizes_8'][$size['id']]) ? "kadWidth[{$size['id']}]" : "" ?>" placeholder="kadWidth"
+                               value="<?php echo !isset($this->formValues['kadWidth'][$size['id']]) ? $size['width'] : $this->formValues['kadWidth'][$size['id']] ?>"
+                        >
+                    </div>
+                </div>
+                <div class="form-group <?php if(isset($this->formErrors['kadHeight'])) echo "has-error" ?>">
+                    <label for="kadHeight_<?php echo $size['id'] ?>" class="col-sm-2 control-label">kadHeight=</label>
+                    <div class="col-sm-4">
+                        <input type="text" class="form-control" id="kadHeight_<?php echo $size['id'] ?>"
+                               name="<?php echo isset($this->formValues['sizes_8'][$size['id']]) ? "kadHeight[{$size['id']}]" : "" ?>" placeholder="kadHeight"
+                               value="<?php echo !isset($this->formValues['kadHeight'][$size['id']]) ? $size['height'] : $this->formValues['kadHeight'][$size['id']] ?>"
+                        >
+                    </div>
+                </div>
+                <div class="form-group <?php if(isset($this->formErrors['kadType'])) echo "has-error" ?>">
+                    <label for="kadType_<?php echo $size['id'] ?>" class="col-sm-2 control-label">kadtype=</label>
+                    <div class="col-sm-4">
+                        <input type="text" class="form-control" id="kadType_<?php echo $size['id'] ?>"
+                               name="<?php echo isset($this->formValues['sizes_8'][$size['id']]) ? "kadType[{$size['id']}]" : "" ?>" placeholder="kadType"
+                               value="<?php echo !isset($this->formValues['kadType'][$size['id']]) ? 1 : $this->formValues['kadType'][$size['id']] ?>"
+                        >
+                    </div>
+                </div>
+                <div class="form-group <?php if(isset($this->formErrors['kadPageUrl'])) echo "has-error" ?>">
+                    <label for="kadPageUrl_<?php echo $size['id'] ?>" class="col-sm-2 control-label">kadpageurl=</label>
+                    <div class="col-sm-4">
+                        <input type="text" class="form-control" id="kadPageUrl_<?php echo $size['id'] ?>"
+                               name="<?php echo isset($this->formValues['sizes_8'][$size['id']]) ? "kadPageUrl[{$size['id']}]" : "" ?>" placeholder="kadPageUrl"
+                               value="<?php echo !isset($this->formValues['kadPageUrl'][$size['id']]) ? 'http://'.str_replace(array('http://', 'https://'), '', strtolower($this->dataSite['define_url'])) : $this->formValues['kadPageUrl'][$size['id']] ?>"
+                        >
+                    </div>
+                </div>
+                </div>
+            <?php endif; ?>
+        <?php endforeach; ?>
+    <?php endif; ?>
+</div>

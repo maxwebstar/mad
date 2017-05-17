@@ -1,0 +1,170 @@
+<style type="text/css">
+    
+    #message-holder{ font-size: 20px; display: none; margin-top: 10px; }
+    #api-holder{ display: none; }
+    .sendMasBtn{ cursor: pointer; }    
+
+    #contentLoad{ margin-top: 10px; display: none; }
+    #contentLoad thead td{ font-size: 16px; font-weight: 600; text-align: center; }
+    #contentLoad td{ padding: 2px; } 
+    
+</style>
+<script>
+
+   var accessToken = null;
+   var loginUrl = null;
+
+   $(document).ready(function(){
+       
+       $( ".datepicker" ).datepicker({showOn:'focus', 'dateFormat' : "yy-mm-dd"});
+       
+       if(location.host == 'madadsmedia.com'){ $('#api-holder').css('display', 'block'); checkAuth(); }
+                                         else{ $('#message-holder').css('display', 'block'); };
+                                         
+       if(accessToken){ $('input[name=start]').removeAttr("disabled");
+                        $('input[name=end]').removeAttr("disabled"); }   
+                  else{ $('input[name=start]').attr("disabled", "true");
+                        $('input[name=end]').attr("disabled", "true"); } 
+                    
+       $('#api-holder').css('display', 'block');
+   });
+   
+   function checkAuth()
+   {
+       $.ajax({ url : '/administrator/google-api/ajax-check-access',
+                 data : { },
+                 type : "POST",
+                 async: false,
+                 dataType : "json",
+
+         success : function(response) { 
+
+                  if(response.status == 'token'){ accessToken = response.value; }  
+             else if(response.status == 'login'){ loginUrl = response.value; login(); }
+
+         }, error : function(){ alert('ajax request access return error'); }});
+   }
+   
+   function login()
+   {
+       document.location.href = loginUrl;
+   }
+   
+   function mySubmit()
+   {       
+       $("#get_load").css('display', 'block');
+       
+       var start = $('input[name=start]').val();
+       var end = $('input[name=end]').val(); 
+       var size = $('#filter-size').val();
+       var search = $('#search-unit').val(); 
+       
+       $.ajax({ url : '/administrator/google-api/get-data',
+                 data : { start : start, end : end, size : size, search : search },
+                 type : "POST",
+                 async: false,
+                 dataType : "json",
+
+         success : function(response) { 
+
+                $("#get_load").css('display', 'none');
+                        
+                if(response.rows){
+
+                        $("#contentLoad tbody").html('');
+                        $("#contentLoad").css('display', 'block');
+
+                        $.each(response.rows, function(key, iter){
+                            
+                            $.each(iter, function(key2, jter){
+
+                                $("#contentLoad tbody").append('<tr><td>'+(jter.PubID ? jter.PubID : '<span style="color: red">'+jter.PubID+'</span>')+'</td><td>'+(jter.SiteID ? jter.SiteID : '<span style="color: red">'+jter.SiteID+'</span>')+'</td><td>'+jter.SiteName+'</td><td>'+jter.SizeAd+'</td><td>'+(jter.SizeID ? jter.SizeID : '<span style="color: red">'+jter.SizeID+'</span>')+'</td><td>'+jter.date+'</td><td>'+jter.impressions+'</td><td>'+jter.revenue+'</td><td>'+(jter.status ? '<span style="color: green">ok</span>' : '<span style="color: red">error</span>')+'</td></tr>'); 
+
+                            }); 
+                        
+                        });                       
+
+                        alert("Completed!");
+                }                
+
+         }, error : function(){ $("#get_load").css('display', 'none'); alert('ajax request get data return error'); }});
+   }
+
+</script>
+<a href="/administrator/sites/csv/" title="" style="float:left;" class="sendMasBtn">Rubicon CSV</a>
+<a href="/administrator/sites/csv2/" title="" style="float:left; margin-left: 10px;" class="sendMasBtn">All Size</a>
+<br/><br/>
+
+<div id="message-holder">Only for MadadsMeidia.com host name !</div>
+<div id="api-holder" style="width: 700px;" class="contUsL">
+    
+    <p><label>Start Date: </label> <input type="text" class="datepicker" value="<?php echo date("Y-m-d"); ?>" name="start" /></p> 
+    <p><label>End Date: </label> <input type="text" class="datepicker" value="<?php echo date("Y-m-d"); ?>" name="end" /></p>  
+    <p>
+        <label>AdSize:</label>
+        <select name="filter-size" id="filter-size">
+            <option value="all" selected>All Size</option>
+            <?php foreach($this->size as $iter):?>
+                  <option value="<?php echo $iter['description']?>"><?php echo $iter['name'];?></option>
+            <?php endforeach;?>
+        </select>    
+    </p>
+    <p>
+        <label>Search:</label>
+        <input type="text" placeholder="AD_UNIT_NAME" name="seach-unit" id="search-unit" value="Custom"/>
+    </p>
+    <p><a class="sendMasBtn" onclick="mySubmit();">Submit</a></p>
+    
+    <br/><br/>
+    
+    <img alt="" src="/images/ajax-loader.gif" id="get_load" style="display: none" />
+    <table id="contentLoad" border="1" cellspacing="0" cellpadding="2" width="760px">
+        <thead>
+            <tr>
+                <td>PubID</td>
+                <td>SiteID</td>
+                <td>Doname</td>
+                <td>Size</td>
+                <td>SizeID</td>
+                <td>Date</td>
+                <td>Impressions</td>
+                <td>Revenue</td>
+                <td>Status</td>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    
+</div>
+
+<script type="text/javascript" src="/font/cufon-yui.js"></script>
+<script type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#topMenu a', {hover: true});	
+		Cufon.replace('#topMenu a');
+    Cufon.replace('.error', {color: 'red'});	    
+
+</script>
+<script type="text/javascript" src="/font/Headline_Two_400.font.js"></script>
+<script type="text/javascript">
+	Cufon.replace('.footerBann h5');		
+	Cufon.replace('.footerBann p');	
+	Cufon.replace('.footerBann a', {hover: true});	
+	Cufon.replace('.contactUs h1');		
+    Cufon.replace('h1');				
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Lt_300.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#footCopyr');	
+		Cufon.replace('.fMenu a');		
+		Cufon.replace('.contactUs p');	
+		Cufon.replace('.contUsL label');		
+		Cufon.replace('#location');		
+		Cufon.replace('.contBtn p');			
+		Cufon.replace('.sendMasBtn',{textShadow: '-1px -1px #5F5F5F'});		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Rg_700.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('.fMenu h4');
+		Cufon.replace('.headquaters');		
+</script> 

@@ -1,0 +1,224 @@
+<script type="text/javascript" charset="utf-8">
+
+$(document).ready(function() {   
+   
+        $('#filterDate').datepicker({'dateFormat' : "yy-mm-dd"});
+   
+//        var filterMostValue = $('#filterMostValue').val(); 
+//        var filterFloorPricing = $('#filterFloorPricing').val(); 
+//        var filterBurst = $('#filterBurst').val(); 
+        var filterTag = $('#filterTag').val();
+        var filterDifferenceType = $('#filterDifferenceType').val();
+        var filterDate = $('#filterDate').val();
+
+        var oTable1 = $('#difference_ecpm').dataTable( {
+                "bProcessing": true,
+                "bServerSide": true,
+                "sAjaxSource": '/administrator/difference/ajax-ecpm',
+                "fnServerParams": function ( aoData ) {  aoData.push( /*{ "name": "filterMostValue", "value": filterMostValue }, { "name": "filterFloorPricing", "value": filterFloorPricing }, { "name": "filterBurst", "value": filterBurst },*/ { "name": "filterTag", "value": filterTag }, { "name": "filterDifferenceType", "value": filterDifferenceType }, { "name": "filterDate", "value": filterDate } ); },
+                "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+                "iDisplayLength": 100
+                ,
+                "aoColumns": [
+                    { 
+                      "sTitle": "PubID",
+                      "fnRender": function(obj){ return obj.aData[0]; } 
+                    },
+                    { 
+                      "sTitle": "SiteID",
+                      "fnRender": function(obj){ return obj.aData[1]; } 
+                    },
+                    { 
+                      "sTitle": "Website",
+                      "fnRender": function(obj){ return '<a href="/administrator/sites/view/id/'+obj.aData[1]+'">'+obj.aData[2]+'</a>'; } 
+                    },
+                    { 
+                      "sTitle": "Tag Type",
+                      "fnRender": function(obj){ var result = '';
+                          
+                                                 switch(obj.aData[3]){ case '4': result = 'Google'; break;
+                                                                       case '5': result = 'Rubicon'; break;
+                                                                       case '6': result = 'Burst'; break; }
+                                                 return result; } 
+                    },
+                    { 
+                      "sTitle": "Most Difference",
+                      "fnRender": function(obj){ return obj.aData[4] == 1 ? 'Estim' : 'Final'; } 
+                    },
+                    { 
+                      "sTitle": "Difference",
+                      "fnRender": function(obj){ return obj.aData[5]; } 
+                    },
+                    { 
+                      "sTitle": "Estim Ecpm",
+                      "fnRender": function(obj){ return obj.aData[6]; } 
+                    },
+                    { 
+                      "sTitle": "Final Ecpm",
+                      "fnRender": function(obj){ return obj.aData[7]; } 
+                    },
+                    { 
+                      "sTitle": "Estim Date",
+                      "fnRender": function(obj){ return obj.aData[8]; } 
+                    },
+                    { 
+                      "sTitle": "Final Date",
+                      "fnRender": function(obj){ return obj.aData[9]; } 
+                    },
+                    { 
+                      "sTitle": "Cpm",
+                      "fnRender": function(obj){ return obj.aData[10] ? obj.aData[10] : '' ; } 
+                    },
+                    { 
+                      "sTitle": "Cpm Approved",
+                      "fnRender": function(obj){ return obj.aData[11] ? obj.aData[11] : '' ; } 
+                    },
+//                    { 
+//                      "sTitle": "Floor Pricing",
+//                      "fnRender": function(obj){ if(obj.aData[10] == 1) return '<img src="/images/status-green-check.gif"/>';
+//                                                                   else return '<img src="/images/stats-red-x.gif"/>';      } 
+//                    },
+                
+                    { 
+                      "sTitle": "",
+                      "bSortable": false,
+                      "fnRender": function(obj){ return '<a target="_blank" href="/administrator/index/auth/id/'+obj.aData[0]+'">login</a>'; } 
+                    },
+                 
+                ],                                                
+                "aaSorting": [[ 7, "desc" ]]
+
+        });     
+              
+        
+        $('#filterMostValue').change(function(){ filterMostValue = $('#filterMostValue').val(); oTable1.fnClearTable();  });
+        $('#filterFloorPricing').change(function(){ filterFloorPricing = $('#filterFloorPricing').val(); oTable1.fnClearTable();  });
+        $('#filterBurst').change(function(){ filterBurst = $('#filterBurst').val(); oTable1.fnClearTable();  });  
+        $('#filterTag').change(function(){ filterTag = $('#filterTag').val(); oTable1.fnClearTable();  });
+        $('#filterDifferenceType').change(function(){ filterDifferenceType = $('#filterDifferenceType').val(); oTable1.fnClearTable();  });
+        $('#filterDate').change(function(){ filterDate = $('#filterDate').val(); oTable1.fnClearTable();  });        
+        
+});
+
+
+</script>
+
+<div class="contUsL" style="width: 750px;">
+<h1>Difference Ecpm</h1>
+
+<!--    <p>
+        <select id="filterMostValue">
+                <option value="all" selected="selected">No Filter Most Value</option>
+                <option value="1">Estimated Impressions</option>
+                <option value="0">Final Impressions</option>
+        </select>
+        <select id="filterDifference" style="margin-left: 75px;">
+                <option value="0" selected="selected">Show all difference</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+                <option value="200">200</option>
+                <option value="500">500</option>
+                <option value="1000">1000</option>
+                <option value="10000">10000</option>
+        </select>
+    </p>
+    <p>
+        <select id="filterFloorPricing">
+                <option value="all" selected="selected">No Filter Floor Pricing</option>
+                <option value="1">Floor Pricing</option>
+                <option value="0">No Floor Pricing</option>
+        </select>
+        <select id="filterBurst" style="margin-left: 75px;">
+                <option value="all" selected="selected">No Filter Burst Tag</option>
+                <option value="1">Burst Tag</option>
+                <option value="0">No Burst Tag</option>
+        </select>
+    </p>-->
+    <p>
+        <select id="filterTag" style="margin-left: 1px;">
+                <option value="0" selected="selected">No Filter Tag</option>
+                <option value="4">Google AdManadger</option>
+                <option value="5">Rubicon</option>
+                <option value="6">Burst</option>
+        </select>
+    </p>
+    <p>
+        <select id="filterDifferenceType">
+                <option value="0" selected="selected">No Filter Status Data</option>
+                <option value="1">Most Estim</option>
+                <option value="2">Most Final</option>
+        </select>
+        
+        <input type="text" name="filterDate" id="filterDate" style="margin-left: 75px;" placeholder="Filter Date" value=""/>
+    </p>
+
+    <table width="870px" cellpadding="0" cellspacing="0" border="0" class="display" id="difference_ecpm">
+            <thead>
+                    <tr>                        
+                        <th width="5%">PubID</th>
+                        <th width="5%">SiteID</th>                        
+                        <th width="20%">Website</th>
+                        <th width="5%">Tag Type</th> 
+                        <th width="5%">Difference Type</th>
+                        <th width="5%">Difference</th>
+                        <th width="5%">Estim Ecpm</th>
+                        <th width="5%">Final Ecpm</th>
+                        <th width="10%">Estim Date</th>
+                        <th width="10%">Final Date</th>
+                        <th width="5%">Cpm</th> 
+                        <th width="10%">Cpm Approved</th>               
+                        <th width="5%"></th> 
+                    </tr>
+            </thead>
+            <tbody></tbody>
+            <tfoot>
+                    <tr>
+                        <th>PubID</th>
+                        <th>SiteID</th>                        
+                        <th>Website</th>
+                        <th>Tag Type</th> 
+                        <th>Difference Type</th>
+                        <th>Difference</th>
+                        <th>Estim Ecpm</th>
+                        <th>Final Ecpm</th>
+                        <th>Estim Date</th>
+                        <th>Final Date</th>
+                        <th>Cpm</th> 
+                        <th>Cpm Approved</th>               
+                        <th></th> 
+                    </tr>
+            </tfoot>
+    </table>  
+    
+</div>
+
+
+<script type="text/javascript" src="/font/cufon-yui.js"></script>
+<script type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#topMenu a', {hover: true});	
+		Cufon.replace('#topMenu a');
+</script>
+<script type="text/javascript" src="/font/Headline_Two_400.font.js"></script>
+<script type="text/javascript">
+	Cufon.replace('.contInf h3', {hover: true});	
+	Cufon.replace('.contInf h3');
+	Cufon.replace('.contInf h3.white', {color: '#FFF'});	
+	Cufon.replace('.footerBann h5');		
+	Cufon.replace('.footerBann p');	
+	Cufon.replace('.footerBann a', {hover: true});		
+    Cufon.replace('h1');		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Lt_300.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#footCopyr');	
+		Cufon.replace('.contInf p', {hover: true});		
+		Cufon.replace('.contInf p', {color: '#333333'});	
+		Cufon.replace('.contInf p.white', {color: '#FFF'});	
+		Cufon.replace('.fMenu a', {textDecoration: 'underline'});		
+		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Rg_700.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('.fMenu h4');
+</script>

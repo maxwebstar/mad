@@ -1,0 +1,138 @@
+<style type="text/css">
+    #report
+    {
+	   background-image: none;
+       border-right: solid 1px #E2E2E2;
+       border-left: solid 1px #E2E2E2;
+    }
+    .contUsL
+    {
+	   margin-left: 50px;
+    }
+    #reportL
+    {
+	   background-image: none;
+       border-right: solid 1px #E2E2E2;
+       border-left: solid 1px #E2E2E2;
+    }
+</style>
+<script type="text/javascript" charset="utf-8">
+
+        $(document).ready(function() {
+
+                var oTable = $('#users').dataTable( {
+                        "bProcessing": true,
+                        "bServerSide": true,
+                        "sAjaxSource": '/administrator/payments/pending-ajax',
+                        "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+                        "iDisplayLength": 100
+                        ,
+                        "aoColumns": [
+                            {
+                              "sTitle": "PID",
+                              "fnRender": function(obj){ return obj.aData[0]; }
+                            },
+                            {
+                              "sTitle": "Email",
+                              "bSortable": false,
+                              "fnRender": function(obj){ return '<a href="/administrator/payments/pending-view/id/'+obj.aData[0]+'">'+obj.aData[1]+'</a>'; }
+                            },
+                            {
+                              "sTitle": "Type",
+                              "bSortable": false,
+                              "fnRender": function(obj){ return obj.aData[2]; }
+                            },
+                            {
+                              "sTitle": "Method",
+                              "fnRender": function(obj){ return obj.aData[3]; }
+                            },
+                            {
+                              "sTitle": "Request Date",
+                              "fnRender": function(obj){ return $.format.date(new Date(obj.aData[4]), "yyyy MMM, dd"); }
+                            },
+
+                            {
+                              "sTitle": "",
+                              "bSortable": false,
+                              "fnRender": function(obj){ return '<a href="/administrator/payments/pending-view/id/'+obj.aData[0]+'">view</a>'; }
+                            },
+                            {
+                              "sTitle": "",
+                              "bSortable": false,
+                              "fnRender": function(obj){ return '<a href="/administrator/payments/pending-approve/id/'+obj.aData[0]+'" onclick="return confirm(\'Approve ?\');">approve</a>'; }
+                            },
+                            {
+                              "sTitle": "",
+                              "bSortable": false,
+                              "fnRender": function(obj){ return '<a href="/administrator/payments/pending-delete/id/'+obj.aData[0]+'" onclick="return confirm(\'Delete ?\');">delete</a>'; }
+                            }
+
+                        ],
+                        "aaSorting": [[ 4, "asc" ]]
+
+                } );
+
+
+        });
+
+</script>
+<h1>Change of pay information</h1>
+<div class="contUsL" style="width: 870px;">
+<br /><br />
+<table width="870px" cellpadding="0" cellspacing="0" border="0" class="display" id="users">
+	<thead>
+		<tr>
+                    <th width="5%">PID</th>
+                    <th width="20%">Email</th>
+                    <th width="20%">Type</th>
+                    <th width="20%">Method</th>
+                    <th width="15%">Request Date</th>
+                    <th width="5%"></th>
+                    <th width="5%"></th>
+                    <th width="10%"></th>
+		</tr>
+	</thead>
+	<tbody></tbody>
+	<tfoot>
+		<tr>
+                    <th>PID</th>
+                    <th>Email</th>
+                    <th>Type</th>
+                    <th>Method</th>
+                    <th>Request Date</th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+		</tr>
+	</tfoot>
+</table>
+</div>
+<script type="text/javascript" src="/font/cufon-yui.js"></script>
+<script type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#topMenu a', {hover: true});
+		Cufon.replace('#topMenu a');
+</script>
+<script type="text/javascript" src="/font/Headline_Two_400.font.js"></script>
+<script type="text/javascript">
+	Cufon.replace('.contInf h3', {hover: true});
+	Cufon.replace('.contInf h3');
+	Cufon.replace('.contInf h3.white', {color: '#FFF'});
+	Cufon.replace('.footerBann h5');
+	Cufon.replace('.footerBann p');
+	Cufon.replace('.footerBann a', {hover: true});
+    Cufon.replace('h1');
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Lt_300.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#footCopyr');
+		Cufon.replace('.contInf p', {hover: true});
+		Cufon.replace('.contInf p', {color: '#333333'});
+		Cufon.replace('.contInf p.white', {color: '#FFF'});
+		Cufon.replace('.fMenu a', {textDecoration: 'underline'});
+
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Rg_700.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('.fMenu h4');
+</script>

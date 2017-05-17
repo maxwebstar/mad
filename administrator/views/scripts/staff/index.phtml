@@ -1,0 +1,89 @@
+<script type="text/javascript" charset="utf-8">
+        
+       $(document).ready(function(){           
+         
+               var oTable = $('#staff').dataTable( {
+                        "bProcessing": true,
+                        "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+                        "iDisplayLength": -1                 
+                });            	
+            	
+        });
+        
+</script>
+
+<h1>Manage Staff</h1>
+<div class="contUsL" style="width: 750px;">
+<p>
+    <a href="/administrator/staff/add">Add New Staff</a>
+</p>    
+<br /><br />
+<table width="740px" cellpadding="0" cellspacing="0" border="0" class="display" id="staff">
+	<thead>
+		<tr>	
+                    <th width="25%">Name</th>
+                    <th width="20%">Email</th>
+                    <th width="15%">Livechat</th>
+                    <th width="10%">Signature</th>
+                    <th width="10%">Hidden</th>                    
+                    <th width="10%">Edit</th>
+		</tr>
+	</thead>
+	<tbody>
+
+        <?php foreach($this->data as $iter):?>	
+    
+            <tr>
+                <td><?php echo $iter['name'] ?></td>
+                <td><?php echo $iter['email']; ?></td>
+                <td><?php echo $iter['livechat'] ? '<img src="/images/status-green-check.gif">' : '<img src="/images/stats-red-x.gif">'?></td>
+                <td><?php echo $iter['signature'] ? '<img src="/images/status-green-check.gif">' : '<img src="/images/stats-red-x.gif">'?></td>
+                <td><?php echo $iter['hidden'] ? '<img src="/images/status-green-check.gif">' : '<img src="/images/stats-red-x.gif">'?></td>    
+                <td><a href="/administrator/staff/edit/id/<?php echo $iter['id'];?>">edit</a></td>
+            </tr>  
+        
+        <?php endforeach;?>
+        
+	</tbody>
+	<tfoot>
+		<tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Livechat</th>
+                    <th>Signature</th>
+                    <th>Hidden</th>
+                    <th>Edit</th>
+		</tr>
+	</tfoot>
+</table>
+
+</div> 
+<script type="text/javascript" src="/font/madads/cufon-yui.js"></script>
+<script type="text/javascript" src="/font/madads/Bebas_400.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#topMenu a', {hover: true});	
+		Cufon.replace('#topMenu a');
+</script>
+<script type="text/javascript" src="/font/madads/Headline_Two_400.font.js"></script>
+<script type="text/javascript">
+	Cufon.replace('.contInf h3', {hover: true});	
+	Cufon.replace('.contInf h3');
+	Cufon.replace('.contInf h3.white', {color: '#FFF'});	
+	Cufon.replace('.footerBann h5');		
+	Cufon.replace('.footerBann p');	
+	Cufon.replace('.footerBann a', {hover: true});		
+    Cufon.replace('h1');		
+</script>
+<script type="text/javascript" src="/font/madads/Proxima_Nova_Lt_300.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#footCopyr');	
+		Cufon.replace('.contInf p', {hover: true});		
+		Cufon.replace('.contInf p', {color: '#333333'});	
+		Cufon.replace('.contInf p.white', {color: '#FFF'});	
+		Cufon.replace('.fMenu a', {textDecoration: 'underline'});		
+		
+</script>
+<script type="text/javascript" src="/font/madads/Proxima_Nova_Rg_700.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('.fMenu h4');
+</script>

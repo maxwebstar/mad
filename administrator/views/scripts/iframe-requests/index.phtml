@@ -1,0 +1,122 @@
+<style>
+    #report
+    {
+       padding-right: 100px;
+	   background-image: none;
+       border-right: solid 1px #E2E2E2;
+       border-left: solid 1px #E2E2E2;
+    }
+    .contUsL
+    {
+	   margin-left: 50px;
+    }
+    #reportL
+    {
+	   background-image: none;
+       border-right: none;
+       border-left: solid 1px #E2E2E2;
+    }
+</style>
+<script type="text/javascript" charset="utf-8">
+
+        $(document).ready(function() {   
+                            
+                var oTable = $('#users').dataTable( {
+                		"bFilter": false,
+                        "bProcessing": true,
+                        "bServerSide": true,
+                        "sAjaxSource": '/administrator/iframe-requests/get-ajax',
+                        "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+                        "iDisplayLength": 100
+                        ,
+                        "aoColumns": [
+                            { 
+                              "sTitle": "SID",
+                              "fnRender": function(obj){ return obj.aData[0]; } 
+                            },
+                            { 
+                              "sTitle": "Website",
+                              "fnRender": function(obj){ return obj.aData[1]; } 
+                            },
+                            { 
+                              "sTitle": "Contact",
+                              "fnRender": function(obj){ return obj.aData[2]; } 
+                            },
+                            { 
+                              "sTitle": "Alexa Rank",
+                              "fnRender": function(obj){ return obj.aData[3]; } 
+                            },
+                            { 
+                              "sTitle": "Date Requested",
+                              "fnRender": function(obj){ return obj.aData[4]; } 
+                            },
+                            { 
+                              "sTitle": "Approve/Deny",
+                              "bSortable": false,
+                              "fnRender": function(obj)
+                               {
+                                  return '<a href="/administrator/iframe-requests/enable/id/'+obj.aData[0]+'">Enable</a> | <a href="/administrator/iframe-requests/disable/id/'+obj.aData[0]+'">Disable</a>'; 
+                               } 
+                            }                                          
+                        ],                                                
+                        "aaSorting": [[ 3, "desc" ]]
+                         
+                } );                
+        } );  
+</script>
+<h1>Iframe Tag Requests</h1>
+<div class="contUsL" style="width: 750px;">
+<br /><br />
+<table width="950px" cellpadding="0" cellspacing="0" border="0" class="display" id="users">
+	<thead>
+		<tr>
+					<th width="5%">SID</th>
+                    <th width="10%">Website</th>
+                    <th width="10%">Contact</th>
+                    <th width="10%">Alexa Rank</th>
+                    <th width="15%">Date Requested</th>
+                    <th width="10%">Approve/Deny</th>
+		</tr>
+	</thead>
+	<tbody></tbody>
+	<tfoot>
+		<tr>
+					<th>SID</th>
+                    <th>Website</th>
+                    <th>Contact</th>
+                    <th>Alexa Rank</th>
+                    <th>Date Requested</th>
+                    <th>Approve/Deny</th>
+		</tr>
+	</tfoot>
+</table>
+</div> 
+<script type="text/javascript" src="/font/cufon-yui.js"></script>
+<script type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#topMenu a', {hover: true});	
+		Cufon.replace('#topMenu a');
+</script>
+<script type="text/javascript" src="/font/Headline_Two_400.font.js"></script>
+<script type="text/javascript">
+	Cufon.replace('.contInf h3', {hover: true});	
+	Cufon.replace('.contInf h3');
+	Cufon.replace('.contInf h3.white', {color: '#FFF'});	
+	Cufon.replace('.footerBann h5');		
+	Cufon.replace('.footerBann p');	
+	Cufon.replace('.footerBann a', {hover: true});		
+    Cufon.replace('h1');		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Lt_300.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#footCopyr');	
+		Cufon.replace('.contInf p', {hover: true});		
+		Cufon.replace('.contInf p', {color: '#333333'});	
+		Cufon.replace('.contInf p.white', {color: '#FFF'});	
+		Cufon.replace('.fMenu a', {textDecoration: 'underline'});		
+		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Rg_700.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('.fMenu h4');
+</script>

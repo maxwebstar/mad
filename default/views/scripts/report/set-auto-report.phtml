@@ -1,0 +1,225 @@
+<style type="text/css">
+    #report-csv{font-family: Arial,Helvetica,sans-serif; color: #4d4d4d;}
+    #report-csv #mySubmit{ display: block; height: 28px; width: 129px; font-size: 16px; background-color: #8E8E8E; color: #FFFFFF; cursor: pointer; margin-top: 15px; margin-right: 557px; } 
+    #report-csv #mySubmit:hover{ background-color: #DE3232; }
+    #report-csv #mySubmit span{ float: left; margin: 5px 0px 0px 43px; }
+
+    #report-csv #dis_report{ display: block; height: 28px; width: 220px; font-size: 16px; background-color: #8E8E8E; color: #FFFFFF; cursor: pointer; margin-top: 15px; margin-right: 557px; } 
+    #report-csv #dis_report:hover{ background-color: #DE3232; }
+    #report-csv #dis_report span{ float: left; margin: 5px 0px 0px 43px; }
+        
+    label{ color: #414141;
+           float: left;
+           font-size: 16px;
+           padding: 1px 0 0 3px;
+           width: 140px; }
+    input[name="email"]{ background: url("/images/inpBg.png") no-repeat scroll left top rgba(0, 0, 0, 0);
+                         border: 0 none;
+                         height: 26px;
+                         line-height: 26px;
+                         padding: 0 0 0 6px;
+                         width: 300px; }
+    select{ background: url("/images/inpBg.png") no-repeat scroll left top rgba(0, 0, 0, 0);
+                           border: 0 none;
+                           height: 26px;
+                           padding-top: 5px;
+                           width: 300px; }
+    
+    #blockEmail{ margin-top: 15px; margin-bottom: 5px; }
+    #blockPeriod{ margin-top: 5px; margin-bottom: 5px; }
+    
+    .error{ padding-left: 10px; margin-top: 8px; margin-bottom: 8px; }
+    .error li{ color: #FF0000;
+               font-family: Arial,Helvetica,sans-serif;
+               font-size: 14px;
+               font-weight: 600;
+               text-decoration: none; list-style: none; }
+    
+</style>
+<script type="text/javascript" src="/js/jquery-1.8.2.min.js"></script>
+<script type="text/javascript">
+
+      $(document).ready(function(){
+          
+          $("#dis_report").click(function(){
+	          var r = confirm("Disable Daily Reports?");
+	          if(r == true){
+					$.get("/default/report/del-auto-report/id/"+<?php echo $this->PubID ?>, function( data ) {
+						$("body" ).html( data );
+					});   
+	          }
+          })
+          
+          $("#break_size").click(function(){
+	          if($(this).prop('checked')){
+		          $("#link_csv").attr("href", "/csv-report/?start_date=<?php echo $this->report_params["start_date"] ?>&end_date=<?php echo $this->report_params["end_date"] ?>&ad_size=<?php echo $this->report_params["ad_size"] ?>&site=<?php echo $this->report_params["site"] ?>&break_size=1");
+	          }else{
+		          $("#link_csv").attr("href", "/csv-report/?start_date=<?php echo $this->report_params["start_date"] ?>&end_date=<?php echo $this->report_params["end_date"] ?>&ad_size=<?php echo $this->report_params["ad_size"] ?>&site=<?php echo $this->report_params["site"] ?>");		          
+	          }
+          })
+                 
+          $("#when").change(function(){
+	          if($(this).val()=='once_day'){
+		          $("#period").find('option').remove().end();
+				  $("#period").append($('<option></option>').attr('value', 'yesterday').text('Yesterday'));
+				  $("#period").append($('<option></option>').attr('value', 'last7days').text('Last 7 Days'));
+				  $("#period").append($('<option></option>').attr('value', 'last30days').text('Last 30 Days'));
+				  $("#period").append($('<option></option>').attr('value', 'thisMonth').text('This Month'));
+	          }else if($(this).val()=='once_week'){
+		          $("#period").find('option').remove().end();
+				  $("#period").append($('<option></option>').attr('value', 'last7days').text('Last 7 Days'));
+				  $("#period").append($('<option></option>').attr('value', 'last30days').text('Last 30 Days'));
+				  $("#period").append($('<option></option>').attr('value', 'thisMonth').text('This Month'));
+	          }else if($(this).val()=='once_month'){
+		          $("#period").find('option').remove().end();
+				  $("#period").append($('<option></option>').attr('value', 'last30days').text('Last 30 Days'));
+	          }
+          })   
+      });
+
+</script>
+<form action="/default/report/set-auto-report" method="post" id="report-csv">
+<strong>Schedule Report Delivery</strong>
+<br>Have your dashboard statistics emailed to you.
+<br>
+    <div id="blockEmail">
+        <label>Email Address:</label>
+        <input type="text" name="email" value="<?php echo $this->formValues['email']?>" placeholder="(separate multiple emails using commas)" /> 
+        <?php if(!empty($this->formErrors['email'])): ?>
+            <ul class="error">
+            <?php foreach($this->formErrors['email'] as $errors): ?>
+                <li><?php echo $errors ?></li>
+            <?php endforeach; ?>
+            </ul>
+        <?php endif; ?> 
+    </div>
+    <div id="blockWhen">
+        <label>Email Me:</label>
+        <select name="when" id="when">
+            <option value="once_day" <?php echo $this->formValues['when'] == 'once_day' ? 'selected="selected"' : '' ?>>Once a day</option>
+            <option value="once_week" <?php echo $this->formValues['when'] == 'once_week' ? 'selected="selected"' : '' ?>>Once a week (every Monday)</option>
+            <option value="once_month" <?php echo $this->formValues['when'] == 'once_month' ? 'selected="selected"' : '' ?>>Once a month (1st of every month)</option>
+        </select>
+        <?php if(!empty($this->formErrors['when'])): ?>
+            <ul class="error">
+            <?php foreach($this->formErrors['when'] as $errors): ?>
+                <li><?php echo $errors ?></li>
+            <?php endforeach; ?>
+            </ul>
+        <?php endif; ?> 
+    </div>
+    <div id="blockPeriod">
+        <label>Date Range:</label>
+        <select name="period" id="period">
+        <?php if($this->formValues['when']=='once_day' || empty($this->formValues['when'])):?>
+            <option value="yesterday" <?php echo $this->formValues['period'] == 'yesterday' ? 'selected="selected"' : '' ?>>Yesterday</option>
+            <option value="last7days" <?php echo $this->formValues['period'] == 'last7days' ? 'selected="selected"' : '' ?>>Last 7 Days</option>
+            <option value="last30days" <?php echo $this->formValues['period'] == 'last30days' ? 'selected="selected"' : '' ?>>Last 30 Days</option>
+            <option value="thisMonth" <?php echo $this->formValues['period'] == 'thisMonth' ? 'selected="selected"' : '' ?>>This Month</option>           		
+        <?php elseif($this->formValues['when']=='once_week'):?>
+            <option value="last7days" <?php echo $this->formValues['period'] == 'last7days' ? 'selected="selected"' : '' ?>>Last 7 Days</option>
+            <option value="last30days" <?php echo $this->formValues['period'] == 'last30days' ? 'selected="selected"' : '' ?>>Last 30 Days</option>
+            <option value="thisMonth" <?php echo $this->formValues['period'] == 'thisMonth' ? 'selected="selected"' : '' ?>>This Month</option>           		
+        <?php elseif($this->formValues['when']=='once_month'):?>
+            <option value="last30days" <?php echo $this->formValues['period'] == 'last30days' ? 'selected="selected"' : '' ?>>Last 30 Days</option>
+        <?php endif;?>
+        </select>
+        <?php if(!empty($this->formErrors['period'])): ?>
+            <ul class="error">
+            <?php foreach($this->formErrors['period'] as $errors): ?>
+                <li><?php echo $errors ?></li>
+            <?php endforeach; ?>
+            </ul>
+        <?php endif; ?> 
+    </div>
+    <div id="blockTime">
+        <label>Email Time:</label>
+        <select name="time" id="time" style="width:60px;">
+			<?php for($i=0; $i<=23; $i++): ?>
+				<?php if($i==$this->formValues['time']): ?>
+					<option value="<?php echo $i; ?>" selected="selected"><?php echo date("H", mktime($i,0,0,01,01,date("Y"))).":00"; ?></option>
+				<?php elseif($i==11 && $this->formValues['time']==''): ?>
+					<option value="<?php echo $i; ?>" selected="selected"><?php echo date("H", mktime($i,0,0,01,01,date("Y"))).":00"; ?></option>
+				<?php else: ?>
+					<option value="<?php echo $i; ?>"><?php echo date("H", mktime($i,0,0,01,01,date("Y"))).":00"; ?></option>				
+				<?php endif; ?>
+			<?php endfor; ?>
+        </select>
+        <select name="utc" id="utc" style="width:236px;">
+			<?php foreach($this->zones as $i=>$zone): ?>
+				<?php if($i==22 && $this->formValues['utc']==''): ?>
+					<option value="<?php echo $i; ?>" selected="selected"><?php echo $zone; ?></option>
+				<?php elseif($i==$this->formValues['utc']): ?>
+					<option value="<?php echo $i; ?>" selected="selected"><?php echo $zone; ?></option>				
+				<?php else: ?>
+					<option value="<?php echo $i; ?>"><?php echo $zone; ?></option>	
+				<?php endif; ?>
+			<?php endforeach; ?>
+        </select>
+        <?php if(!empty($this->formErrors['time'])): ?>
+            <ul class="error">
+            <?php foreach($this->formErrors['time'] as $errors): ?>
+                <li><?php echo $errors ?></li>
+            <?php endforeach; ?>
+            </ul>
+        <?php endif; ?> 
+        <?php if(!empty($this->formErrors['utc'])): ?>
+            <ul class="error">
+            <?php foreach($this->formErrors['utc'] as $errors): ?>
+                <li><?php echo $errors ?></li>
+            <?php endforeach; ?>
+            </ul>
+        <?php endif; ?> 
+    </div>
+	<div id="blockTime">
+	<label style="width: 195px;">Display report by ad size</label>		
+	<input type="checkbox" name="break_size" id="break_size" value="1" <?php echo $this->formValues['break_size'] == '1' ? 'checked="checked"' : '' ?> />    
+	        <?php if(!empty($this->formErrors['break_size'])): ?>
+	            <ul class="error">
+	            <?php foreach($this->formErrors['break_size'] as $errors): ?>
+	                <li><?php echo $errors ?></li>
+	            <?php endforeach; ?>
+	            </ul>
+	        <?php endif; ?> 
+	</div>
+
+<br><br>
+<strong>Export Current Report</strong>
+<br>
+If you'd like to export the current report, please <a id="link_csv" href="/csv-report/?start_date=<?php echo $this->report_params["start_date"] ?>&end_date=<?php echo $this->report_params["end_date"] ?>&ad_size=<?php echo $this->report_params["ad_size"] ?>&site=<?php echo $this->report_params["site"] ?>" target="_blank" >click here to download the report</a>
+<br>
+
+    <input type="hidden" id="csrf" value="<?php echo $this->csrf;?>" name="csrf" readonly="readonly" />
+    <input type="submit" id="subForm" style="display: none;" />
+    <a id="mySubmit" onClick="$('#subForm').click();"><span>Submit</span></a>
+    <?php if(isset($this->formValues['dis']) && $this->formValues['dis']==1): ?>
+	<a id="dis_report"><span>Disable Daily Reports</span></a>
+	<?php endif; ?>
+    
+    <?php if(!empty($this->message)):?>
+    <div style="float: left; font-size: 18px; font-weight: 600; margin-left: 20px; margin-top: 17px;"><?php echo $this->message;?></div>
+    <?php endif;?>
+    
+</form>
+
+<script	type="text/javascript" src="/font/cufon-yui.js"></script>
+<script	type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#topMenu a', {hover: true});	
+		Cufon.replace('#topMenu a');
+</script><script	type="text/javascript" src="/font/Headline_Two_400.font.js"></script><script type="text/javascript">
+	Cufon.replace('.footerBann h5');		
+	Cufon.replace('.footerBann p');	
+	Cufon.replace('.footerBann a', {hover: true});	
+</script><script	type="text/javascript" src="/font/Proxima_Nova_Lt_300.font.js"></script><script type="text/javascript">
+		Cufon.replace('#footCopyr');	
+		Cufon.replace('.fMenu a', {textDecoration: 'underline'});		
+		Cufon.replace('.publisher h4');	
+		Cufon.replace('.publisher h4 span');	
+		Cufon.replace('.publMail a');	
+		Cufon.replace('.logOut span');					
+</script><script	type="text/javascript" src="/font/Proxima_Nova_Rg_700.font.js"></script><script type="text/javascript">
+		Cufon.replace('.fMenu h4');
+		Cufon.replace('.reportTop h5');		
+		Cufon.replace('.estimate h5');			
+</script>

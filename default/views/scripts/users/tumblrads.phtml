@@ -1,0 +1,337 @@
+<script type="text/javascript">
+    $(document).ready(function(){
+        $("#country").change(function(){
+            if($(this).val()==237){
+                $("#stateTxt").css('display', 'none');
+                $("#stateTxt").attr('name', '');
+                $("#stateTxt").val('');
+                $("#stateSel").css('display', 'block');
+                $("#stateSel").attr('name', 'state');
+                $("#stateSel").val('');
+                
+                $("#ssn").css('display', 'block');
+            }else{
+                $("#stateTxt").css('display', 'block');
+                $("#stateTxt").attr('name', 'state');
+                $("#stateTxt").val('');
+                $("#stateSel").css('display', 'none');  
+                $("#stateSel").attr('name', '');   
+                $("#stateSel").val('');  
+                
+                $("#ssn").css('display', 'none');  
+                $("#ssn input[name='ssn']").val('');       
+            }
+        })
+    })
+</script>
+
+    <?php if($this->message): ?>
+        <?php echo $this->message ?>
+					<!-- Google Code for MadAdsMedia.com Application Conversion Page -->
+					<script type="text/javascript">
+					/* <![CDATA[ */
+					var google_conversion_id = 1008598665;
+					var google_conversion_language = "en";
+					var google_conversion_format = "3";
+					var google_conversion_color = "ffffff";
+					var google_conversion_label = "kR09CJeX4AIQif334AM";
+					var google_conversion_value = 0;
+					/* ]]> */
+					</script>
+					<script type="text/javascript" src="http://www.googleadservices.com/pagead/conversion.js"></script>
+					<noscript>
+					<div style="display:inline;">
+					<img height="1" width="1" style="border-style:none;" alt="" src="http://www.googleadservices.com/pagead/conversion/1008598665/?label=kR09CJeX4AIQif334AM&amp;guid=ON&amp;script=0"/>
+					</div>    
+                    </noscript>    					        
+    <?php else: ?>
+      <h1 class="applTitle">Publisher Application Form</h1>
+      <p  class="topSlog">Please answer the questions below to apply to the Mad Ads Media publisher network.<br>Once your tumblr account is approved, you'll be ready to start earning money.</p>    
+      <!--applicationn form-->
+	  <div class="application">
+      	<div class="applInn">
+        	
+            <div class="applInfo">
+                                 
+        		<form method="post" action="">
+                    <h3>Your Information</h3>
+                <p class="firstP"><label>Email: </label><input type="email" name="email" value="<?php echo $this->formValues['email'] ?>" /></p>
+                <?php if($this->formErrors['email']): ?>
+                    <ul class="error">
+                    <?php foreach($this->formErrors['email'] as $errors): ?>
+                        <li><?php echo $errors ?></li>
+                    <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>                               
+                
+                <p><label>Password: </label><input type="password" name="password" /></p>
+                <?php if($this->formErrors['password']): ?>
+                    <ul class="error">
+                    <?php foreach($this->formErrors['password'] as $errors): ?>
+                        <li><?php echo $errors ?></li>
+                    <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>
+                
+                <p><label>Verify Password: </label><input type="password" name="passwordConfirm" /></p>
+                <?php if($this->formErrors['passwordConfirm']): ?>
+                    <ul class="error">
+                    <?php foreach($this->formErrors['passwordConfirm'] as $errors): ?>
+                        <li><?php echo $errors ?></li>
+                    <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>        
+                
+                <p><label>*Company Name: </label><input type="text" name="company" value="<?php echo $this->formValues['company'] ?>" /></p>
+                <?php if($this->formErrors['company']): ?>
+                    <ul class="error">
+                    <?php foreach($this->formErrors['company'] as $errors): ?>
+                        <li><?php echo $errors ?></li>
+                    <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>                
+                
+                <p><label>Contact Name: </label><input type="text" name="name" value="<?php echo $this->formValues['name'] ?>" /></p>
+                <?php if($this->formErrors['name']): ?>
+                    <ul class="error">
+                    <?php foreach($this->formErrors['name'] as $errors): ?>
+                        <li><?php echo $errors ?></li>
+                    <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>                        
+                
+                <p><label>Phone Number: </label><input type="text" name="phone" value="<?php echo $this->formValues['phone'] ?>" /></p>
+                <?php if($this->formErrors['phone']): ?>
+                    <ul class="error">
+                    <?php foreach($this->formErrors['phone'] as $errors): ?>
+                        <li><?php echo $errors ?></li>
+                    <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>                                       
+                
+                
+                <p><label>Time Zone: </label>
+                    <select name="zone">
+                        <option>Please Select...</option>
+                        <?php foreach($this->zones as $item): ?>
+                        <option value="<?php echo $item['key'] ?>" <?php echo $item['key']==$this->formValues['zone'] ? 'selected' : '' ?> ><?php echo $item['value'] ?></option>
+                        <?php endforeach; ?>
+                    </select></p>
+                <?php if($this->formErrors['zone']): ?>
+                    <ul class="error">
+                    <?php foreach($this->formErrors['zone'] as $errors): ?>
+                        <li><?php echo $errors ?></li>
+                    <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>                                               
+                
+        
+                <p><label>Country: </label> 
+                    <select name="country" id="country">
+                        <option>Please Select...</option>
+                        <?php foreach($this->country as $item): ?>
+                        <option value="<?php echo $item['key'] ?>" <?php echo $item['key']==$this->formValues['country'] ? 'selected' : '' ?> ><?php echo $item['value'] ?></option>
+                        <?php endforeach; ?>
+                    </select></p>
+                <?php if($this->formErrors['country']): ?>
+                    <ul class="error">
+                    <?php foreach($this->formErrors['country'] as $errors): ?>
+                        <li><?php echo $errors ?></li>
+                    <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>                                                       
+                
+                <p><label>State: </label>
+                <input type="text" <?php echo $this->formValues['country']==237 ? "name=\"\" style=\"display:none;\"" : "name=\"state\" style=\"display:block;\""  ?> id="stateTxt" value="<?php echo $this->formValues['state'] ?>" />
+                <select id="stateSel" <?php echo $this->formValues['country']==237 ? "name=\"state\" style=\"display:block;\"" : "name=\"\" style=\"display:none;\""  ?>>
+                        <?php foreach($this->state as $item): ?>
+                        <option value="<?php echo $item['key'] ?>" <?php echo $item['key']==$this->formValues['state'] ? 'selected' : '' ?> ><?php echo $item['value'] ?></option>
+                        <?php endforeach; ?>        
+                </select></p>
+                <?php if($this->formErrors['state']): ?>
+                    <ul class="error">
+                    <?php foreach($this->formErrors['state'] as $errors): ?>
+                        <li><?php echo $errors ?></li>
+                    <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>                        
+                       
+                <!--<p id="ssn" style="display: <?php echo $this->formValues['country']==237 ? 'block' : 'none' ?>;"><label>SSN or EIN: </label><input type="text" name="ssn" value="<?php echo $this->formValues['ssn'] ?>" />
+                <?php if($this->formErrors['ssn']): ?>
+                    <ul class="error">
+                    <?php foreach($this->formErrors['ssn'] as $errors): ?>
+                        <li><?php echo $errors ?></li>
+                    <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>                                                               
+                </p>-->
+
+                <div class="aboutSite">
+                
+                    <h3>About Your Tumblr Account</h3>
+        
+                <p class="firstP"><label>URL: </label><input type="text" name="url" value="<?php echo $this->formValues['url'] ?>" /></p>
+                <?php if($this->formErrors['url']): ?>
+                    <ul class="error">
+                    <?php foreach($this->formErrors['url'] as $errors): ?>
+                        <li><?php echo $errors ?></li>
+                    <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>                                                                               
+                
+                <p><label>Title: </label><input type="text" name="title" value="<?php echo $this->formValues['title'] ?>" /></p>
+                <?php if($this->formErrors['title']): ?>
+                    <ul class="error">
+                    <?php foreach($this->formErrors['title'] as $errors): ?>
+                        <li><?php echo $errors ?></li>
+                    <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>                                                                                       
+                
+                <p><label>Description: </label><input type="text" name="description" value="<?php echo $this->formValues['description'] ?>" /></p>
+                <?php if($this->formErrors['description']): ?>
+                    <ul class="error">
+                    <?php foreach($this->formErrors['description'] as $errors): ?>
+                        <li><?php echo $errors ?></li>
+                    <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>                                                                                               
+                
+                <p><label>Keywords: </label><input type="text" name="keywords" value="<?php echo $this->formValues['keywords'] ?>" /></p>
+                <?php if($this->formErrors['keywords']): ?>
+                    <ul class="error">
+                    <?php foreach($this->formErrors['keywords'] as $errors): ?>
+                        <li><?php echo $errors ?></li>
+                    <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>                                                                                                       
+                
+        
+                <p><label>Category: </label>
+                    <select name="category">
+                        <option>Please Select...</option>
+                        <?php foreach($this->category as $item): ?>
+                        <option value="<?php echo $item['key'] ?>" <?php echo $item['key']==$this->formValues['category'] ? 'selected' : '' ?> ><?php echo $item['value'] ?></option>
+                        <?php endforeach; ?>
+                    </select></p>
+                <?php if($this->formErrors['category']): ?>
+                    <ul class="error">
+                    <?php foreach($this->formErrors['category'] as $errors): ?>
+                        <li><?php echo $errors ?></li>
+                    <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>                                                                                                               
+                                      
+                <p><label># of Followers: </label><input type="text" name="followers" value="<?php echo $this->formValues['followers'] ?>" /></p>
+                <?php if($this->formErrors['followers']): ?>
+                    <ul class="error">
+                    <?php foreach($this->formErrors['followers'] as $errors): ?>
+                        <li><?php echo $errors ?></li>
+                    <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>                   
+                
+	                    <div><a href="#" title="" onclick="document.getElementById('subForm').click(); return false; " class="subAplBtn">Submit Application</a></div>
+                        <input type="submit" id="subForm" style="display: none;" />
+                </form>
+                </div>
+
+            </div>
+            <!-- publish appl. right side-->
+            <div class="applSideR">
+            	<h3>Display Ads On Tumblr & Make Money!</h3>
+                <img src="/images/example-tumblr-ad.png" width="370" height="327" style="border:1px #CCC solid"><br>
+				<center><a href="http://gifpeanutbutter.tumblr.com/" target="_blank" rel="nofollow" style="font-size:12px; color:#E45B5B; text-decoration:underline">(Visit Site)</a></center>
+                <div class="applRbox" style="margin-top:-50px">
+                    <p>Turn your hobby into a career.  Display ads from premium advertisers, directly on your Tumblr account, and make money!</p>
+					<p>Many top Tumblr accounts are making $100's of dollars a day, and more!</p>
+                </div>
+
+                <div class="applRbox" style="margin-top:-15px">
+            	<h3>How It Works</h3>
+                    <p>Once we've approved your Tumblr account, you're provided a code that you put on your Tumblr page.  This code will allow our advertisers to display advertisements along-side your posts.  As users visit your Tubmlr and see the ads, you make money. </p>
+					<p>You can see how much you've earned by logging into your MadAds account.  Reports are updated next-day.</p>
+                </div>
+
+                <div class="applRbox" style="margin-top:-15px">
+            	<h3>How Much Can I Make?</h3>
+                    <p>The more users you have visting your Tumblr, the more you make.  <a href="#" title="">Popular tumblr accounts can make $100's of dollars a day.</a></p>
+                </div>
+                
+                <div class="applRbox" style="margin-top:-15px">
+            	<h3>Why Mad Ads Media?</h3>
+                <ul>
+                	<li><a href="#" title="">Optimization Technology to drive maximum yield</a></li>
+                	<li><a href="#" title="">Over 100 partners competing for your inventory</a></li>
+                	<li><a href="#" title="">Wide Range of Campaigns (CPM, CPC, CPA, CPL)</a></li>
+                	<li><a href="#" title="">We work with the top brands</a></li>
+                	<li><a href="#" title="">100% fill rate. No impression goes unsold</a></li>
+                	<li><a href="#" title="">Team of experienced ad optimization professionals</a></li>
+                </ul>
+                </div>
+                
+                <div class="applRbox" style="margin-top:-15px">
+                	<h3>Contact Us</h3>
+                    <p>Have any questions before joining?</p>
+                    <p>Feel free to use the <a href="/contact-us/" title="">contact form</a> or email us at:</p>
+                    <p><a href="mailto:support@madadsmedia.com" title="">support@madadsmedia.com</a></p>
+                </div>
+                
+            </div>
+            <!--// publish appl. right side-->            
+            
+        </div>
+        <div class="applBot">&nbsp;</div>
+      </div>	
+      <!--//applicationn form-->        
+
+    <?php endif; ?>
+<script type="text/javascript" src="/font/cufon-yui.js"></script>
+<script type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#topMenu a', {hover: true});	
+		Cufon.replace('#topMenu a');
+    Cufon.replace('.error', {color: 'red'});	
+</script>
+<script type="text/javascript" src="/font/Headline_Two_400.font.js"></script>
+<script type="text/javascript">
+	Cufon.replace('.footerBann h5');		
+	Cufon.replace('.footerBann p');	
+	Cufon.replace('.footerBann a', {hover: true});	
+	Cufon.replace('#content h1');		
+				
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Lt_300.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#footCopyr');	
+		Cufon.replace('.fMenu a', {textDecoration: 'underline'});		
+		Cufon.replace('.topSlog');	
+		Cufon.replace('.applInfo label');	
+		Cufon.replace('.subAplBtn',{textShadow: '-1px -1px #5F5F5F'});
+		Cufon.replace('.applSideR li a');		
+		Cufon.replace('.applRbox p');		
+		Cufon.replace('.applRbox p a');				
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Rg_700.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('.fMenu h4');
+		Cufon.replace('.applInn h3');		
+		
+</script>
+<script type="text/javascript">
+$(document).ready(function() {
+Cufon.set("fontFamily", "Proxima_Nova_Lt_300.font.js");
+	$(".subAplBtn").hover(
+		function(){
+		$(this).addClass('subAplBtnHov');
+		Cufon.refresh();		
+		Cufon.replace('.subAplBtnHov', {textShadow: '-1px -1px #A21A1A'});	
+		}, 
+	  function () {
+		$(this).removeClass('subAplBtnHov');
+		Cufon.refresh();			
+		Cufon.replace('.subAplBtnHov', {textShadow: '-1px -1px #5F5F5F'});	
+	  }
+	);
+});
+</script>

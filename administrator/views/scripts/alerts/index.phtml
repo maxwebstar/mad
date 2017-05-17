@@ -1,0 +1,401 @@
+<style type="text/css">
+    
+    #filterCompleted{
+        width: 20px;
+        height: 10px;
+        margin-left: 122px;
+    }
+    #labelCompleted{
+        font-size: 13px;
+        margin-left: 5px;
+    }
+    
+</style>
+<script type="text/javascript" charset="utf-8">
+
+        $(document).ready(function() {   
+            
+                var oTable = $('#open_alerts').dataTable( {
+                        "bProcessing": true,
+                        "bServerSide": true,
+                        "sAjaxSource": '/administrator/alerts/get-ajax',
+                        "fnServerParams": function ( aoData ) {  aoData.push( { "name": "status", "value": '1' } ); },
+                        "fnDrawCallback": function( oSettings ) { $("#total_open").html(oTable.fnSettings().fnRecordsTotal()); },
+                        "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+                        "iDisplayLength": 100,
+                        "aoColumns": [
+                            { 
+                              "sTitle": "ID",
+                              "fnRender": function(obj){ return obj.aData[0]; } 
+                            },
+                            { 
+                              "sTitle": "Date",
+                              "fnRender": function(obj){
+                                  
+                                  var date = new Date(obj.aData[1]);   
+                                      date.setDate(date.getUTCDate());
+                                  
+                                  return $.format.date(date, "yyyy MMM dd"); } 
+                            },
+                            { 
+                              "sTitle": "Message",
+                              "fnRender": function(obj){ return obj.aData[2]+' (From: '+obj.aData[3]+')'; } 
+                            },
+                            { 
+                              "sTitle": "Close",
+                              "fnRender": function(obj){ return '<a href="/administrator/alerts/close/id/'+obj.aData[4]+'">close</a>'; } 
+                            },
+                            { 
+                              "sTitle": "Edit",
+                              "bSortable": false,
+                              "fnRender": function(obj){ return '<a href="/administrator/alerts/edit/id/'+obj.aData[5]+'">edit</a>'; } 
+                            }, 
+                            { 
+                              "sTitle": "Delete",
+                              "bSortable": false,
+                              "fnRender": function(obj){ return '<a href="/administrator/alerts/delete/id/'+obj.aData[6]+'" onClick="return confirm(\'Are you sure?\')">delete</a>'; } 
+                            }                              
+                        ],                                                
+                        "aaSorting": [[ 1, "desc" ]]
+                         
+                } );  
+
+                var oTable2 = $('#pending_alerts').dataTable( {
+                        "bProcessing": true,
+                        "bServerSide": true,
+                        "sAjaxSource": '/administrator/alerts/get-ajax',
+                        "fnServerParams": function ( aoData ) {  aoData.push( { "name": "status", "value": '2' } ); },
+                        "fnDrawCallback": function( oSettings ) { $("#total_pending").html(oTable2.fnSettings().fnRecordsTotal()); },
+                        "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+                        "iDisplayLength": 100,
+                        "aoColumns": [
+                            { 
+                              "sTitle": "ID",
+                              "fnRender": function(obj){ return obj.aData[0]; } 
+                            },
+                            { 
+                              "sTitle": "Date",
+                              "fnRender": function(obj){
+                                  
+                                  var date = new Date(obj.aData[1]);   
+                                      date.setDate(date.getUTCDate());
+                                  
+                                  return $.format.date(date, "yyyy MMM dd"); } 
+                            },
+                            { 
+                              "sTitle": "Message",
+                              "fnRender": function(obj){ return obj.aData[2]+' (From: '+obj.aData[3]+')'; } 
+                            },
+                            { 
+                              "sTitle": "Edit",
+                              "bSortable": false,
+                              "fnRender": function(obj){ return '<a href="/administrator/alerts/edit/id/'+obj.aData[4]+'">edit</a>'; } 
+                            }, 
+                            { 
+                              "sTitle": "Delete",
+                              "bSortable": false,
+                              "fnRender": function(obj){ return '<a href="/administrator/alerts/delete/id/'+obj.aData[5]+'" onClick="return confirm(\'Are you sure?\')">delete</a>'; } 
+                            }
+                        ],                                                
+                        "aaSorting": [[ 1, "desc" ]]
+                         
+                } );  
+
+                var oTable3 = $('#closed_alerts').dataTable( {
+                        "bProcessing": true,
+                        "bServerSide": true,
+                        "sAjaxSource": '/administrator/alerts/get-ajax',
+                        "fnServerParams": function ( aoData ) {  aoData.push( { "name": "status", "value": '3' } ); },
+                        "fnDrawCallback": function( oSettings ) { $("#total_closed").html(oTable3.fnSettings().fnRecordsTotal()); },
+                        "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+                        "iDisplayLength": 100,
+                        "aoColumns": [
+                            { 
+                              "sTitle": "ID",
+                              "fnRender": function(obj){ return obj.aData[0]; } 
+                            },
+                            { 
+                              "sTitle": "Date",
+                              "fnRender": function(obj){ 
+                                  
+                                  var date = new Date(obj.aData[1]);   
+                                      date.setDate(date.getUTCDate());
+                                  
+                                  return $.format.date(date, "yyyy MMM dd"); } 
+                            },
+                            { 
+                              "sTitle": "Message",
+                              "fnRender": function(obj){ return obj.aData[2]+' (From: '+obj.aData[3]+')'; } 
+                            },
+                            { 
+                              "sTitle": "Edit",
+                              "bSortable": false,
+                              "fnRender": function(obj){ return '<a href="/administrator/alerts/edit/id/'+obj.aData[4]+'">edit</a>'; } 
+                            }, 
+                            { 
+                              "sTitle": "Delete",
+                              "bSortable": false,
+                              "fnRender": function(obj){ return '<a href="/administrator/alerts/delete/id/'+obj.aData[5]+'" onClick="return confirm(\'Are you sure?\')">delete</a>'; } 
+                            }
+                        ],                                                
+                        "aaSorting": [[ 1, "desc" ]]
+                         
+                } );  
+                
+                var accounts = $('#accounts').val();
+                var filterCompleted = $('#filterCompleted:checked').val() ? 1 : 0;
+                var oTable4 = $('#assign_alerts').dataTable( {
+                        "bProcessing": true,
+                        "bServerSide": true,
+                        "sAjaxSource": '/administrator/alerts/get-ajax-assign',
+                        "fnServerParams": function ( aoData ) { aoData.push( { "name": "accounts", "value": accounts }, { "name": "filterCompleted", "value": filterCompleted } ) },
+                        "fnDrawCallback": function( oSettings ) {  },
+                        "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+                        "iDisplayLength": 100,
+                        "aoColumns": [
+                            { 
+                              "sTitle": "ID",
+                              "fnRender": function(obj){ return obj.aData[0]; } 
+                            },
+                            { 
+                              "sTitle": "Date",
+                              "fnRender": function(obj){ 
+                                  
+                                  var date = new Date(obj.aData[1]);   
+                                      date.setDate(date.getUTCDate());
+                                  
+                                  return $.format.date(date, "yyyy MMM dd"); } 
+                            },
+                            
+                            { 
+                              "sTitle": "Status",
+                              "fnRender": function(obj){                                  
+                                              
+                                  var result = '';
+
+                                  var dateNow = new Date();
+                                      dateNow.setDate(dateNow.getUTCDate());
+                                  var dateShow = new Date(obj.aData[10]);
+                                      dateShow.setDate(dateShow.getUTCDate());
+
+                                       if(obj.aData[2] == '1' && dateNow <= dateShow){ result = 'Pending';  } //- The selected "date" has not been met, or it equals the current date.
+                                  else if(obj.aData[2] == '1' && dateNow > dateShow) { result = 'Past Due'; } //- The "date" is a past date and the alert is not closed.    
+                                  else if(obj.aData[2] == '2'){ result = 'Complete'; }                        //- The alert has been closed. 
+
+                                  return result; } 
+                            },
+                            
+                            { 
+                              "sTitle": "Date Completed",
+                              "fnRender": function(obj){ 
+                                  
+                                  var result = '';
+                                  
+                                  if(obj.aData[3]){
+                                  
+                                  var date = new Date(obj.aData[3]);   
+                                      date.setDate(date.getUTCDate());
+                                  
+                                  result = $.format.date(date, "yyyy MMM dd"); }
+                              
+                                  return result;
+                                } 
+                            },
+                            
+                            { 
+                              "sTitle": "Message",
+                              "fnRender": function(obj){ return obj.aData[4]+' (From: '+obj.aData[6]+')'; } 
+                            },
+                            {
+                               "sTitle": "Assigned To",
+                               "fnRender": function(obj){ return obj.aData[5]; }
+                            },
+                            { 
+                              "sTitle": "Close",
+                              "bSortable": false,
+                              "fnRender": function(obj){ return obj.aData[11] == '2' ? '<a style="cursor: pointer;" onClick="alert(\'Already closed\')">closed</a>' : '<a href="/administrator/alerts/close/id/'+obj.aData[7]+'">close</a>'; } 
+                            },
+                            { 
+                              "sTitle": "Edit",
+                              "bSortable": false,
+                              "fnRender": function(obj){ return '<a href="/administrator/alerts/edit/id/'+obj.aData[8]+'">edit</a>'; } 
+                            }, 
+                            { 
+                              "sTitle": "Delete",
+                              "bSortable": false,
+                              "fnRender": function(obj){ return '<a href="/administrator/alerts/delete/id/'+obj.aData[9]+'" onClick="return confirm(\'Are you sure?\')">delete</a>'; } 
+                            }   
+                        ],                                                
+                        "aaSorting": [[ 1, "desc" ]]
+                         
+                });  
+
+                $('#accounts').change(function(){ accounts = $('#accounts').val(); oTable4.fnClearTable(); });
+                $('#filterCompleted').change(function(){ filterCompleted = $('#filterCompleted:checked').val() ? 1 : 0; oTable4.fnClearTable(); });
+
+                $("#tabs").tabs();
+        } );  
+</script>
+<h1>Alerts</h1>
+<div id="showTable" class="contUsL" style="width: 900px;">
+    <p><a href="/administrator/alerts/add/">Add New Alert</a></p>
+<br /><br />
+    <div id="tabs">
+		<ul>
+                    <li><a href="#tabs-1">Open Alerts (<span id="total_open"></span>)</a></li>
+                    <li><a href="#tabs-2">Pending Alerts (<span id="total_pending"></span>)</a></li>
+                    <li><a href="#tabs-3">Closed Alerts (<span id="total_closed"></span>)</a></li>
+                    <li><a href="#tabs-4">Assigned Alerts</a></li>
+		</ul>
+<div id="tabs-1">
+    <table width="740px" cellpadding="0" cellspacing="0" border="0" class="display" id="open_alerts">
+            <thead>
+                    <tr>
+                        <th width="10%">ID</th>
+                        <th width="20%">Date</th>
+                        <th width="60%">Message</th>
+                        <th width="10%">Close</th>
+                        <th width="10%">Edit</th>
+                        <th width="10%">Delete</th>
+                    </tr>
+            </thead>
+            <tbody></tbody>
+            <tfoot>
+                    <tr>
+                        <th>ID</th>
+                        <th>Date</th>
+                        <th>Message</th>
+                        <th>Close</th>
+                        <th>Edit</th>
+                        <th>Delete</th>
+                    </tr>
+            </tfoot>
+    </table>    
+</div>
+
+<div id="tabs-2">
+    <table width="740px" cellpadding="0" cellspacing="0" border="0" class="display" id="pending_alerts">
+            <thead>
+                    <tr>
+                        <th width="10%">ID</th>
+                        <th width="20%">Date</th>
+                        <th width="60%">Message</th>
+                        <th width="10%">Edit</th>
+                        <th width="10%">Delete</th>
+                    </tr>
+            </thead>
+            <tbody></tbody>
+            <tfoot>
+                    <tr>
+                        <th>ID</th>
+                        <th>Date</th>
+                        <th>Message</th>
+                        <th>Edit</th>
+                        <th>Delete</th>
+                    </tr>
+            </tfoot>
+    </table>    
+</div>
+        
+<div id="tabs-3">
+    <table width="740px" cellpadding="0" cellspacing="0" border="0" class="display" id="closed_alerts">
+            <thead>
+                    <tr>
+                        <th width="10%">ID</th>
+                        <th width="20%">Date</th>
+                        <th width="60%">Message</th>
+                        <th width="10%">Edit</th>
+                        <th width="10%">Delete</th>
+                    </tr>
+            </thead>
+            <tbody></tbody>
+            <tfoot>
+                    <tr>
+                        <th>ID</th>
+                        <th>Date</th>
+                        <th>Message</th>
+                        <th>Edit</th>
+                        <th>Delete</th>
+                    </tr>
+            </tfoot>
+    </table>    
+</div>    
+        
+<div id="tabs-4">
+    
+        <select id="accounts" style="top: 30px; margin: 7px 0px 7px 3px;">
+            <?php if($this->dataAuth->role == 'super'):?>
+                <option value="-1">Select Admin</option>
+                <?php foreach($this->admins as $iter):?>
+                     <option value="<?php echo $iter['id']?>"><?php echo $iter['email'];?></option>
+                <?php endforeach;?>    
+            <?php else: ?>
+                <option value="-1">Show All Accounts</option>
+                <option value="<?php echo $this->dataAuth->admin_id; ?>">Show My Account</option>               
+            <?php endif;?>    
+        </select>
+    
+        <input type="checkbox" name="filterCompleted" id="filterCompleted" value="1" checked/><span id="labelCompleted">Hide Completed</span>
+    
+    <table width="840px" cellpadding="0" cellspacing="0" border="0" class="display" id="assign_alerts">
+            <thead>
+                    <tr>
+                        <th width="5%">ID</th>
+                        <th width="10%">Date</th>
+                        <th width="10%">Status</th>
+                        <th width="10%">Date Completed</th>
+                        <th width="60%">Message</th>
+                        <th width="10%">Assigned To</th>
+                        <th width="5%">Closed</th>
+                        <th width="5%">Edit</th>
+                        <th width="5%">Delete</th>
+                    </tr>
+            </thead>
+            <tbody></tbody>
+            <tfoot>
+                    <tr>
+                        <th>ID</th>
+                        <th>Date</th>                        
+                        <th>Status</th>
+                        <th>Date Completed</th>                        
+                        <th>Message</th>
+                        <th>Assigned To</th>
+                        <th>Closed</th>
+                        <th>Edit</th>
+                        <th>Delete</th>
+                    </tr>
+            </tfoot>
+    </table>    
+</div>         
+</div>
+</div>
+
+<script type="text/javascript" src="/font/cufon-yui.js"></script>
+<script type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#topMenu a', {hover: true});	
+		Cufon.replace('#topMenu a');
+</script>
+<script type="text/javascript" src="/font/Headline_Two_400.font.js"></script>
+<script type="text/javascript">
+	Cufon.replace('.contInf h3', {hover: true});	
+	Cufon.replace('.contInf h3');
+	Cufon.replace('.contInf h3.white', {color: '#FFF'});	
+	Cufon.replace('.footerBann h5');		
+	Cufon.replace('.footerBann p');	
+	Cufon.replace('.footerBann a', {hover: true});		
+    Cufon.replace('h1');		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Lt_300.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#footCopyr');	
+		Cufon.replace('.contInf p', {hover: true});		
+		Cufon.replace('.contInf p', {color: '#333333'});	
+		Cufon.replace('.contInf p.white', {color: '#FFF'});	
+		Cufon.replace('.fMenu a', {textDecoration: 'underline'});		
+		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Rg_700.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('.fMenu h4');
+</script>

@@ -1,0 +1,357 @@
+<?php
+
+$showGraphReport = true;
+
+?><script type="text/javascript">
+    $(document).ready(function(){                        
+        $(".selectDate").click(function(){
+            $("#search-start_date").val($(this).attr('start'));
+            $("#search-end_date").val($(this).attr('end'));
+            $("#showBox").html($.datepicker.formatDate('M d, yy', new Date($(this).attr('start')))+' - '+$.datepicker.formatDate('M d, yy', new Date($(this).attr('end'))));            
+        })
+        
+        $("#search-start_date").change(function(){
+            $("#showBox").html($.datepicker.formatDate('M d, yy', new Date($("#search-start_date").val()))+' - '+$.datepicker.formatDate('M d, yy', new Date($("#search-end_date").val())));                        
+        })        
+
+        $("#search-end_date").change(function(){
+            $("#showBox").html($.datepicker.formatDate('M d, yy', new Date($("#search-start_date").val()))+' - '+$.datepicker.formatDate('M d, yy', new Date($("#search-end_date").val())));                        
+        })        
+
+        $("#update").click(function(){
+            $("#formDate").submit();       
+        })
+
+        $("#cancel").click(function(){
+            $("#showBox").html($(this).attr('txt'));         
+        })
+
+<?php
+$totalEstimated = false;
+$totalrevenue = 0;
+$totalimpressions = 0;
+if($showGraphReport && count($this->report_rows)>0){
+    $count = 0;
+    $line1 = "[";
+    $line2 = "[";
+    foreach($this->report_rows as $row) {
+        $revShare = $row["RevShare"] / 100.0;
+        
+        if ($revShare > 1) {
+        $revShare = 1;
+        } else if ($revShare < 0) {
+        $revShare = 0;
+        }
+        
+        $revenue = $row["Revenue"] * $revShare;
+        
+        if ($row["Impressions"] > 0) {
+          $totalimpressions += $row["Impressions"];
+          $ecpm = number_format($revenue * 1000 / $row["Impressions"],2);          
+        } else {
+          $ecpm = "-";
+        }
+        
+        $totalrevenue += $revenue;
+        
+        if ($row["estimated"]) {
+          $totalEstimated = true;      	
+        }    
+        
+        $count++;
+        
+        $formatLine = '<table class=\"jqplot-highlighter\"><tr><td>Date:</td><td>'.date("M d, Y", strtotime($row['Date'])).'</td></tr><tr><td>Impressions:</td><td>'.number_format($row['Impressions']).'</td></tr><tr><td>Revenue:</td><td>$'.number_format($revenue,2).'</td></tr><tr><td>eCPM:</td><td>$'.$ecpm.'</td></tr></table>';
+        
+        if($count==count($this->report_rows)){
+            $line1.= "['$row[Date]', ".str_replace(',','.',$row['Impressions']).", '$formatLine']";
+            $line2.= "['$row[Date]', ".str_replace(',','.',number_format($revenue,2)).", '$formatLine']";                   
+        }else{
+            $line1.= "['$row[Date]', ".str_replace(',','.',$row['Impressions']).", '$formatLine'], ";
+            $line2.= "['$row[Date]', ".str_replace(',','.',number_format($revenue,2)).", '$formatLine'], ";                   
+        }
+        
+    } 
+    $line1.= "]";
+    $line2.= "]";  
+    
+    $noresult=false;
+    
+}else{
+    
+    $line1 = "[";
+    $line2 = "[";
+
+    $start = strtotime($this->report_params['start_date']);
+    $end = strtotime($this->report_params['end_date']);
+        
+    for($i=$start; $i<=$end; $i=$i+86400){
+                
+        $formatLine = '<table class=\"jqplot-highlighter\"><tr><td>Date:</td><td>'.date("M d, Y", $i).'</td></tr><tr><td>Impressions:</td><td>0,000</td></tr><tr><td>Revenue:</td><td>$0.00</td></tr><tr><td>eCPM:</td><td>$0.00</td></tr></table>';
+        
+        $line1.= "['".date("M d, Y", $i)."', 0.000, '$formatLine'], ";
+        $line2.= "['".date("M d, Y", $i)."', 0.00, '$formatLine'], ";               
+    }
+
+    $line1.= "]";
+    $line2.= "]";  
+    
+    $noresult=true;
+
+}     
+?>
+  var line1 = <?php echo $line1 ?>;
+  var line2 = <?php echo $line2 ?>;
+ 
+  var plot2 = $.jqplot('chartdiv', [line1, line2], {
+    series:[{renderer:$.jqplot.highlighter, label:'Impressions', color:'grey'}, {xaxis:'xaxis', yaxis:'y2axis', label:'Revenue', color:'red'}],
+    axesDefaults: {
+        tickRenderer: $.jqplot.CanvasAxisLabelRenderer,
+    },
+    highlighter: {
+      show: true,
+      showMarker:false,
+      tooltipAxes: 'both',
+      yvalues: 3,
+      // You can customize the tooltip format string of the highlighter
+      // to include any arbitrary text or html and use format string
+      // placeholders (%s here) to represent x and y values.
+      formatString:'<!--%s%s-->%s'
+    },    
+    legend: {
+        show: true,
+        placement: 'outsideGrid',
+        location: 's'
+    },    
+    axes: {
+      xaxis: {
+        renderer: $.jqplot.DateAxisRenderer,
+          tickOptions:{
+            formatString:'%b %#d'
+          },
+      },
+      yaxis: {
+        autoscale:true,
+          tickOptions:{
+            formatString:'%s'
+            }<?php if($noresult): ?>,   
+          min:0, 
+          max: 50000,
+          tickInterval:10000
+            <?php endif; ?>
+      },
+      y2axis: {
+          autoscale:true,
+          tickOptions:{
+            formatString:'$%.2f'
+            }<?php if($noresult): ?>,   
+          min:0.000, 
+          max: 50.000,
+          tickInterval:10
+            <?php endif; ?>
+      }
+    }
+  });
+})    
+</script>
+
+
+<?php
+
+
+$sortParamsBase = $this->report_params;
+unset($sortParamsBase["order"]);
+
+$orderUrl = array();
+foreach(array("Date","Impressions","Revenue") as $sortfield) {
+	$tmp = $sortParamsBase;
+	if (!isset($this->report_params["order"]) || (!isset($this->report_params["order"][$sortfield]))) {
+		$tmp["order"][$sortfield] = -1;
+	} else {
+		$tmp["order"][$sortfield] = $this->report_params["order"][$sortfield] > 0 ? -1 : 1;
+	}
+
+	$orderUrl[$sortfield] = $this->url() . "?" .http_build_query($tmp);
+}
+
+
+?><form name="size" method="get" id="formDate" action="">	<input type="hidden" name="id" value="<?php echo $id ?>">				
+                <?php if (isset($this->report_error)) { ?>
+                <p><b><?php echo htmlentities($this->report_error->type); ?></b> error: <?php echo htmlentities($this->report_error->message); ?></p>
+                <?php } ?>
+<?php if (isset($this->report_time)) { ?><!-- Report Tq = <?php echo $this->report_time; ?>--><?php }?>
+            <!--report TOP-->                                            
+            <div class="reportTop">
+            	<h5>Earnings</h5>                
+                <div class="dateBox">
+                	<p class="dateBoxInn"><a href="#" title="" class="dateLink" id="showBox"><?php echo htmlentities(date("M j, Y", strtotime($this->report_params["start_date"]))); ?> – <?php echo htmlentities(date("M j, Y", strtotime($this->report_params["end_date"]))); ?></a></p>
+                    <div class="subDate">
+                    	<div class="dateRanch">
+                        	<h5>Date Range </h5>
+                            <input type="text" value="<?php echo htmlentities(date("M j, Y", strtotime($this->report_params["start_date"]))); ?>" name="start_date" id="search-start_date"  onfocus="this.value=''" onblur="if (this.value==''){this.value=''}" class="datepicker" />
+                            <input type="text" value="<?php echo htmlentities(date("M j, Y", strtotime($this->report_params["end_date"]))); ?>" name="end_date" id="search-end_date"  onfocus="this.value=''" onblur="if (this.value==''){this.value=''}" class="datepicker"/>                            
+                            <p>
+                            	<a href="#" title="" class="dCancelBtn" id="cancel" txt="<?php echo htmlentities(date("M j, Y", strtotime($this->report_params["start_date"]))); ?> – <?php echo htmlentities(date("M j, Y", strtotime($this->report_params["end_date"]))); ?>">Cancel</a>
+                            	<a href="#" title="" class="dUpdlBtn" id="update">Update</a>                            
+                            </p>
+                        </div>
+                        
+                        <div class="quickDate">
+                        	<h5>Quick dates</h5>
+                            <br class="clear" />
+                            <ul>
+                            	<li><a href="#" class="selectDate" start="<?php echo date("M j, Y"); ?>" end="<?php echo date("M j, Y"); ?>" title="">Today</a></li>
+                            	<li><a href="#" class="selectDate" start="<?php echo date("M j, Y", mktime(0,0,0,date("m"),date("d")-1,date("Y"))); ?>" end="<?php echo date("M j, Y", mktime(0,0,0,date("m"),date("d")-1,date("Y"))); ?>" title="">Yesterday</a></li>
+                            	<li><a href="#" class="selectDate" start="<?php echo date("M j, Y", mktime(0,0,0,date("m"),date("d")-7,date("Y"))); ?>" end="<?php echo date("M j, Y"); ?>" title="">Last 7 days</a></li>
+                            </ul>
+                            
+                            <ul class="rightUl">
+                            	<li><a href="#" class="selectDate" start="<?php echo date("M j, Y", mktime(0,0,0,date("m"),date("d")-30,date("Y"))); ?>" end="<?php echo date("M j, Y"); ?>" title="">Last 30 days</a></li>
+                            	<li><a href="#" class="selectDate" start="<?php echo date("M j, Y", mktime(0,0,0,date("m"),1,date("Y"))); ?>" end="<?php echo date("M j, Y", mktime(0,0,0,date("m"),date("t"),date("Y"))); ?>" title="">This month:<span> <?php echo date("F") ?></span></a></li>
+                            	<li><a href="#" class="selectDate" start="<?php echo date("M j, Y", mktime(0,0,0,date("m")-1,1,date("Y"))); ?>" end="<?php echo date("M j, Y", mktime(0,0,0,date("m")-1,date("t", mktime(0,0,0,date("m")-1,1,date("Y"))),date("Y"))); ?>" title="">Last month: <span><?php echo date("F", mktime(0,0,0,date("m")-1,1,date("Y"))); ?></span></a></li>
+                            </ul>                            
+                        </div>
+                    </div>
+                </div>
+                <p class="sizeSel"><b>Size</b>
+                	<select onchange="this.form.submit();" name="ad_size">
+                    	<option value="">All Media Types</option>
+        <?php foreach($this->report_ad_sizes as $ad_size) { ?>
+            <option value="<?php echo htmlentities($ad_size["id"]); ?>"<?php if ($this->report_params["ad_size"] ==$ad_size["id"]) { echo ' selected'; } ?>><?php echo htmlentities($ad_size["name"]); ?></option>
+        <?php } ?>
+                    </select>
+                </p>
+                <p class="sizeSel"><b>Site</b>
+                	<select onchange="this.form.submit();" name="site">
+                    	<option value="">All Sites</option>
+    <?php foreach($this->report_sites as $site) { ?>
+        <option value="<?php echo htmlentities($site["SiteID"]); ?>"<?php if ($this->report_params["site"] ==$site["SiteID"]) { echo ' selected'; } ?>><?php echo htmlentities($site["SiteName"]); ?></option>  
+    <?php } ?>
+                    </select>
+                </p>                                <?php if ($this->identity->role == "admin" || $this->identity->role=='super') { ?>               <!--  Admin Options -->               <div style="float: left; clear: left; margin-left: 0px; margin-top: 8px;">                   <p style="color: #000000; float: left; margin-right: 10px; font-weight: bold;">Admin Options:</p>                   <p style="color: #000000; float: left; margin-right: 10px;"><label><input type="checkbox" name="disable_grouping" onchange="document.getElementById('formDate').submit()" value="1"<?php if (isset($this->report_params["disable_grouping"]) && $this->report_params["disable_grouping"]) { echo ' checked="checked"'; } ?>>  Disable grouping</label></p>                   <p style="color: #000000; float: left;"><a href="/users/zones" style="color: #000080; text-decoration: underline;">view zones</a></p>                   </div><?php } ?>                
+            </div>
+            <!--//report TOP-->   
+</form>
+
+<?php if (isset($this->report_time)) { ?><!-- Report time: <?php echo $this->report_time; ?> --><?php } ?><div class="reportBox">	<table cellpadding="0" cellspacing="0" id="reportTbl">		<tr>			<th>Date</th>			<th>Impressions</th>			<th>eCPM</th>			<th class="lastTh">Revenue</th>		</tr>																
+  <?php
+  $totalEstimated = false;
+  $totalrevenue = 0;
+  $totalimpressions = 0;
+  
+  $counter = 0;
+  
+  foreach($this->report_rows as $row) {
+      $revShare = $row["RevShare"] / 100.0;
+      
+      if ($revShare > 1) {
+      	$revShare = 1;
+      } else if ($revShare < 0) {
+      	$revShare = 0;
+      }
+      
+      $revenue = $row["Revenue"] * $revShare;
+      
+      if ($row["Impressions"] > 0) {
+          $totalimpressions += $row["Impressions"];
+          $ecpm = number_format($revenue * 1000 / $row["Impressions"],2);          
+      } else {
+          $ecpm = "-";
+      }
+
+      $totalrevenue += $revenue;
+      
+      if ($row["estimated"]) {
+          $totalEstimated = true;      	
+      }     
+      
+      $counter++; 
+      
+      if($counter==1){
+        $className = 'class="first"';
+      }elseif($counter%2==0){
+        $className = 'class="gray"';
+      }else{
+        $className = '';
+      }
+?>
+  <tr <?php echo $className ?> >
+    <td><?php echo $row['Date'] ?><?php if($row["estimated"]) { echo '*'; } ?></td>
+    <td><?php echo number_format($row['Impressions']) ?><?php if($row["estimated"]) { echo '*'; } ?></td>
+    <td><?php if ($ecpm == "-") { ?>-<?php } else { ?>$<?php echo $ecpm ?><?php if($row["estimated"]) { echo '*'; } ?><?php } ?></td>
+    <td class="lastTd">$<?php echo number_format($revenue,2) ?><?php if(($row["estimated"])) { echo '*'; } ?></td>
+  </tr>
+  <? }
+  
+if($totalimpressions > 0) {
+	$totalecpm = $totalrevenue / ($totalimpressions/1000);
+}else{
+	$totalecpm = "0.00";
+}  
+  ?>
+                    <tr>
+                        <td class="total">Totals </td>
+                        <td class="total"><?php echo number_format($totalimpressions) ?></td>
+                        <td class="total">$<?php echo number_format($totalecpm,2) ?></td>
+                        <td class="total lastTd">$<?php echo number_format($totalrevenue, 2) ?></td>                                                            
+                    </tr>
+                </table></div><!--estimate--><div class="estimate">	<h5>*Estimates Only. Numbers can take up to 2 days to finalize.</h5>	<p>			<div id="chartdiv" style="height: 300px; width: 750px;"></div>	</p></div><!--//estimate--><script	type="text/javascript" src="/font/cufon-yui.js"></script><script	type="text/javascript" src="/font/Bebas_400.font.js"></script><script type="text/javascript">
+		Cufon.replace('#topMenu a', {hover: true});	
+		Cufon.replace('#topMenu a');
+</script><script	type="text/javascript" src="/font/Headline_Two_400.font.js"></script><script type="text/javascript">
+	Cufon.replace('.footerBann h5');		
+	Cufon.replace('.footerBann p');	
+	Cufon.replace('.footerBann a', {hover: true});	
+</script><script	type="text/javascript" src="/font/Proxima_Nova_Lt_300.font.js"></script><script type="text/javascript">
+		Cufon.replace('#footCopyr');	
+		Cufon.replace('.fMenu a', {textDecoration: 'underline'});		
+		Cufon.replace('.publisher h4');	
+		Cufon.replace('.publisher h4 span');	
+		Cufon.replace('.publMail a');	
+		Cufon.replace('.logOut span');					
+</script><script	type="text/javascript" src="/font/Proxima_Nova_Rg_700.font.js"></script><script type="text/javascript">
+		Cufon.replace('.fMenu h4');
+		Cufon.replace('.reportTop h5');		
+		Cufon.replace('.estimate h5');			
+</script><script type="text/javascript">
+$(document).ready(function() {
+Cufon.set("fontFamily", "Proxima_Nova_Lt_300.font.js");
+	$("#reportL li").hover(
+		function(){
+		$(this).children('a').children('span').addClass('black');
+		Cufon.refresh();		
+		Cufon.replace('.black', {color: '#000000'});	
+		}, 
+	  function () {
+		$(this).children('a').children('span').removeClass('black');
+		Cufon.refresh();			
+		Cufon.replace('#reportL li span', {color: '#DE3232'});	
+	  }
+	);
+	$("#showBox").click(
+		function(){
+		$('.subDate').toggle(220);
+		$('.dateBoxInn').toggleClass('curDate');
+		}
+	);
+	
+	$(".dCancelBtn").click(
+		function(){
+		$('.subDate').fadeOut(600);
+		$('.dateBoxInn').removeClass('curDate');
+		}
+	);	
+	
+
+
+	
+});
+</script><script	type="text/javascript" src="/js/calendar.js.js"></script><script type="text/javascript">
+	$(function(){
+		$('#singleCont').css('backgroundImage', 'url(/images/contBg_1.png)');
+			$(".datepicker").datepicker({dateFormat: 'M d, yy'});
+});
+</script>
+<?php
+
+
+?>

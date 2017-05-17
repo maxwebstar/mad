@@ -1,0 +1,328 @@
+<link type="text/css" rel="stylesheet" media="screen" href="/styles/table.css"></link>
+<style type="text/css">
+    
+    .reportTop .dateLink{ cursor: pointer; }
+    .subDate { width: 307px; }
+    
+</style>
+<script src="/js/jquery.dataTables.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+    
+    
+jQuery.fn.dataTableExt.oSort['numeric-comma-asc']  = function(a,b) {
+   
+    var x = a.replace( /,/g, '' );
+    var y = b.replace( /,/g, '' );
+
+    x = parseFloat( x );
+    y = parseFloat( y );
+    
+    return ((x < y) ? -1 : ((x > y) ?  1 : 0));
+
+};
+ 
+jQuery.fn.dataTableExt.oSort['numeric-comma-desc'] = function(a,b) {
+
+    var x = a.replace( /,/g, '' );
+    var y = b.replace( /,/g, '' );
+
+    x = parseFloat( x );
+    y = parseFloat( y );
+    
+    return ((x < y) ?  1 : ((x > y) ? -1 : 0));
+    
+};
+
+jQuery.fn.dataTableExt.oSort['num-html-asc']  = function(a,b) {
+   
+    var x = a.replace( '$', '' );
+    var y = b.replace( '$', '' );
+    
+    if(x.indexOf('Pending') != -1 || y.indexOf('Pending') != -1){
+    
+        x = x.replace( /<.*?>/g, '' );
+        y = y.replace( /<.*?>/g, '' );
+
+        x = x.replace( 'Pending', '0' );
+        y = y.replace( 'Pending', '0' );
+    
+    } else {
+    
+        if(x.indexOf('-') && x.length == 1) x = x.replace( '-', '0' );
+        if(y.indexOf('-') && y.length == 1) y = y.replace( '-', '0' );
+    
+    }
+  
+    x = parseFloat( x );
+    y = parseFloat( y );
+    
+    return ((x < y) ? -1 : ((x > y) ?  1 : 0));
+
+};
+ 
+jQuery.fn.dataTableExt.oSort['num-html-desc'] = function(a,b) {
+
+    var x = a.replace( '$', '' );
+    var y = b.replace( '$', '' );
+    
+    if(x.indexOf('Pending') != -1 || y.indexOf('Pending') != -1){
+    
+        x = x.replace( /<.*?>/g, '' );
+        y = y.replace( /<.*?>/g, '' );
+
+        x = x.replace( 'Pending', '0' );
+        y = y.replace( 'Pending', '0' );
+    
+    } else {
+        
+        if(x.indexOf('-') && x.length == 1) x = x.replace( '-', '0' );
+        if(y.indexOf('-') && y.length == 1) y = y.replace( '-', '0' );
+        
+    }
+  
+    x = parseFloat( x );
+    y = parseFloat( y );
+    
+    return ((x < y) ?  1 : ((x > y) ? -1 : 0));
+    
+};
+    
+    
+    $(document).ready(function() {
+
+            $("#search-date").datepicker({
+                            dateFormat: 'M d, yy',
+                            changeYear: true,
+                            changeMonth: true
+            });
+    
+    
+            $("#search-date").change(function(){
+                    $("#showBox").html($.datepicker.formatDate('M d, yy', new Date($("#search-date").val()))); 
+            }); 
+            
+    
+            $("#showBox").click(function(){
+
+                    $('.subDate').toggle(220);
+                    $('.dateBoxInn').toggleClass('curDate');
+            });
+            $(".dCancelBtn").click(function(){
+
+                    $('.subDate').fadeOut(600);
+                    $('.dateBoxInn').removeClass('curDate');
+            });
+            $("#update").click(function(){
+                    $("#formDate").submit();       
+            })
+                        
+            var oTable2 = $('#reportTbl').dataTable( {
+                        "bFilter": false,
+                        "bProcessing": true,
+                        "bLengthChange": false,
+                        "bPaginate": false,
+                        "aoColumns": [
+                            { 
+                              "sTitle": "Sites",
+                              "bSortable": false 
+                            }, 
+                            { 
+                              "sTitle": "Rubicon Impressions",
+                              "sType": "numeric-comma" 
+                            }, 
+                            { 
+                              "sTitle": "MadAds' Impressions",
+                              "sType": "num-html" 
+                            },
+                            { 
+                              "sTitle": "Rubicon eCPM",
+                              "sType": "num-html" 
+                            },
+                            { 
+                              "sTitle": "MadAds' eCPM",
+                              "sType": "num-html" 
+                            },                           
+                            { 
+                              "sTitle": "Cost",
+                              "sType": "num-html" 
+                            },
+                            { 
+                              "sTitle": "Revenue",
+                              "sType": "num-html" 
+                            },
+                            { 
+                              "sTitle": "Profit",
+                              "sType": "num-html" 
+                            }
+                            
+                        ],                                                
+                        "aaSorting": [[ 0, "desc" ]]
+            });
+                        
+     });
+    
+</script>
+
+<form name="size" method="get" id="formDate" action="/administrator/exchange/view/">	
+
+      <div class="reportTop">
+
+          <h5>Earnings</h5>              
+          <div class="dateBox">
+              <p class="dateBoxInn">
+                  <a title="" class="dateLink" id="showBox"><?php echo date("M j, Y", strtotime($this->curent["date"])); ?></a>
+              </p>
+              <div class="subDate">
+                 <div class="dateRanch">
+                    <h5>Date</h5> 
+                    <input type="text" value="<?php echo date("M j, Y", strtotime($this->curent["date"])); ?>" name="date" id="search-date" onfocus="this.value=''" onblur="if (this.value==''){this.value=''}" class="datepicker" />
+                    <p>
+                        <a href="#" title="" class="dCancelBtn" id="cancel" txt="<?php echo htmlentities(date("M j, Y", strtotime($this->report_params["start_date"]))); ?> – <?php echo htmlentities(date("M j, Y", strtotime($this->report_params["end_date"]))); ?>">Cancel</a>
+                        <a href="#" title="" class="dUpdlBtn" id="update">Update</a>                            
+                    </p>
+                 </div>
+              </div>
+          </div>
+          <p class="sizeSel"><b>Size</b>
+              	<select onchange="this.form.submit();" name="ad_size">
+                    	<option value="">All Media Types</option>
+                    <?php foreach($this->ad_sizes as $size) { ?>
+                        <option value="<?php echo $size->id ?>"<?php if ($this->curent["ad_size"] == $size->id) { echo ' selected'; } ?>><?php echo $size->name ?></option>
+                    <?php } ?>
+                </select>
+          </p>          
+       </div>
+</form>
+
+
+<br /><br />   
+
+<div class="reportBox">	
+    <table cellpadding="0" cellspacing="0" width="741px" class="display" id="reportTbl">	
+
+            <thead>       
+                <tr>			
+                    <th>Sites</th>			
+                    <th>Rubicon Impressions</th>
+                    <th>MadAds' Impressions</th>			
+                    <th>Rubicon eCPM</th>			
+                    <th>MadAds' eCPM</th>			
+                    <th>Cost</th>			
+                    <th>Revenue</th>	
+                    <th class="lastTh">Profit</th>
+                </tr>
+            </thead>
+            <tbody>
+    
+<?php 
+$totalRubimpressions = 0;
+$totalRubecpm = 0;
+$totalCost = 0;
+
+$totalMadimpressions = 0;
+$totalMadecpm = 0;
+$totalRevenue = 0;
+
+$impressionsRub = 0;
+$cost = 0;
+$ecpmRub = 0;
+
+$impressionsMad = 0;
+$revenue = 0;
+$ecpmMad = 0;
+
+$profit = 0;
+$totalProfit = 0;
+?>
+    
+<?php if($this->report): ?>    
+    <?php foreach ($this->report as $item):?>
+        <?php      
+            $impressionsRub = $item['rub_impressiosn'];
+            $cost = $item['cost'];
+            $ecpmRub = '-';
+            
+            if($impressionsRub>0 && $cost>0)
+                $ecpmRub = $cost*1000/$impressionsRub;
+
+            $totalRubimpressions += $impressionsRub;
+            $totalCost += $cost;
+
+            
+            $impressionsMad = $item['madads_impressions'];
+            $revenue = $item['revenue'];
+            $ecpmMad = '-';
+            
+            if($impressionsMad>0 && $revenue>0)
+                $ecpmMad = $revenue*1000/$impressionsMad;
+
+            $totalMadimpressions += $impressionsMad;
+            $totalRevenue += $revenue;
+            
+            $profit = $revenue-$cost;
+            $totalProfit +=$profit;
+            
+        ?>
+        
+        <tr>
+            <td><?php echo '<a href="/administrator/exchange/size/site/'.$item['SiteID'].'/date/'.$item['query_date'].'">'.$item['SiteName'].'</a>';?><?php echo $asterics?></td>
+            <td><?php echo !$impressionsRub ? '-' : number_format($impressionsRub) ?></td>
+            <td><?php echo !$impressionsMad ? '-' : number_format($impressionsMad) ?></td>
+            <td><?php echo $ecpmRub=='-' ?  '-' : "$".number_format($ecpmRub,2) ?></td>
+            <td><?php echo $ecpmMad=='-' ?  '-' : "$".number_format($ecpmMad,2) ?></td>
+            <td><?php echo !$cost ? '-' : "$".number_format($cost,2) ?></td>
+            <td><?php echo !$revenue ? '-' : "$".number_format($revenue,2) ?></td>
+            <td><?php echo !$profit ? '-' : $profit<0 ? '<span style="color:red">$'.number_format($profit,2).'</span>' : '<span style="color:green">$'.number_format($profit,2).'</span>' ?></td>
+        </tr>
+    
+    <?php endforeach; ?>
+    </tbody>
+<?php endif; ?>   
+<?php 
+    if($totalRubimpressions > 0) {
+            $totalRubecpm = $totalCost / ($totalRubimpressions/1000);
+    }else{
+            $totalRubecpm = "0.00";
+    } 
+    
+    if($totalMadimpressions > 0) {
+            $totalMadecpm = $totalRevenue / ($totalMadimpressions/1000);
+    }else{
+            $totalMadecpm = "0.00";
+    } 
+?>    
+    <tfoot>
+    <tr>
+            <td class="total">Totals </td>
+            <td class="total"><?php echo number_format($totalRubimpressions) ?></td>
+            <td class="total"><?php echo number_format($totalMadimpressions) ?></td>
+            <td class="total">$<?php echo number_format($totalRubecpm,2) ?></td>
+            <td class="total">$<?php echo number_format($totalMadecpm,2) ?></td>
+            <td class="total">$<?php echo number_format($totalCost, 2) ?></td>                                                            
+            <td class="total">$<?php echo number_format($totalRevenue, 2) ?></td>                                                            
+            <td class="total lastTd">$<?php echo number_format($totalProfit, 2) ?></td>                                                            
+    </tr>
+    </tfoot>
+    </table>
+</div><!--estimate-->
+<script	type="text/javascript" src="/font/cufon-yui.js"></script>
+<script	type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#topMenu a', {hover: true});	
+		Cufon.replace('#topMenu a');
+</script><script	type="text/javascript" src="/font/Headline_Two_400.font.js"></script><script type="text/javascript">
+	Cufon.replace('.footerBann h5');		
+	Cufon.replace('.footerBann p');	
+	Cufon.replace('.footerBann a', {hover: true});	
+</script><script	type="text/javascript" src="/font/Proxima_Nova_Lt_300.font.js"></script><script type="text/javascript">
+		Cufon.replace('#footCopyr');	
+		Cufon.replace('.fMenu a', {textDecoration: 'underline'});		
+		Cufon.replace('.publisher h4');	
+		Cufon.replace('.publisher h4 span');	
+		Cufon.replace('.publMail a');	
+		Cufon.replace('.logOut span');					
+</script><script	type="text/javascript" src="/font/Proxima_Nova_Rg_700.font.js"></script><script type="text/javascript">
+		Cufon.replace('.fMenu h4');
+		Cufon.replace('.reportTop h5');		
+		Cufon.replace('.estimate h5');			
+</script>

@@ -1,0 +1,199 @@
+<style type="text/css">
+    
+    .click-auth img{ cursor: pointer; }
+    .mail-server{ display: block; }
+    .mail-server .label{ display: block; float: left; width: 90px; margin-top: 2px; margin-bottom: 2px; }
+    .mail-server .value{ display: block; float: left; width: 250px; margin-top: 2px; margin-bottom: 2px; }
+   
+</style>
+<script type="text/javascript" charset="utf-8">
+        
+       $(document).ready(function(){           
+         
+               var oTable = $('#contact').dataTable( {
+                        "bProcessing": true,
+                        "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+                        "iDisplayLength": -1,  
+                        "aoColumns": [
+                            { 
+                              "sTitle": "Name"
+                            },
+                            { 
+                              "sTitle": "Email"
+                            },
+                            { 
+                              "sTitle": "Created"
+                            },
+                            { 
+                              "sTitle": "Active"
+                            },
+                            { 
+                              "sTitle": "Livechat"
+                            },
+                            { 
+                              "sTitle": "Signature"
+                            },
+                            { 
+                              "sTitle": "Auth",
+                              "sClass": "click-auth",
+                              "bSortable": false
+                            },
+                            { 
+                              "sTitle": "",
+                              "bSortable": false
+                            },
+                            { 
+                              "sTitle": "",
+                              "bSortable": false
+                            },
+                            { 
+                              "sTitle": "",
+                              "bSortable": false
+                            },                            
+                        ]
+                });  
+
+                $('#contact tbody td.click-auth img').live('click', function () {
+                    var nTr = $(this).parents('tr')[0];
+                    if ( oTable.fnIsOpen(nTr) )
+                    {
+                        /* This row is already open - close it */
+                        this.src = "/images/details_open.png";
+                        oTable.fnClose( nTr );
+                    }
+                    else
+                    {
+                        /* Open this row */
+                        this.src = "/images/details_close.png";
+                        oTable.fnOpen( nTr, fnFormatDetails(oTable, nTr), 'details' );
+                    }
+                });
+            	
+        });
+        
+        function fnFormatDetails ( oTable, nTr )
+        {
+            /*var aData = oTable.fnGetData( nTr ); var SiteID = aData[1];*/
+            
+            var td = $(nTr).children();
+            var img = $(td[4]).find('img');
+            var alt = $(img).attr('alt');
+            var data = JSON.parse(alt);
+             
+            var host = data.host ? data.host : '';
+            var login = data.user_login ? data.user_login : '';
+            var port = data.port ? data.port : '';
+            var protocol = data.ssl ? data.ssl : '';            
+            var password = '';            
+            
+            if(data.user_pass) for(var i = 0; i < data.user_pass.length; i++){ password += '*'; } 
+
+            var result = '<div class="mail-server">';
+            
+                result += '<div class="label">Host</div><div class="value">'+host+'</div><div style="clear: both"></div>';
+                result += '<div class="label">Login</div><div class="value">'+login+'</div><div style="clear: both"></div>';
+                result += '<div class="label">Password</div><div class="value">'+password+'</div><div style="clear: both"></div>';
+                result += '<div class="label">Port</div><div class="value">'+port+'</div><div style="clear: both"></div>';
+                result += '<div class="label">Protocol</div><div class="value">'+protocol+'</div><div style="clear: both"></div>'; 
+                
+                result += '</div>';
+
+            return result;
+        }
+        
+</script>
+
+<div class="mail-server">
+    <div class="label"></div>
+    <div class="value"></div>
+</div>
+
+<h1>Contact Notification</h1>
+<div class="contUsL" style="width: 750px;">
+<p>
+    <a href="/administrator/contactnotification/add">Add New Contact</a>
+</p>
+<br><br>
+<table width="770px" cellpadding="0" cellspacing="0" border="0" class="display" id="contact">
+	<thead>
+		<tr>	
+                    <th width="30%">Name</th>
+                    <th width="30%">Email</th>
+                    <th width="14%">Created</th>
+                    <th width="8%">Active</th>
+                    <th width="8%">Livechat</th>
+                    <th width="8%">Signature</th>
+                    <th width="8%"></th>
+                    <th width="8%"></th>
+                    <th width="8%"></th>
+                    <th width="8%"></th>
+		</tr>
+	</thead>
+	<tbody>
+
+        <?php foreach($this->data as $iter):?>	
+    
+            <tr>
+                <td><?php echo $iter['name'] ?></td>
+                <td><?php echo $iter['mail']; ?></td>
+                <td><?php echo $iter['created']; ?></td>
+                <td><?php echo $iter['status'] ? '<img src="/images/status-green-check.gif">' : '<img src="/images/stats-red-x.gif">'?></td>
+                <td><?php echo $iter['livechat'] ? '<img src="/images/status-green-check.gif">' : '<img src="/images/stats-red-x.gif">'?></td>
+                <td><?php echo $iter['signature'] ? '<img src="/images/status-green-check.gif">' : '<img src="/images/stats-red-x.gif">'?></td>
+                <td><img src="/images/details_open.png" alt='<?php echo json_encode($iter); ?>'/></td>
+                <td><a href="/administrator/contactnotification/edit/id/<?php echo $iter['id'];?>">edit</a></td>
+                <td><a onClick="return confirm('Delete ?');" href="/administrator/contactnotification/delete/id/<?php echo $iter['id'];?>">delete</td>
+                <td><?php if($iter['status']==1): ?><a href="/administrator/contactnotification/assign/id/<?php echo $iter['id'];?>">Assign Accounts</a><?php endif; ?></td>
+            </tr>  
+        
+        <?php endforeach;?>
+        
+	</tbody>
+	<tfoot>
+		<tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Created</th>
+                    <th>Active</th>
+                    <th>Livechat</th>
+                    <th>Signature</th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+		</tr>
+	</tfoot>
+</table>
+
+</div> 
+<script type="text/javascript" src="/font/cufon-yui.js"></script>
+<script type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#topMenu a', {hover: true});	
+		Cufon.replace('#topMenu a');
+</script>
+<script type="text/javascript" src="/font/Headline_Two_400.font.js"></script>
+<script type="text/javascript">
+	Cufon.replace('.contInf h3', {hover: true});	
+	Cufon.replace('.contInf h3');
+	Cufon.replace('.contInf h3.white', {color: '#FFF'});	
+	Cufon.replace('.footerBann h5');		
+	Cufon.replace('.footerBann p');	
+	Cufon.replace('.footerBann a', {hover: true});		
+    Cufon.replace('h1');		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Lt_300.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#footCopyr');	
+		Cufon.replace('.contInf p', {hover: true});		
+		Cufon.replace('.contInf p', {color: '#333333'});	
+		Cufon.replace('.contInf p.white', {color: '#FFF'});	
+		Cufon.replace('.fMenu a', {textDecoration: 'underline'});		
+		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Rg_700.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('.fMenu h4');
+</script>
+
+

@@ -1,0 +1,613 @@
+<style type="text/css">
+
+    #tableScroll{
+        width: 1000px;
+        overflow-y: auto;
+        margin-top: 20px;
+        float: left;
+        resize: horizontal;
+    }
+</style>
+
+<script type="text/javascript" src="/fancybox/jquery.mousewheel-3.0.4.pack.js"></script>	<script type="text/javascript" src="/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
+	<link rel="stylesheet" type="text/css" href="/fancybox/jquery.fancybox-1.3.4.css" media="screen" />
+<script type="text/javascript" charset="utf-8">
+        $(document).ready(function() {           
+                var oTable1 = $('#users1').dataTable( {
+                        "bProcessing": true,
+                        "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+                        "iDisplayLength": -1,
+                        "aoColumns": [
+                            null,
+                            { "sTitle": "Rubicon", "sType": "numeric" },
+                            { "sTitle": "Pubmatic", "sType": "numeric" },
+                            { "sTitle": "Amazon", "sType": "numeric" },
+                            { "sTitle": "PulsePoint", "sType": "numeric" },
+                            { "sTitle": "PopAds", "sType": "numeric" },
+                            { "sTitle": "Sekindo", "sType": "numeric" },
+                            { "sTitle": "AOL", "sType": "numeric" },
+                            { "sTitle": "AOL Outstream", "sType": "numeric" },
+                            { "sTitle": "bRealTime", "sType": "numeric" },
+                            { "sTitle": "Manual Revenue", "sType": "numeric" },                             
+                            { "sTitle": "All Impressions", "sType": "numeric" }, 
+                            { "sTitle": "All Sources", "sType": "numeric" } 
+                        ],                                                
+                        "aaSorting": [[ 0, "desc" ]]
+                } );
+
+                var oTable2 = $('#users2').dataTable( {
+                    "bProcessing": true,
+                    "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+                    "iDisplayLength": -1,
+                    "aoColumns": [
+                        null, 
+                        { "sTitle": "Rubicon", "sType": "numeric" },
+                        { "sTitle": "Rubicon Total Impressions", "sType": "numeric" },
+                        { "sTitle": "Rubicon Paid Impressions", "sType": "numeric" },
+                        { "sTitle": "Pubmatic", "sType": "numeric" },
+                        { "sTitle": "Pubmatic Total Impressions", "sType": "numeric" },
+                        { "sTitle": "Pubmatic Paid Impressions", "sType": "numeric" },
+                        { "sTitle": "Amazon", "sType": "numeric" },
+                        { "sTitle": "Amazon Total Impressions", "sType": "numeric" },
+                        { "sTitle": "Amazon Paid Impressions", "sType": "numeric" },
+                        { "sTitle": "PulsePoint", "sType": "numeric" },
+                        { "sTitle": "PulsePoint Total Impressions", "sType": "numeric" },
+                        { "sTitle": "PulsePoint Paid Impressions", "sType": "numeric" },
+                        { "sTitle": "PopAds", "sType": "numeric" },
+                        { "sTitle": "PopAds Total Impressions", "sType": "numeric" },
+                        { "sTitle": "PopAds Paid Impressions", "sType": "numeric" },
+                        { "sTitle": "Sekindo", "sType": "numeric" },
+                        { "sTitle": "Sekindo Total Impressions", "sType": "numeric" },
+                        { "sTitle": "Sekindo Paid Impressions", "sType": "numeric" },
+                        { "sTitle": "AOL", "sType": "numeric" },        
+                        { "sTitle": "AOL Total Impressions", "sType": "numeric" },
+                        { "sTitle": "AOL Paid Impressions", "sType": "numeric" },
+                        { "sTitle": "AOL Outstream", "sType": "numeric" },
+                        { "sTitle": "AOL Outstream Total Impressions", "sType": "numeric" },
+                        { "sTitle": "AOL Outstream Paid Impressions", "sType": "numeric" },
+                        { "sTitle": "bRealTime", "sType": "numeric" },
+                        { "sTitle": "bRealTime Total Impressions", "sType": "numeric" },
+                        { "sTitle": "bRealTime Paid Impressions", "sType": "numeric" },
+                        { "sTitle": "Manual Revenue", "sType": "numeric" },
+                        { "sTitle": "All Total Impressions", "sType": "numeric" },
+                        { "sTitle": "All Paid Impressions", "sType": "numeric" },
+                        { "sTitle": "All Sources", "sType": "numeric" }
+                       
+                    ],                                                
+                    "aaSorting": [[ 0, "desc" ]]
+            	} );
+
+                var oTable3 = $('#users3').dataTable( {
+                    "bProcessing": true,
+                    "aLengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+                    "iDisplayLength": -1,
+                    "aoColumns": [
+                        null,
+                        { "sTitle": "Rubicon", "sType": "numeric" },
+                        { "sTitle": "Pubmatic", "sType": "numeric" },
+                        { "sTitle": "Amazon", "sType": "numeric" },
+                        { "sTitle": "PulsePoint", "sType": "numeric" },
+                        { "sTitle": "PopAds", "sType": "numeric" },
+                        { "sTitle": "Sekindo", "sType": "numeric" },
+                        { "sTitle": "AOL", "sType": "numeric" },
+                        { "sTitle": "AOL Outstream", "sType": "numeric" },
+                        { "sTitle": "bRealTime", "sType": "numeric" },
+                        { "sTitle": "Manual Revenue", "sType": "numeric" },
+                        { "sTitle": "All Sources", "sType": "numeric" } 
+                    ],                                                
+                    "aaSorting": [[ 0, "desc" ]]
+	            } );
+            	
+                
+            	$("#GeneretePayment").fancybox({            		
+            		'width'				: '30%',
+            		'height'			: '30%',
+                    'autoScale'     	: false,
+                    'transitionIn'		: 'none',
+            		'transitionOut'		: 'none',
+            		'type'				: 'iframe',
+            		'onClosed'			: function () { document.location = location.href; }
+            	});            	
+
+            	$("#tabs").tabs();
+                             	
+		        $(".fancyFrame").live('click', function(){
+		            $this = $(this);
+		            $.fancybox({
+		                'height': '75%',
+		                'width': '75%',
+		                'autoScale': false,
+		                'transitionIn': 'none',
+		                'href': $this.attr('href'),
+		                'type': 'iframe'
+		            });
+		            return false;
+		        })                             	
+        });
+        
+        function rubicon_15(value)
+        {                    
+            var res = 0;
+            if(value) res = value;
+            location.href='<?php echo $this->url(array('year'=>$this->year, 'month'=>$this->month, 'rubicon_15'=>'')) ?>/'+ res;
+        }
+        
+</script>
+
+<h1>Network Stats</h1>
+<div class="contUsL" style="width: 950px;">
+<!-- <p><a href="/administrator/index/generatenetwork/" title="Generate Network Stats" id="GeneretePayment">Generate Network Stats</a></p>-->
+<p><strong>Year:</strong>
+<?php
+    for($i=2011; $i<=date("Y"); $i++){
+        if($i==date("Y"))
+            echo "<a href='".$this->url(array('year'=>$i, 'month'=>date("n")))."'>$i</a>";
+        else
+            echo "<a href='".$this->url(array('year'=>$i, 'month'=>date("n")))."'>$i</a> | ";
+    }
+?>
+</p>
+<p><strong>Month:</strong>
+<?php
+    for($i=1; $i<=12; $i++){
+        if($i==date("n")){
+            echo "<a href='".$this->url(array('month'=>$i))."'>" .date("F", mktime(0, 0, 0, $i, 1, date("Y")))."</a>";
+            if(date("Y")==$this->year)
+                break;
+        }else{
+            echo "<a href='".$this->url(array('month'=>$i))."'>" .date("F", mktime(0, 0, 0, $i, 1, date("Y"))). "</a> | ";
+        }
+    }
+?>
+
+</p>
+
+<br><br>
+    <div id="tabs">
+		<ul>
+                    <li><a href="#tabs-1">Gross Revenue</a></li>
+                    <li><a href="#tabs-2">Paid To Publishers</a></li>
+                    <li><a href="#tabs-3">Profit</a></li>
+		</ul>
+<div id="tabs-1">
+    
+    <p>
+        <label for="rubicon_15" style="width: 160px;">Hide Rubicon's 15%</label>
+        <input type="checkbox" value="1" name="rubicon_15_1" style="width: 262px; height: 20px;" <?php echo $this->rubicon_15 ? 'checked' : '';?> onchange="rubicon_15($('input[name=rubicon_15_1]:checked').val())"/>
+    </p>
+    <div id="tableScroll">
+        <div id="tableRotate">
+<table width="950px" cellpadding="0" cellspacing="0" border="0" class="display" id="users1">
+	<thead>
+		<tr>
+                    <th width="15%">Date</th>
+                    <th width="15%">Rubicon</th>
+                    <th width="15%">Pubmatic</th>
+                    <th width="15%">Amazon</th>
+                    <th width="15%">PulsePoint</th>
+                    <th width="15%">PopAds</th>
+                    <th width="15%">Sekindo</th>
+                    <th width="15%">AOL</th>
+                    <th width="15%">AOL Outstream</th>
+                    <th width="15%">bRealTime</th>
+                    <th width="15%">Manual Revenue</th>
+                    <th width="15%">All Impressions</th>
+                    <th width="15%">All Sources</th>
+		</tr>
+	</thead>
+	<?php $totalCross = array(
+                                'Rubicom' => 0,
+                                'Pubmatic' => 0,
+                                'Amazon' => 0,
+                                'PulsePoint' => 0,
+                                'PopAds' => 0,
+                                'Sekindo'=>0,
+                                'aol'=>0,
+                                'aol_o'=>0,
+                                'brt'=>0,
+                                'RevMan' => 0,
+                                'Impressions' => 0,
+                                'All' => 0); 
+        
+                      if(count($this->data)):?>
+		<?php foreach ($this->data as $item):
+
+
+                                    $estimPubm = $item['GrossPubm']!=0 ? '' : '*';
+
+                                    $item['GrossPubm'] = $item['GrossPubm']!=0 ? $item['GrossPubm'] : $item['GrossPubmEstim'];
+                    				
+                                    $itemGrossRubicon = $this->rubicon_15 ? round($item['GrossRubicon'] * 0.85, 2) : $item['GrossRubicon'] ; 
+                                    $itemTotalCross = $itemGrossRubicon + $item['GrossPubm'] + $item['GrossRevMan'] + $item['GrossAmazon'] + $item['GrossPulsePoint'] + $item['GrossPop'] + $item['GrossSekindo'];
+                                    
+                                    $totalCross['Impressions'] += ($item['impressions_Rubicon']+$item['impressions_pubmatic']+$item['impressions_amazon']+$item['impressions_pulse']+$item['impressions_pop']+$item['impressions_sekindo']);
+                                    $totalCross['Rubicom'] += $itemGrossRubicon/*$item['GrossRubicon']*/;
+                                    $totalCross['Pubmatic'] += $item['GrossPubm']/*$item['GrossPubm']*/;
+                                    $totalCross['Amazon'] += $item['GrossAmazon'];
+                                    $totalCross['PulsePoint'] += $item['GrossPulsePoint'];
+                                    $totalCross['PopAds'] += $item['GrossPop'];
+                                    $totalCross['Sekindo'] += $item['GrossSekindo'];
+                                    $totalCross['aol'] += $item['GrossAol'];
+                                    $totalCross['aol_o'] += $item['GrossAol_o'];
+                                    $totalCross['brt'] += $item['GrossBrt'];
+                                    $totalCross['RevMan'] += $item['GrossRevMan']/*$item['GrossRevMan']*/;                                                                                                            
+                                    $totalCross['All'] += $itemTotalCross/*$item['GrossAll']*/; ?>
+		<tr>
+			<td><?php echo $item['Date']?></td>
+                        <td><?php echo $itemGrossRubicon /*$item['GrossRubicon']*/;?></td>
+                        <td><?php echo $item['GrossPubm'].$estimPubm /*$item['GrossBurst']*/;?></td>
+                        <td><?php echo $item['GrossAmazon'];?></td>
+                        <td><?php echo $item['GrossPulsePoint'];?></td>
+                        <td><?php echo $item['GrossPop'];?></td>
+                        <td><?php echo $item['GrossSekindo'];?></td>
+                        <td><?php echo $item['GrossAol'];?></td>
+                        <td><?php echo $item['GrossAol_o'];?></td>
+                        <td><?php echo $item['GrossBrt'];?></td>
+                        <td><?php echo $item['GrossRevMan']/*$item['GrossBurst']*/;?></td>
+                        <td><?php echo $item['impressions_Rubicon']+$item['impressions_pubmatic']+$item['impressions_amazon']+$item['impressions_pulse']+$item['impressions_pop']+$item['impressions_sekindo'];?></td>
+			<td><?php echo $itemTotalCross /*$item['GrossAll']*/?></td>
+		</tr>
+		<?php endforeach;?>
+	<?php endif;?>
+	<tfoot>
+		<tr>
+			<th>Date</th>
+                        <th>Rubicon (total: <?php echo $totalCross['Rubicom'];?>)</th>
+                        <th>Pubmatic (total: <?php echo $totalCross['Pubmatic'];?>)</th>
+                        <th>Amazon (total: <?php echo $totalCross['Amazon'];?>)</th>
+                        <th>PulsePoint (total: <?php echo $totalCross['PulsePoint'];?>)</th>
+                        <th>PopAds (total: <?php echo $totalCross['PopAds'];?>)</th>
+                        <th>Sekindo (total: <?php echo $totalCross['Sekindo'];?>)</th>
+                        <th>AOL (total: <?php echo $totalCross['aol'];?>)</th>
+                        <th>AOL Outstream (total: <?php echo $totalCross['aol_o'];?>)</th>
+                        <th>bRealTime (total: <?php echo $totalCross['brt'];?>)</th>
+                        <th>Manual Revenue (total: <?php echo $totalCross['RevMan'];?>)</th>
+                        <th>All Impressions (total: <?php echo $totalCross['Impressions'];?>)</th>
+                        <th>All Sources (total: <?php echo $totalCross['All'];?>)</th>
+		</tr>
+	</tfoot>
+</table>
+            </div>
+        </div>
+</div>
+
+<div id="tabs-2">
+    
+    <p>
+        <label for="rubicon_15" style="width: 160px;">Show Rubicon's 15%</label>
+        <input type="checkbox" value="1" name="rubicon_15_2" style="width: 262px; height: 20px;" <?php echo $this->rubicon_15 ? 'checked' : '';?> onchange="rubicon_15($('input[name=rubicon_15_2]:checked').val())"/>
+    </p>
+    <div id="tableScroll">
+        <div id="tableRotate">
+
+<table width="950px" cellpadding="0" cellspacing="0" border="0" class="display" id="users2">
+	<thead>
+		<tr>
+			<th width="15%">Date</th>
+                        <th width="25%">Rubicon</th>
+                        <th width="15%">Rubicon Total Impressions</th>
+                        <th width="15%">Rubicon Paid Impressions</th>
+                        <th width="15%">Pubmatic</th>
+                        <th width="15%">Pubmatic Total Impressions</th>
+                        <th width="15%">Pubmatic Paid Impressions</th>
+                        <th width="15%">Amazon</th>
+                        <th width="15%">Amazon Total Impressions</th>
+                        <th width="15%">Amazon Paid Impressions</th>
+                        <th width="15%">PulsePoint</th>
+                        <th width="15%">PulsePoint Total Impressions</th>
+                        <th width="15%">PulsePoint Paid Impressions</th>
+                        <th width="15%">PopAds</th>
+                        <th width="15%">PopAds Total Impressions</th>
+                        <th width="15%">PopAds Paid Impressions</th>
+                        <th width="15%">Sekindo</th>
+                        <th width="15%">Sekindo Total Impressions</th>
+                        <th width="15%">Sekindo Paid Impressions</th>
+                        <th width="15%">AOL</th>
+                        <th width="15%">AOL Total Impressions</th>
+                        <th width="15%">AOL Paid Impressions</th>
+                        <th width="15%">AOL Outstream</th>
+                        <th width="15%">AOL Outstream Total Impressions</th>
+                        <th width="15%">AOL Outstream Paid Impressions</th>
+                        <th width="15%">bRealTime</th>
+                        <th width="15%">bRealTime Total Impressions</th>
+                        <th width="15%">bRealTime Paid Impressions</th>
+                        <th width="15%">Manual Revenue</th>
+                        <th width="15%">All Total Impressions</th>
+                        <th width="15%">All Paid Impressions</th>
+                        <th width="15%">All Sources</th>
+		</tr>
+	</thead>
+	<?php   $totalPaid = array(
+                                'Rubicom' => 0,
+                                'impressions_Rubicon' => 0,
+                                'paid_impressions_RubiconCsv' => 0,
+                                'Pubmatic' => 0,
+                                'impressions_Pubmatic' => 0,
+                                'paid_impressions_Pubmatic' => 0,
+                                'Amazon' => 0,
+                                'impressions_Amazon' => 0,
+                                'paid_impressions_Amazon' => 0,
+                                'PulsePoint' => 0,
+                                'impressions_PulsePoint' => 0,
+                                'paid_impressions_Pulse' => 0,
+                                'PopAds' => 0,
+                                'impressions_Pop' => 0,
+                                'paid_impressions_Pop' => 0,
+                                'Sekindo' => 0,
+                                'impressions_Sekindo' => 0,
+                                'paid_impressions_Sekindo' => 0,
+                                'aol' => 0,
+                                'impressions_aol' => 0,
+                                'paid_impressions_aol' => 0,
+                                'aol_o' => 0,
+                                'impressions_aol_o' => 0,
+                                'paid_impressions_aol_o' => 0,
+                                'brt' => 0,
+                                'impressions_brt' => 0,
+                                'paid_impressions_brt' => 0,
+                                'RevMan' => 0,
+                                'Impressions' => 0,
+                                'PaidImpressions' => 0,
+                                'All' => 0);     
+        
+                      if(count($this->data)):?>
+		<?php foreach ($this->data as $item):
+                                        
+
+                                    $estimPubm = $item['PaidPubm']!=0 ? '' : '*';
+
+                                    $item['PaidPubm'] = $item['PaidPubm']!=0 ? $item['PaidPubm'] : $item['PaidPubmEstim'];
+                                        
+                                    $totalPaid['Rubicom'] += $item['PaidRubicon'];
+                                    $totalPaid['impressions_Rubicon'] += $item['impressions_Rubicon'];
+                                    $totalPaid['paid_impressions_RubiconCsv'] += $item['paid_impressions_RubiconCsv'];
+                                    $totalPaid['Pubmatic'] += $item['PaidPubm']/*$item['PaidPubm']*/;
+                                    $totalPaid['impressions_Pubmatic'] += $item['impressions_pubmatic'];
+                                    $totalPaid['paid_impressions_Pubmatic'] += $item['paid_impressions_pubmatic'];
+                                    $totalPaid['Amazon'] += $item['PaidAmazon'];
+                                    $totalPaid['impressions_Amazon'] += $item['impressions_amazon'];
+                                    $totalPaid['paid_impressions_Amazon'] += $item['paid_impressions_amazon'];
+                                    $totalPaid['PulsePoint'] += $item['PaidPulsePoint'];
+                                    $totalPaid['impressions_PulsePoint'] += $item['impressions_pulse'];
+                                    $totalPaid['paid_impressions_Pulse'] += $item['paid_impressions_pulse'];
+                                    $totalPaid['PopAds'] += $item['PaidPop'];
+                                    $totalPaid['impressions_Pop'] += $item['impressions_pop'];
+                                    $totalPaid['paid_impressions_Pop'] += $item['paid_impressions_pop'];
+                                    $totalPaid['Sekindo'] += $item['PaidSekindo'];
+                                    $totalPaid['impressions_Sekindo'] += $item['impressions_sekindo'];
+                                    $totalPaid['paid_impressions_Sekindo'] += $item['paid_impressions_sekindo'];
+                                    $totalPaid['aol'] += $item['PaidAol'];
+                                    $totalPaid['impressions_aol'] += $item['impressions_aol'];
+                                    $totalPaid['paid_impressions_aol'] += $item['paid_impressions_aol'];
+                                    $totalPaid['aol_o'] += $item['PaidAol_o'];
+                                    $totalPaid['impressions_aol_o'] += $item['impressions_aol_o'];
+                                    $totalPaid['paid_impressions_aol_o'] += $item['paid_impressions_aol_o'];
+                                    $totalPaid['brt'] += $item['PaidBrt'];
+                                    $totalPaid['impressions_brt'] += $item['impressions_brt'];
+                                    $totalPaid['paid_impressions_brt'] += $item['paid_impressions_brt'];
+                                    $totalPaid['RevMan'] += $item['PaidRevMan']/*$item['PaidRevMan']*/;
+                                    $totalPaid['Impressions'] += ($item['impressions_Rubicon']+$item['impressions_pubmatic']+$item['impressions_amazon']+$item['impressions_pulse']+$item['impressions_pop']+$item['impressions_sekindo'])/*$item['GrossBurst']*/;
+                                    $totalPaid['PaidImpressions'] += ($item['paid_impressions_RubiconCsv']+$item['paid_impressions_pubmatic']+$item['paid_impressions_amazon']+$item['paid_impressions_pulse']+$item['paid_impressions_pop']+$item['paid_impressions_sekindo']);
+                                    $totalPaid['All'] += ($item['PaidRubicon']+$item['PaidPubm']+$item['PaidRevMan']+$item['PaidAmazon']+$item['PaidPulsePoint']+$item['PaidPop']+$item['PaidSekindo']); ?>
+		<tr>
+			<td><?php echo $item['Date']?></td>
+                        <td><?php echo $item['PaidRubicon'];?></td>
+                        <td><?php echo $item['impressions_Rubicon']?></td>
+                        <td><?php echo $item['paid_impressions_RubiconCsv']?></td>
+                        <td><?php echo $item['PaidPubm'].$estimPubm;?></td>
+                        <td><?php echo $item['impressions_pubmatic']?></td>
+                        <td><?php echo $item['paid_impressions_pubmatic']?></td>
+                        <td><?php echo $item['PaidAmazon'];?></td>
+                        <td><?php echo $item['impressions_amazon'];?></td>
+                        <td><?php echo $item['paid_impressions_amazon'];?></td>
+                        <td><?php echo $item['PaidPulsePoint'];?></td>
+                        <td><?php echo $item['impressions_pulse'];?></td>
+                        <td><?php echo $item['paid_impressions_pulse'];?></td>
+                        <td><?php echo $item['PaidPop'];?></td>
+                        <td><?php echo $item['impressions_pop'];?></td>
+                        <td><?php echo $item['paid_impressions_pop'];?></td>
+                        <td><?php echo $item['PaidSekindo'];?></td>
+                        <td><?php echo $item['impressions_sekindo'];?></td>
+                        <td><?php echo $item['paid_impressions_sekindo'];?></td>                        
+                        <td><?php echo $item['PaidAol'];?></td>
+                        <td><?php echo $item['impressions_aol'];?></td>
+                        <td><?php echo $item['paid_impressions_aol'];?></td>
+                        <td><?php echo $item['PaidAol_o'];?></td>
+                        <td><?php echo $item['impressions_aol_o'];?></td>
+                        <td><?php echo $item['paid_impressions_aol_o'];?></td>
+                        <td><?php echo $item['PaidBrt'];?></td>
+                        <td><?php echo $item['impressions_brt'];?></td>
+                        <td><?php echo $item['paid_impressions_brt'];?></td>                        
+                        <td><?php echo $item['PaidRevMan'];?></td>
+                        <td><?php echo $item['impressions_Rubicon']+$item['impressions_pubmatic']+$item['impressions_amazon']+$item['impressions_pulse']+$item['impressions_pop']+$item['impressions_sekindo'];?></td>
+                        <td><?php echo $item['paid_impressions_RubiconCsv']+$item['paid_impressions_pubmatic']+$item['paid_impressions_amazon']+$item['paid_impressions_pulse']+$item['paid_impressions_pop']+$item['paid_impressions_sekindo'];?></td>
+                        <td><?php echo $item['PaidRubicon']+$item['PaidPubm']+$item['PaidRevMan']+$item['PaidAmazon']+$item['PaidPulsePoint']+$item['PaidPop']+$item['PaidSekindo']; ?></td>
+		</tr>
+		<?php endforeach;?>
+	<?php endif;?>
+	<tfoot>
+		<tr>
+			<th>Date</th>
+                        <th>Rubicon (total: <?php echo $totalPaid['Rubicom'];?>)</th>
+                        <th>Rubicon Total Impressions (total: <?php echo $totalPaid['impressions_Rubicon'];?>)</th>
+                        <th>Rubicon Paid Impressions (total: <?php echo $totalPaid['paid_impressions_RubiconCsv'];?>)</th>
+                        <th>Pubmatic (total: <?php echo $totalPaid['Pubmatic'];?>)</th>
+                        <th>Pubmatic Total Impressions (total: <?php echo $totalPaid['impressions_Pubmatic'];?>)</th>
+                        <th>Pubmatic Paid Impressions (total: <?php echo $totalPaid['paid_impressions_Pubmatic'];?>)</th>
+                        <th>Amazon (total: <?php echo $totalPaid['Amazon'];?>)</th>
+                        <th>Amazon Total Impressions (total: <?php echo $totalPaid['impressions_Amazon'];?>)</th>
+                        <th>Amazon Paid Impressions (total: <?php echo $totalPaid['paid_impressions_Amazon'];?>)</th>
+                        <th>PulsePoint (total: <?php echo $totalPaid['PulsePoint'];?>)</th>
+                        <th>PulsePoint Total Impressions (total: <?php echo $totalPaid['impressions_PulsePoint'];?>)</th>
+                        <th>PulsePoint Paid Impressions (total: <?php echo $totalPaid['paid_impressions_Pulse'];?>)</th>
+                        <th>PopAds (total: <?php echo $totalPaid['PopAds'];?>)</th>
+                        <th>PopAds Total Impressions (total: <?php echo $totalPaid['impressions_Pop'];?>)</th>
+                        <th>PopAds Paid Impressions (total: <?php echo $totalPaid['paid_impressions_Pop'];?>)</th>
+                        <th>Sekindo (total: <?php echo $totalPaid['Sekindo'];?>)</th>
+                        <th>Sekindo Total Impressions (total: <?php echo $totalPaid['impressions_Sekindo'];?>)</th>
+                        <th>Sekindo Paid Impressions (total: <?php echo $totalPaid['paid_impressions_Sekindo'];?>)</th>                        
+                        <th>AOL (total: <?php echo $totalPaid['aol'];?>)</th>
+                        <th>AOL Total Impressions (total: <?php echo $totalPaid['impressions_aol'];?>)</th>
+                        <th>AOL Paid Impressions (total: <?php echo $totalPaid['paid_impressions_aol'];?>)</th>
+                        <th>AOL Outstream (total: <?php echo $totalPaid['aol_o'];?>)</th>
+                        <th>AOL Outstream Total Impressions (total: <?php echo $totalPaid['impressions_aol_o'];?>)</th>
+                        <th>AOL Outstream Paid Impressions (total: <?php echo $totalPaid['paid_impressions_aol_o'];?>)</th>
+                        <th>bRealTime (total: <?php echo $totalPaid['brt'];?>)</th>
+                        <th>bRealTime Total Impressions (total: <?php echo $totalPaid['impressions_brt'];?>)</th>
+                        <th>bRealTime Paid Impressions (total: <?php echo $totalPaid['paid_impressions_brt'];?>)</th>                        
+                        <th>Manual Revenue (total: <?php echo $totalPaid['RevMan'];?>)</th>
+                        <th>All Total Impressions (total: <?php echo $totalPaid['Impressions'];?>)</th>
+                        <th>All Paid Impressions (total: <?php echo $totalPaid['PaidImpressions'];?>)</th>
+                        <th>All Sources (total: <?php echo $totalPaid['All'];?>)</th>
+		</tr>
+	</tfoot>
+</table>
+            </div>
+        </div>
+</div>
+
+<div id="tabs-3">
+    
+    <p>
+        <label for="rubicon_15" style="width: 160px;">Show Rubicon's 15%</label>
+        <input type="checkbox" value="1" name="rubicon_15_3" style="width: 262px; height: 20px;" <?php echo $this->rubicon_15 ? 'checked' : '';?> onchange="rubicon_15($('input[name=rubicon_15_3]:checked').val())"/>
+    </p>
+    <div id="tableScroll">
+        <div id="tableRotate">
+
+<table width="950px" cellpadding="0" cellspacing="0" border="0" class="display" id="users3">
+	<thead>
+		<tr>
+			<th width="15%">Date</th>
+                        <th width="25%">Rubicon</th>
+                        <th width="15%">Pubmatic</th>
+                        <th width="15%">Amazon</th>
+                        <th width="15%">PulsePoint</th>
+                        <th width="15%">PopAds</th>
+                        <th width="15%">Sekindo</th>
+                        <th width="15%">AOL</th>
+                        <th width="15%">AOL Outstream</th>
+                        <th width="15%">bRealTime</th>
+                        <th width="15%">Manual Revenue</th>
+                        <th width="15%">All Sources</th>
+		</tr>
+	</thead>
+	<?php $totalProfit = array(
+                                'Rubicom' => 0,
+                                'Pubmatic' => 0,
+                                'Amazon' => 0,
+                                'PulsePoint' => 0,
+                                'PopAds' => 0,
+                                'Sekindo' => 0,
+                                'Aol' => 0,
+                                'Aol_o' => 0,
+                                'Brt' => 0,
+                                'RevMan' => 0,                                   
+                                'All' => 0); 
+                   
+                      if(count($this->data)):?>
+		<?php foreach ($this->data as $key => $item):
+                    
+
+                                    $estimPubm = $item['ProfitPubm']!=0 ? '' : '*';
+
+                                    $item['ProfitPubm'] = $item['ProfitPubm']!=0 ? $item['ProfitPubm'] : $item['ProfitPubmEstim'];                    
+                                    $item['PaidPubm'] = $item['PaidPubm']!=0 ? $item['PaidPubm'] : $item['PaidPubmEstim'];
+                                    $item['GrossPubm'] = $item['GrossPubm']!=0 ? $item['GrossPubm'] : $item['GrossPubmEstim'];
+
+
+                                    $item['PaidAll'] = $item['PaidRubicon']+$item['PaidPubm']+$item['PaidRevMan']+$item['PaidAmazon']+$item['PaidPulsePoint']+$item['PaidPop']+$item['PaidSekindo']+$item['PaidAol']+$item['PaidAol_o']+$item['PaidBrt'];
+                    
+                                    $itemGrossRubicon = $this->rubicon_15 ? round($item['GrossRubicon'] * 0.85, 2) : $item['GrossRubicon'] ; 
+                                    $itemTotalCross = $itemGrossRubicon + $item['GrossPubm']+$item['GrossRevMan']+$item['GrossAmazon']+$item['GrossPulsePoint']+$item['GrossPop']+$item['GrossSekindo'];
+                                    
+                                    $itemProfitRubicon = $itemGrossRubicon - $item['PaidRubicon'];
+                                    $itemProfitAll = $itemTotalCross - $item['PaidAll'];
+                                    $itemProfitPubm = $item['GrossPubm'] - $item['PaidPubm'];
+                                    $itemProfitMan = $item['GrossRevMan'] - $item['PaidRevMan'];
+                                    $itemProfitAmazon = $item['GrossAmazon'] - $item['PaidAmazon'];
+                                    $itemProfitPulsePoint = $item['GrossPulsePoint'] - $item['PaidPulsePoint'];
+                                    $itemProfitPop = $item['GrossPop'] - $item['PaidPop'];
+                                    $itemProfitSekindo = $item['GrossSekindo'] - $item['PaidSekindo'];
+                                    $itemProfitAol = $item['GrossAol'] - $item['PaidAol'];
+                                    $itemProfitAol_o = $item['GrossAol_o'] - $item['PaidAol_o'];
+                                    $itemProfitBrt = $item['GrossBrt'] - $item['PaidBrt'];
+
+                                    $totalProfit['Rubicom'] += $itemProfitRubicon /*$item['ProfitRubicon']*/;
+                                    $totalProfit['Pubmatic'] += $itemProfitPubm;
+                                    $totalProfit['Amazon'] += $itemProfitAmazon;
+                                    $totalProfit['PulsePoint'] += $itemProfitPulsePoint;
+                                    $totalProfit['PopAds'] += $itemProfitPop;
+                                    $totalProfit['Sekindo'] += $itemProfitSekindo;
+                                    $totalProfit['Aol'] += $itemProfitAol;
+                                    $totalProfit['Aol_o'] += $itemProfitAol_o;
+                                    $totalProfit['Brt'] += $itemProfitBrt;
+                                    $totalProfit['RevMan'] += $itemProfitMan;
+                                    $totalProfit['All'] += $itemProfitAll /*$item['ProfitAll']*/; ?>
+		<tr>
+			<td><?php echo $item['Date']?></td>
+                        <td><?php echo $itemProfitRubicon /*$item['ProfitRubicon']*/;?></td>
+                        <td><?php echo $itemProfitPubm.$estimPubm /*$item['ProfitBurst']*/;?></td>
+                        <td><?php echo $itemProfitAmazon;?></td>
+                        <td><?php echo $itemProfitPulsePoint;?></td>
+                        <td><?php echo $itemProfitPop;?></td>
+                        <td><?php echo $itemProfitSekindo;?></td>
+                        <td><?php echo $itemProfitAol;?></td>
+                        <td><?php echo $itemProfitAol_o;?></td>
+                        <td><?php echo $itemProfitBrt;?></td>
+                        <td><?php echo $itemProfitMan /*$item['ProfitBurst']*/;?></td>
+			<td><?php echo $itemProfitAll /*$item['ProfitAll']*/?></td>
+		</tr>
+		<?php endforeach;?>
+	<?php endif;?>
+	<tfoot>
+		<tr>
+			<th>Date</th>
+                        <th>Rubicon (total: <?php echo $totalProfit['Rubicom'];?>)</th>
+                        <th>Pubmatic (total: <?php echo $totalProfit['Pubmatic'];?>)</th>
+                        <th>Amazon (total: <?php echo $totalProfit['Amazon'];?>)</th>
+                        <th>PulsePoint (total: <?php echo $totalProfit['PulsePoint'];?>)</th>
+                        <th>PopAds (total: <?php echo $totalProfit['PopAds'];?>)</th>
+                        <th>Sekindo (total: <?php echo $totalProfit['Sekindo'];?>)</th>
+                        <th>Aol (total: <?php echo $totalProfit['Aol'];?>)</th>
+                        <th>Aol Outstream (total: <?php echo $totalProfit['Aol_o'];?>)</th>
+                        <th>bRealTime (total: <?php echo $totalProfit['Brt'];?>)</th>
+                        <th>Manual Revenue (total: <?php echo $totalProfit['RevMan'];?>)</th>
+                        <th>All Sources (total: <?php echo $totalProfit['All'];?>)</th>
+		</tr>
+	</tfoot>
+</table>
+            </div>
+        </div>
+</div>
+	</div>
+</div> 
+<script type="text/javascript" src="/font/cufon-yui.js"></script>
+<script type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#topMenu a', {hover: true});	
+		Cufon.replace('#topMenu a');
+</script>
+<script type="text/javascript" src="/font/Headline_Two_400.font.js"></script>
+<script type="text/javascript">
+	Cufon.replace('.contInf h3', {hover: true});	
+	Cufon.replace('.contInf h3');
+	Cufon.replace('.contInf h3.white', {color: '#FFF'});	
+	Cufon.replace('.footerBann h5');		
+	Cufon.replace('.footerBann p');	
+	Cufon.replace('.footerBann a', {hover: true});		
+    Cufon.replace('h1');		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Lt_300.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#footCopyr');	
+		Cufon.replace('.contInf p', {hover: true});		
+		Cufon.replace('.contInf p', {color: '#333333'});	
+		Cufon.replace('.contInf p.white', {color: '#FFF'});	
+		Cufon.replace('.fMenu a', {textDecoration: 'underline'});		
+		
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Rg_700.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('.fMenu h4');
+</script>

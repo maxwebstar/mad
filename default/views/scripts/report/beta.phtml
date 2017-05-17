@@ -1,0 +1,162 @@
+<style type="text/css">
+    #mask{position: fixed;height: 100%;width: 100%;display: none;opacity: 0.3;filter: alpha(opacity=30);background-color: #000000;z-index: 9000;left:0;top:0;}
+    #loading{position: fixed;display: none;z-index: 10000;left: 50%;top: 44%;}
+</style>
+
+<div class="reportTop">
+    <p class="sizeSel">
+        <select id="ad_size">
+            <option value="">All Media Types</option>
+            <?php foreach($this->ad_sizes as $ad_size): ?>
+                <option value="<?php echo $ad_size->id; ?>"><?php echo htmlentities($ad_size->name); ?></option>
+            <?php endforeach; ?>
+        </select>
+    </p>
+    <p class="sizeSel">
+        <select id="site">
+            <option value="">All Sites</option>
+            <?php foreach($this->sites as $site): ?>
+                <option value="<?php echo $site["SiteID"]; ?>"><?php echo htmlentities($site["SiteName"]); ?></option>
+            <?php endforeach; ?>
+        </select>
+    </p>
+    <p class="sizeSel">
+        <select id="range">
+            <option value="<?php echo $this->rangeToday ?>">Today</option>
+            <option value="<?php echo $this->rangeYest ?>">Yesterday</option>
+            <option value="<?php echo $this->rangeLast7 ?>">Last 7 Days</option>
+            <option value="<?php echo $this->rangeLast30 ?>">Last 30 Days</option>
+            <option value="<?php echo $this->rangeThisMonth ?>" selected>This Month</option>
+            <option value="<?php echo $this->rangePrevMonth ?>">Last Month</option>
+            <option value="<?php echo $this->rangeAll ?>">All Time</option>
+        </select>
+    </p>
+    <p class="sizeSel">
+        <input type="text" value="<?php echo date("M j, Y", time()-86400*(date("j")-1)); ?>" id="dateStart" class="dateRange datepicker" />
+    </p>
+    <p class="sizeSel">
+        <input type="text" value="<?php echo date("M j, Y"); ?>" id="dateFinish" class="dateRange datepicker" />
+    </p>
+    <p class="sizeSel">
+        <a id="update" class="dUpdlBtn" href="#" style="width:75px;">Update</a>
+    </p>
+</div>
+<div class="reportBox" style="float: left;">
+    <table cellpadding="0" class="display" cellspacing="0" id="reportTbl">
+        <thead>
+        <tr>
+            <th>Date</th>
+            <th>Impressions</th>
+            <th>Paid Impressions</th>
+            <th>eCPM</th>
+            <th class="lastTh">Revenue</th>
+        </tr>
+        </thead>
+        <tbody>
+        </tbody>
+        <tfoot>
+        <tr>
+            <td class="total">Totals </td>
+            <td class="total" id="impressAll">0</td>
+            <td class="total" id="impressPaidAll">0</td>
+            <td class="total" id="ecpmAll">$0.00</td>
+            <td class="total lastTd" id="revenueAll">$0.00</td>
+        </tr>
+        </tfoot>
+    </table>
+</div>
+
+<div id="mask"></div>
+<div id="loading"><img src="/images/ajax_loader_reports.gif" /></div>
+
+<script	type="text/javascript" src="/font/cufon-yui.js"></script>
+<script	type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script type="text/javascript">
+    Cufon.replace('#topMenu a', {hover: true});
+    Cufon.replace('#topMenu a');
+</script><script	type="text/javascript" src="/font/Headline_Two_400.font.js"></script><script type="text/javascript">
+    Cufon.replace('.footerBann h5');
+    Cufon.replace('.footerBann p');
+    Cufon.replace('.footerBann a', {hover: true});
+</script><script	type="text/javascript" src="/font/Proxima_Nova_Lt_300.font.js"></script><script type="text/javascript">
+    Cufon.replace('#footCopyr');
+    Cufon.replace('.fMenu a', {textDecoration: 'underline'});
+    Cufon.replace('.publisher h4');
+    Cufon.replace('.publisher h4 span');
+    Cufon.replace('.publMail a');
+    Cufon.replace('.logOut span');
+</script><script	type="text/javascript" src="/font/Proxima_Nova_Rg_700.font.js"></script><script type="text/javascript">
+    Cufon.replace('.fMenu h4');
+    Cufon.replace('.reportTop h5');
+    Cufon.replace('.estimate h5');
+</script>
+<script	type="text/javascript" src="/js/calendar.js.js"></script>
+<script type="text/javascript">
+    $(function(){
+        $(".datepicker").datepicker({dateFormat: 'M d, yy'});
+        $('#range').change(function(){
+
+            var period = $('#range option:selected').val();
+            var str = period.split('_');
+
+            $('#dateStart').val(str[0]);
+            $('#dateFinish').val(str[1]);
+
+        });
+
+        getReport();
+
+        $("#update").click(function(){
+            getReport();
+            return false;
+        })
+    });
+
+    function getReport()
+    {
+        var tableObj = $('#reportTbl');
+        $.ajax({ url : '/default/report/beta-ajax',
+            data : {
+                ad_size : $("#ad_size option:selected").val(),
+                site: $("#site").val(),
+                dateStart: $("#dateStart").val(),
+                dateFinish: $("#dateFinish").val()
+            },
+            async: true,
+            dataType : "json",
+            type: "POST",
+            beforeSend: function(){
+                display('block');
+                $("tbody", tableObj).empty();
+                $("#impressAll").html('0');
+                $("#impressPaidAll").html('0');
+                $("#ecpmAll").html('$0.00');
+                $("#revenueAll").html('$0.00');
+            },
+            success : function(response) {
+                display('none');
+                if(response.status=='OK'){
+                    $.each(response.report, function (index, value){
+                        tableObj.append("<tr><td>"+value.date+"</td><td>"+value.impressions+"</td><td>"+value.paid_impressions+"</td><td>"+value.cpm+"</td><td>"+value.revenue_paid+"</td></tr>");
+                    });
+
+                    $("#impressAll").html(response.total.totalImpressions);
+                    $("#impressPaidAll").html(response.total.totalPaidImpressions);
+                    $("#ecpmAll").html(response.total.totalCpm);
+                    $("#revenueAll").html(response.total.totalPaidRevenue);
+
+                }
+            }, error : function(){
+                display('none');
+                alert("ERROR!!!");
+            }
+        });
+
+    }
+
+    function display(status)
+    {
+        $('#mask').css('display', status);
+        $('#loading').css('display', status);
+    }
+</script>

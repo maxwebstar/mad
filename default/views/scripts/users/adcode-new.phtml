@@ -1,0 +1,1667 @@
+<style>
+	#reportL{ min-height: 1450px; }
+        .checkbox-slider{ display: block; margin-top: 2px; }
+        .checkbox-slider label{ float: left; margin-bottom: 2px; margin-left: 5px; padding: 0px; font-size: 13px; width: 400px; }
+        .checkbox-slider input{ float: left; height: 16px; width: 16px; }
+</style>
+<script type="text/javascript">
+	$(document).ready(function()
+	{
+	    $("textarea").click(function(){
+	        $(this).focus();
+	        $(this).select();
+	    });
+    
+	    $("#tabs").tabs();
+
+	    $(".NewAdsize").click(function()
+	    {
+		    var button = $(this);
+			var banner_params = $(this).attr('data-banner');
+			if($(this).attr('data-type') == 'admanager')
+			{
+				$.ajax(
+						{
+							  type: 'POST',
+							  url: '/users/request-banner',
+							  dataType: 'json',
+							  data: {
+								  banner_params : banner_params,
+								  site_id: <?php echo $this->siteID;?>,	
+								  },
+							  success: function(data)
+							  {
+								console.log(data);
+							  	if(data.status != undefined)
+							  	{
+									if(data.status == 0)
+									{
+										$("a[data-banner='"+banner_params+"']").html('Request Submitted');
+										$("#message").prepend('<div style="margin-top: 5px;background-color:green; border:1px solid green; display:block; width:750px; color:#FFF; font-weight:bold; font-size:16px; text-align:center; float: left;">Your request for size '+banner_params+' has been submitted.<br>You should receive a confirmation with 48 hours of approval.</div><br><br>');
+									}
+								}
+							  }
+						});
+			}
+			else if($(this).attr('data-type') == 'rubicon')
+			{
+				$.ajax(
+						{
+							  type: 'POST',
+							  url: '/users/request-mobile',
+							  dataType: 'json',
+							  data: {
+								  site_id: <?php echo $this->siteID;?>,	
+								  },
+							  success: function(data)
+							  {
+								console.log(data);
+							  	if(data.status != undefined)
+							  	{
+									if(data.status == 0)
+									{
+										$("a[data-banner='"+banner_params+"']").html('Request Submitted');
+										$("#message").prepend('<div style="margin-top: 5px;background-color:green; border:1px solid green; display:block; width:750px; color:#FFF; font-weight:bold; font-size:16px; text-align:center; float: left;">Your request for size '+banner_params+' has been submitted.<br>You should receive a confirmation with 48 hours of approval.</div><br><br>');
+										
+									}
+								}
+							  }
+						});
+			}
+			return false;
+		});
+		
+	    $(".IframeRequest").click(function()
+	    {
+			$.ajax(
+				{
+				  type: 'POST',
+				  url: '/users/request-iframe',
+				  dataType: 'json',
+				  data: {
+					  site_id: <?php echo $this->siteID;?>,	
+					  },
+				  success: function(data)
+				  {
+				  	if(data.status != undefined)
+				  	{
+						if(data.status == 1)
+						{
+							$(".IframeRequest").html('Request Submitted');
+							$("#message").prepend('<div style="margin-top: 5px;background-color:green; border:1px solid green; display:block; width:750px; color:#FFF; font-weight:bold; font-size:16px; text-align:center; float: left;">Your request for Iframe Tags has been submitted.<br>You should receive a confirmation with 48 hours of approval.</div><br><br>');
+						}
+					}
+				  }
+				});
+			return false;
+		});	
+		
+	    $(".BurstRequest").click(function()
+	    {
+			$.ajax(
+				{
+				  type: 'POST',
+				  url: '/users/request-new-burst',
+				  dataType: 'json',
+				  data: {
+					  site_id: <?php echo $this->siteID;?>,	
+					  },
+				  success: function(data)
+				  {
+				  	if(data.status != undefined)
+				  	{
+						if(data.status == 1)
+						{
+							$(".BurstRequest").html('Request Submitted');
+							//$("#message").prepend('<div style="margin-top: 5px;background-color:green; border:1px solid green; display:block; width:750px; color:#FFF; font-weight:bold; font-size:16px; text-align:center; float: left;">Your request for Iframe Tags has been submitted.<br>You should receive a confirmation with 48 hours of approval.</div><br><br>');
+						}
+					}
+				  }
+				});
+			return false;
+		});					
+	});
+        
+        function modefiTextArea(type, size)
+        {
+            var checked = $('#checkbox-slider-'+type+'-'+size+':checked').val();
+              
+            if(checked){ 
+            
+                    switch(size)
+                    { 
+                         case '728x90':
+
+                            var value = "<!-- MadAdsMedia.com Asynchronous Ad Tag For <?php echo $this->siteName['name'] ?> -->\r\n";
+                                value += "<!-- Size: 728x90 -->\r\n";
+                                value += "<script data-cfasync=\"false\" src=\"http://ads-by.madadsmedia.com/tags/<?php echo $this->userID.'/'.$this->siteID;?>/async/slider/728x90.js\" type=\"text/javascript\"></scr"+"ipt>\r\n";                
+                                value += "<!-- MadAdsMedia.com Asynchronous Ad Tag For <?php echo $this->siteName['name'] ?> -->\r\n";
+                                
+                                $('#textare-'+type+'-'+size).val(value);
+
+                          break;
+                          case '300x250':
+
+                            var value = "<!-- MadAdsMedia.com Asynchronous Ad Tag For <?php echo $this->siteName['name'] ?> -->\r\n";
+                                value += "<!-- Size: 300x250 -->\r\n";
+                                value += "<script data-cfasync=\"false\" src=\"http://ads-by.madadsmedia.com/tags/<?php echo $this->userID.'/'.$this->siteID;?>/async/slider/300x250.js\" type=\"text/javascript\"></scr"+"ipt>\r\n";                
+                                value += "<!-- MadAdsMedia.com Asynchronous Ad Tag For <?php echo $this->siteName['name'] ?> -->\r\n";	
+
+                                $('#textare-'+type+'-'+size).val(value);
+
+                          break;
+                          default : break; 
+                    }      
+ 
+                 } else { 
+                  
+                    switch(size)
+                    { 
+                         case '728x90':
+
+                                    var value = "<!-- MadAdsMedia.com Asynchronous Ad Tag For <?php echo $this->siteName['name'] ?> -->\r\n";
+                                        value += "<!-- Size: 728x90 -->\r\n";
+                                        value += "<script data-cfasync=\"false\" src=\"http://ads-by.madadsmedia.com/tags/<?php echo $this->userID.'/'.$this->siteID;?>/async/728x90.js\" type=\"text/javascript\"></scr"+"ipt>\r\n";
+                                        value += "<!-- MadAdsMedia.com Asynchronous Ad Tag For <?php echo $this->siteName['name'] ?> -->\r\n";	
+
+                                    $('#textare-'+type+'-'+size).val(value);    
+
+                          break;
+                          case '300x250':
+
+                              var value = "<!-- MadAdsMedia.com Asynchronous Ad Tag For <?php echo $this->siteName['name'] ?> -->\r\n";
+                                        value += "<!-- Size: 300x250 -->\r\n";
+                                        value += "<script data-cfasync=\"false\" src=\"http://ads-by.madadsmedia.com/tags/<?php echo $this->userID.'/'.$this->siteID;?>/async/300x250.js\" type=\"text/javascript\"></scr"+"ipt>\r\n";
+                                        value += "<!-- MadAdsMedia.com Asynchronous Ad Tag For <?php echo $this->siteName['name'] ?> -->\r\n";
+                                        
+                              $('#textare-'+type+'-'+size).val(value);          
+
+                          break;
+                          default : break; 
+                    }      
+              }           
+        }
+        
+        function modefiIFrameTextArea(size)
+        {
+            var checked = $('#checkbox-slider-iframe-'+size+':checked').val();
+
+                if(checked)
+                { 
+                    switch(size)
+                    { 
+                         case '728x90':
+
+                            var value = "<!-- MadAdsMedia.com Iframe Ad Tag For <?php echo $this->siteName['name'] ?> -->\r\n";
+                                value += "<!-- Size: 728x90 -->\r\n";
+                                value += "<iframe src=\"http://ads-by.madadsmedia.com/tags/<?php echo $this->userID.'/'.$this->siteID;?>/iframe/slider/728x90.html\" width=\"728\" height=\"90\" style=\"position: fixed; bottom: 0px; left: 50%; margin-left: -364px; z-index: 10000;\" scrolling=\"no\" frameborder=\"0\" marginwidth=\"0\" marginheight=\"0\" ></iframe>\r\n";
+                                value += "<!-- MadAdsMedia.com Iframe Ad Tag For <?php echo $this->siteName['name'] ?> -->\r\n";
+                                
+                                /*$('#textare-iframe-'+size).val(value);*/ 
+
+                          break;
+                          case '300x250':
+
+                            var value = "<!-- MadAdsMedia.com Iframe Ad Tag For <?php echo $this->siteName['name'] ?> -->\r\n";
+                                value += "<!-- Size: 300x250 -->\r\n";
+                                value += "<iframe src=\"http://ads-by.madadsmedia.com/tags/<?php echo $this->userID.'/'.$this->siteID;?>/iframe/slider/300x250.html\" width=\"300\" height=\"250\" style=\"position: fixed; bottom: 0px; right: 0px; z-index: 10000;\" scrolling=\"no\" frameborder=\"0\" marginwidth=\"0\" marginheight=\"0\" ></iframe>\r\n";
+                                value += "<!-- MadAdsMedia.com Iframe Ad Tag For <?php echo $this->siteName['name'] ?> -->\r\n";	
+
+                                /*$('#textare-iframe-'+size).val(value);*/ 
+
+                          break;
+                          default : break; 
+                    }      
+
+                } else {
+
+                    switch(size)
+                    { 
+                         case '728x90':
+
+                            var value = "<!-- MadAdsMedia.com Iframe Ad Tag For <?php echo $this->siteName['name'] ?> -->\r\n";
+                                value += "<!-- Size: 728x90 -->\r\n";
+                                value += "<iframe src=\"http://ads-by.madadsmedia.com/tags/<?php echo $this->userID.'/'.$this->siteID;?>/iframe/728x90.html\" width=\"728\" height=\"90\" scrolling=\"no\" frameborder=\"0\" marginwidth=\"0\" marginheight=\"0\" ></iframe>\r\n";
+                                value += "<!-- MadAdsMedia.com Iframe Ad Tag For <?php echo $this->siteName['name'] ?> -->\r\n";
+                                
+                                /*$('#textare-iframe-'+size).val(value);*/ 
+
+                          break;
+                          case '300x250':
+
+                            var value = "<!-- MadAdsMedia.com Iframe Ad Tag For <?php echo $this->siteName['name'] ?> -->\r\n";
+                                value += "<!-- Size: 300x250 -->\r\n";
+                                value += "<iframe src=\"http://ads-by.madadsmedia.com/tags/<?php echo $this->userID.'/'.$this->siteID;?>/iframe/300x250.html\" width=\"300\" height=\"250\" scrolling=\"no\" frameborder=\"0\" marginwidth=\"0\" marginheight=\"0\" ></iframe>\r\n";
+                                value += "<!-- MadAdsMedia.com Iframe Ad Tag For <?php echo $this->siteName['name'] ?> -->\r\n";	
+
+                                /*$('#textare-iframe-'+size).val(value);*/ 
+
+                          break;
+                          default : break; 
+                    }      
+                }     
+    
+        }
+        
+</script>
+<?php if(!$this->noitems): ?>
+	<h1 class="applTitle">Generate Ad Code</h1>
+		<div id="message">
+		</div>
+		<br/>
+		<div style="border:1px solid #CCCCCC; background-color:#EEEEEE; padding:3px; margin:35px 0; margin-left: 195px; width: 745px;"><b style="color:#CB0008">Please Note:</b> These ad tags will <b>only</b> work for the domain which was approved.  Attempting to run these tags on any other domain will result in non-paying public service ads being displayed.  If you wish to run these ads on any other domain, please <a href="/new-site/">submit the site for approval</a> or <a href="/contact-us/">contact us</a>.</div>
+		<br/>                
+		Generate Code For: 
+		<select onchange="window.location.href='/adcode/'+this.options[this.selectedIndex].value">
+			<?php if($this->sites): ?>
+                                <?php if(count($this->sites) > 1 && $this->siteID == 0):?>
+                                       <option value="0">Pleace Select A Site</option>
+                                <?php endif;?>
+                                           
+				<?php foreach($this->sites as $items): ?>
+                                 
+					<?php if($this->siteID==$items['site_id']) $selected = 'selected="selected"';
+					                                      else $selected = ''; ?>
+                    
+					<option value="<?php echo $items['site_id'] ?>" <?php echo $selected; ?>><?php echo $items['name'] ?></option>
+				<?php endforeach; ?>
+			<?php endif; ?>
+		</select>
+		<br/>
+		<br/> 
+		<?php //shou if showTags ?>
+<?php if($this->showTags===true): ?> 
+<?php if($this->siteID):?>                
+		<div id="showTable" class="contUsL" style="width: 750px;">   
+		<div id="tabs">            
+			<ul>
+				<li>
+					<a href="#tabs-1">Javascript</a>
+				</li>
+				<li>
+					<a href="#tabs-2">Iframe</a>
+				</li>
+			</ul>
+			<!--
+			///////////////
+			 JAVASCRIPT TAB
+			/////////////// 
+			 -->             
+			<div id="tabs-1">
+				<?php if($this->siteID && $this->userID): ?>			                   
+					<p>
+					<?php if($this->siteName['siteType']==4): ?>
+						<div style="background-color:#FFFFCC; width:720px; margin-left: -5px;  padding:5px;">
+						<div style="color:red; font-weight:bold; font-size:13px; margin-bottom:8px; text-decoration:underline">Recommended Ad Sizes:</div>
+					
+						<?php foreach($this->size as $key => $iter):?>   
+							<?php if($iter->hide_google!=1): ?>
+								<?php foreach($this->creative_adexchange as $creative_key => $creative_value):?>
+									<?php if($creative_key == $iter->width.'x'.$iter->height): ?>
+										<?php  if(!empty($this->creative_adexchange[$creative_key])): ?>
+											<strong>
+												<?php echo $iter->name;?>:
+											</strong>
+											<br>
+                                                                                        <textarea style="width:500px; height:125px">
+&lt;!-- MadAdsMedia.com Asynchronous Ad Tag For <?php echo $this->siteName['name'] ?> --&gt;
+&lt;!-- Size: <?php echo $iter->description;?> --&gt;
+<?php if($this->type['type']=='2'): ?>&lt;div style=&quot;width:<?php echo $iter->width;?>px; height:<?php echo $iter->height;?>px; text-align:left;&quot;&gt;<?php endif; ?>
+<?php if($this->siteName['siteType']==4):?>
+&lt;script language=&quot;JavaScript&quot; type=&quot;text/javascript&quot;&gt;
+var prot = document.location.protocol;
+document.write(&apos;&lt;script language=&quot;JavaScript&quot; type=&quot;text/javascript&quot;&apos;); document.write(&apos;src=&quot;'+prot+'//ads-by.madadsmedia.com/tags/<?php echo $this->userID ?>/<?php echo $this->siteID ?>/async/<?php echo $iter->file_name;?>.js&quot;>&apos;); document.write(&apos;&lt;\/scr' + 'ipt&gt;&apos;);
+&lt;/script&gt;
+<?php else: ?>
+&lt;script data-cfasync=&quot;false&quot; src=&quot;http://ads-by.madadsmedia.com/tags/<?php echo $this->userID ?>/<?php echo $this->siteID ?>/async/<?php echo $iter->file_name;?>.js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;
+<?php endif; ?>
+<?php if($this->type['type']=='2'): ?>&lt;a target=&quot;_top&quot; href=&quot;http://www.madadsmedia.com/tumblr-ads&quot; style=&quot;color:#414141; font: small-caps 10px 'Arial', Helvetica, sans-serif; text-decoration:none;&quot;>Ads for &lt;font color=&quot;#FF0000&quot;&gt;Tumblr&lt;/font&gt;&lt;/a&gt;&lt;/div&gt;<?php endif; ?>
+&lt;!-- MadAdsMedia.com Asynchronous Ad Tag For <?php echo $this->siteName['name'] ?> --&gt;
+											</textarea>
+											<?php if('160x600'==$iter->width.'x'.$iter->height):?>
+												</div>
+											<?php endif;?> 
+											<br>         
+										<?php else: ?>
+											<strong>
+												<?php if('300x250'==$iter->width.'x'.$iter->height): ?>
+													<?php echo $iter->name;?> (<b>Highest CPM Ad Size</b>):
+												<?php elseif ('728x90'==$iter->width.'x'.$iter->height):?>
+													<?php echo $iter->name;?> (<b>2nd Highest CPM Ad Size</b>):
+												<?php elseif ('160x600'==$iter->width.'x'.$iter->height):?>
+													<?php echo $iter->name;?> (<b>3rd Highest CPM Ad Size</b>):
+												<?php else:?>
+													<?php echo $iter->name;?>:
+												<?php endif;?>
+											</strong><br>
+											<?php $wanted = false;?>
+											<?php foreach ($this->wanted_banners_for_site as $wanted_banner):?>
+												<?php if($wanted_banner['height'] == $iter->height AND $wanted_banner['width'] == $iter['width'] AND $wanted_banner['value'] ==  1):?>
+													<?php $wanted = true;?>
+												<?php endif;?>
+											<?php endforeach;?>
+											<?php if($wanted): ?>
+												<?php $wanted = false;?>
+												<a class="sendMasBtn NewAdsize" style="float:left; width: 170px;" title="" data-type="admanager" data-banner="<?php echo $iter->width.'x'.$iter->height;?>" onclick="return false;" href="#">Request Submitted</a><br><br><br>
+											<?php else: ?>
+												<a class="sendMasBtn NewAdsize" style="float:left; width: 170px;" title="" data-type="admanager" data-banner="<?php echo $iter->width.'x'.$iter->height;?>" onclick="return false;" href="#">Request This Ad Size</a><br><br><br>
+											<?php endif; ?>                                                                                                                                                                         
+											<?php if('160x600'==$iter->width.'x'.$iter->height):?>
+												</div>
+											<?php endif;?> 
+										<?php endif; ?>                                                                                                
+									<?php endif; ?>
+								<?php endforeach;?>
+							<?php endif; ?>
+						<?php endforeach;?>
+					<!-- END ADMANAGER -->
+					<!-- START RUBICON -->
+					<?php elseif($this->siteName['siteType']==5):?>
+					<div style="background-color:#FFFFCC; width:720px; margin-left: -5px; padding:5px;">
+					<div style="color:red; font-weight:bold; font-size:13px; margin-bottom:8px; text-decoration:underline">Recommended Ad Sizes:</div>
+					
+						<?php foreach($this->size as $key => $iter):?>
+			<?php if($iter->file_name!='300x600' && $iter->file_name!='120x600'): ?>  
+							<?php if( ($iter->hide_rubicon!=1 && $this->siteName['siteType']==5)): ?>
+								<?php if('320x50'==$iter->width.'x'.$iter->height): ?>
+									<?php if(!empty($this->creative_adexchange['320x50'])): ?>
+										<strong>
+											<?php if('300x250'==$iter->width.'x'.$iter->height): ?>
+												<?php echo $iter->name;?> (<b>Highest CPM Ad Size</b>):
+											<?php elseif ('728x90'==$iter->width.'x'.$iter->height):?>
+												<?php echo $iter->name;?> (<b>2nd Highest CPM Ad Size</b>):
+											<?php elseif ('160x600'==$iter->width.'x'.$iter->height):?>
+												<?php echo $iter->name;?> (<b>3rd Highest CPM Ad Size</b>):
+											<?php else:?>
+												<?php echo $iter->name;?>:
+											<?php endif;?>
+										</strong><br>
+                                                                                <?php if($iter['description'] == '728x90' || $iter['description'] == '300x250'):?>
+                                                                                    <div class="checkbox-slider">
+                                                                                        <input type="checkbox" value="1" id="checkbox-slider-script-<?php echo $iter['description']?>" onChange="modefiTextArea('script', '<?php echo $iter['description']?>')"/>
+                                                                                        <label>Make this ad slide in on the page (yields a higher CPM).</label>
+                                                                                    </div>    
+                                                                                <?php endif;?>
+										<textarea id="textare-script-<?php echo $iter['description']?>" style="width:500px; height:125px">
+&lt;!-- MadAdsMedia.com Asynchronous Ad Tag For <?php echo $this->siteName['name'] ?> --&gt;
+&lt;!-- Size: <?php echo $iter->description;?> --&gt;
+<?php if($this->type['type']=='2'): ?>&lt;div style=&quot;width:<?php echo $iter->width;?>px; height:<?php echo $iter->height;?>px; text-align:left;&quot;&gt;<?php endif; ?>
+<?php if($this->siteName['siteType']==4):?>
+&lt;script language=&quot;JavaScript&quot; type=&quot;text/javascript&quot;&gt;
+var prot = document.location.protocol;
+document.write(&apos;&lt;script language=&quot;JavaScript&quot; type=&quot;text/javascript&quot;&apos;); document.write(&apos;src=&quot;'+prot+'//ads-by.madadsmedia.com/tags/<?php echo $this->userID ?>/<?php echo $this->siteID ?>/async/<?php echo $iter->file_name;?>.js&quot;>&apos;); document.write(&apos;&lt;\/scr' + 'ipt&gt;&apos;);
+&lt;/script&gt;
+<?php else: ?>
+&lt;script data-cfasync=&quot;false&quot; src=&quot;http://ads-by.madadsmedia.com/tags/<?php echo $this->userID ?>/<?php echo $this->siteID ?>/async/<?php echo $iter->file_name;?>.js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;
+<?php endif; ?>
+<?php if($this->type['type']=='2'): ?>&lt;a target=&quot;_top&quot; href=&quot;http://www.madadsmedia.com/tumblr-ads&quot; style=&quot;color:#414141; font: small-caps 10px 'Arial', Helvetica, sans-serif; text-decoration:none;&quot;>Ads for &lt;font color=&quot;#FF0000&quot;&gt;Tumblr&lt;/font&gt;&lt;/a&gt;&lt;/div&gt;<?php endif; ?>
+&lt;!-- MadAdsMedia.com Asynchronous Ad Tag For <?php echo $this->siteName['name'] ?> --&gt;
+										</textarea>
+										<?php if('160x600'==$iter->width.'x'.$iter->height):?>
+											</div>
+										<?php endif;?> 
+										<br>  
+									<?php elseif($this->siteName['siteType']==5 && '320x50'==$iter->width.'x'.$iter->height): ?>
+										<strong>
+											<?php if('300x250'==$iter->width.'x'.$iter->height): ?>
+												<?php echo $iter->name;?> (<b>Highest CPM Ad Size</b>):
+											<?php elseif ('728x90'==$iter->width.'x'.$iter->height):?>
+												<?php echo $iter->name;?> (<b>2nd Highest CPM Ad Size</b>):
+											<?php elseif ('160x600'==$iter->width.'x'.$iter->height):?>
+												<?php echo $iter->name;?> (<b>3rd Highest CPM Ad Size</b>):
+											<?php else:?>
+												<?php echo $iter->name;?>:
+											<?php endif;?>
+										</strong><br>
+                                                                                <?php if($iter['description'] == '728x90' || $iter['description'] == '300x250'):?>
+                                                                                    <div class="checkbox-slider">
+                                                                                        <input type="checkbox" value="1" id="checkbox-slider-script-<?php echo $iter['description']?>" onChange="modefiTextArea('script', '<?php echo $iter['description']?>')"/>
+                                                                                        <label>Make this ad slide in on the page (yields a higher CPM).</label>
+                                                                                    </div>    
+                                                                                <?php endif;?>
+										<textarea id="textare-script-<?php echo $iter['description']?>" style="width:500px; height:125px">
+&lt;!-- MadAdsMedia.com Asynchronous Ad Tag For <?php echo $this->siteName['name'] ?> --&gt;
+&lt;!-- Size: <?php echo $iter->description;?> --&gt;
+<?php if($this->type['type']=='2'): ?>&lt;div style=&quot;width:<?php echo $iter->width;?>px; height:<?php echo $iter->height;?>px; text-align:left;&quot;&gt;<?php endif; ?>
+&lt;script data-cfasync=&quot;false&quot; src=&quot;http://ads-by.madadsmedia.com/tags/<?php echo $this->userID ?>/<?php echo $this->siteID ?>/async/<?php echo $iter->file_name;?>.js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;
+<?php if($this->type['type']=='2'): ?>&lt;a target=&quot;_top&quot; href=&quot;http://www.madadsmedia.com/tumblr-ads&quot; style=&quot;color:#414141; font: small-caps 10px 'Arial', Helvetica, sans-serif; text-decoration:none;&quot;>Ads for &lt;font color=&quot;#FF0000&quot;&gt;Tumblr&lt;/font&gt;&lt;/a&gt;&lt;/div&gt;<?php endif; ?>
+&lt;!-- MadAdsMedia.com Asynchronous Ad Tag For <?php echo $this->siteName['name'] ?> --&gt;
+										</textarea>
+										<br>
+										<?php if('160x600'==$iter->width.'x'.$iter->height):?>
+											</div>
+										<?php endif;?>                                                                                                                                                     
+									<?php endif; ?>
+								<?php elseif('300x600'==$iter->width.'x'.$iter->height): ?>
+									<?php if($this->siteName['siteType']=='5' || !empty($this->creative_adexchange['300x600'])): ?>
+										<strong>
+											<?php if('300x250'==$iter->width.'x'.$iter->height): ?>
+												<?php echo $iter->name;?> (<b>Highest CPM Ad Size</b>):
+											<?php elseif ('728x90'==$iter->width.'x'.$iter->height):?>
+												<?php echo $iter->name;?> (<b>2nd Highest CPM Ad Size</b>):
+											<?php elseif ('160x600'==$iter->width.'x'.$iter->height):?>
+												<?php echo $iter->name;?> (<b>3rd Highest CPM Ad Size</b>):
+											<?php else:?>
+												<?php echo $iter->name;?>:
+											<?php endif;?>
+										</strong><br>
+                                                                                <?php if($iter['description'] == '728x90' || $iter['description'] == '300x250'):?>
+                                                                                    <div class="checkbox-slider">
+                                                                                        <input type="checkbox" value="1" id="checkbox-slider-script-<?php echo $iter['description']?>" onChange="modefiTextArea('script', '<?php echo $iter['description']?>')"/>
+                                                                                        <label>Make this ad slide in on the page (yields a higher CPM).</label>
+                                                                                    </div>    
+                                                                                <?php endif;?>
+										<textarea id="textare-script-<?php echo $iter['description']?>" style="width:500px; height:125px">
+&lt;!-- MadAdsMedia.com Asynchronous Ad Tag For <?php echo $this->siteName['name'] ?> --&gt;
+&lt;!-- Size: <?php echo $iter->description;?> --&gt;
+<?php if($this->type['type']=='2'): ?>&lt;div style=&quot;width:<?php echo $iter->width;?>px; height:<?php echo $iter->height;?>px; text-align:left;&quot;&gt;<?php endif; ?>
+<?php if($this->siteName['siteType']==4):?>
+&lt;script language=&quot;JavaScript&quot; type=&quot;text/javascript&quot;&gt;
+var prot = document.location.protocol;
+document.write(&apos;&lt;script language=&quot;JavaScript&quot; type=&quot;text/javascript&quot;&apos;); document.write(&apos;src=&quot;'+prot+'//ads-by.madadsmedia.com/tags/<?php echo $this->userID ?>/<?php echo $this->siteID ?>/async/<?php echo $iter->file_name;?>.js&quot;>&apos;); document.write(&apos;&lt;\/scr' + 'ipt&gt;&apos;);
+&lt;/script&gt;
+<?php else: ?>
+&lt;script data-cfasync=&quot;false&quot; src=&quot;http://ads-by.madadsmedia.com/tags/<?php echo $this->userID ?>/<?php echo $this->siteID ?>/async/<?php echo $iter->file_name;?>.js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;
+<?php endif; ?>
+<?php if($this->type['type']=='2'): ?>&lt;a target=&quot;_top&quot; href=&quot;http://www.madadsmedia.com/tumblr-ads&quot; style=&quot;color:#414141; font: small-caps 10px 'Arial', Helvetica, sans-serif; text-decoration:none;&quot;>Ads for &lt;font color=&quot;#FF0000&quot;&gt;Tumblr&lt;/font&gt;&lt;/a&gt;&lt;/div&gt;<?php endif; ?>
+&lt;!-- MadAdsMedia.com Asynchronous Ad Tag For <?php echo $this->siteName['name'] ?> --&gt;
+										</textarea>
+										<br>
+										<?php if('160x600'==$iter->width.'x'.$iter->height):?>
+											</div>
+										<?php endif;?>                                                                                                                         
+									<?php endif; ?>
+								<?php else: ?>
+									<strong>
+										<?php if('300x250'==$iter->width.'x'.$iter->height): ?>
+											<?php echo $iter->name;?> (<b>Highest CPM Ad Size</b>):
+										<?php elseif ('728x90'==$iter->width.'x'.$iter->height):?>
+											<?php echo $iter->name;?> (<b>2nd Highest CPM Ad Size</b>):
+										<?php elseif ('160x600'==$iter->width.'x'.$iter->height):?>
+											<?php echo $iter->name;?> (<b>3rd Highest CPM Ad Size</b>):
+										<?php else:?>
+											<?php echo $iter->name;?>:
+										<?php endif;?>
+                                                                        </strong><br>
+                                                                        <?php if($iter['description'] == '728x90' || $iter['description'] == '300x250'):?>
+                                                                            <div class="checkbox-slider">
+                                                                                <input type="checkbox" value="1" id="checkbox-slider-script-<?php echo $iter['description']?>" onChange="modefiTextArea('script', '<?php echo $iter['description']?>')"/>
+                                                                                <label>Make this ad slide in on the page (yields a higher CPM).</label>
+                                                                            </div>    
+                                                                        <?php endif;?>
+									<textarea id="textare-script-<?php echo $iter['description']?>" style="width:500px; height:125px">
+&lt;!-- MadAdsMedia.com Asynchronous Ad Tag For <?php echo $this->siteName['name'] ?> --&gt;
+&lt;!-- Size: <?php echo $iter->description;?> --&gt;
+<?php if($this->type['type']=='2'): ?>&lt;div style=&quot;width:<?php echo $iter->width;?>px; height:<?php echo $iter->height?>px; text-align:left;&quot;&gt;<?php endif; ?>
+<?php if($this->siteName['siteType']==4):?>
+&lt;script language=&quot;JavaScript&quot; type=&quot;text/javascript&quot;&gt;
+var prot = document.location.protocol;
+document.write(&apos;&lt;script language=&quot;JavaScript&quot; type=&quot;text/javascript&quot;&apos;); document.write(&apos;src=&quot;'+prot+'//ads-by.madadsmedia.com/tags/<?php echo $this->userID ?>/<?php echo $this->siteID ?>/async/<?php echo $iter->file_name;?>.js&quot;>&apos;); document.write(&apos;&lt;\/scr' + 'ipt&gt;&apos;);
+&lt;/script&gt;
+<?php else: ?>
+&lt;script data-cfasync=&quot;false&quot; src=&quot;http://ads-by.madadsmedia.com/tags/<?php echo $this->userID ?>/<?php echo $this->siteID ?>/async/<?php echo $iter->file_name;?>.js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;
+<?php endif; ?>
+<?php if($this->type['type']=='2'): ?>&lt;a target=&quot;_top&quot; href=&quot;http://www.madadsmedia.com/tumblr-ads&quot; style=&quot;color:#414141; font: small-caps 10px 'Arial', Helvetica, sans-serif; text-decoration:none;&quot;>Ads for &lt;font color=&quot;#FF0000&quot;&gt;Tumblr&lt;/font&gt;&lt;/a&gt;&lt;/div&gt;<?php endif; ?>
+&lt;!-- MadAdsMedia.com Asynchronous Ad Tag For <?php echo $this->siteName['name'] ?> --&gt;
+									</textarea>
+									<br>
+									<?php if('160x600'==$iter->width.'x'.$iter->height):?>
+										</div>
+									<?php endif;?>                                                                                                 
+								<?php endif; ?>
+							<?php endif; ?>
+							<?php endif; ?>
+						<?php endforeach;?>	
+					<!-- END RUBICON -->					
+					<!-- START BURST -->
+					<?php elseif($this->siteName['siteType']==6 && $this->siteName['new_burst_tags']==1):?>
+					<div style="background-color:#FFFFCC; width:720px; margin-left: -5px; padding:5px;">
+					<div style="color:red; font-weight:bold; font-size:13px; margin-bottom:8px; text-decoration:underline">Recommended Ad Sizes:</div>
+					
+						<?php foreach($this->size as $key => $iter):?>
+			<?php if($iter->file_name!='468x60' && $iter->file_name!='300x600' && $iter->file_name!='120x600'): ?>  
+							<?php if( ($iter->hide_rubicon!=1 && $this->siteName['siteType']==6)): ?>
+								<?php if('320x50'==$iter->width.'x'.$iter->height): ?>
+									<?php if(!empty($this->creative_adexchange['320x50'])): ?>
+										<strong>
+											<?php if('300x250'==$iter->width.'x'.$iter->height): ?>
+												<?php echo $iter->name;?> (<b>Highest CPM Ad Size</b>):
+											<?php elseif ('728x90'==$iter->width.'x'.$iter->height):?>
+												<?php echo $iter->name;?> (<b>2nd Highest CPM Ad Size</b>):
+											<?php elseif ('160x600'==$iter->width.'x'.$iter->height):?>
+												<?php echo $iter->name;?> (<b>3rd Highest CPM Ad Size</b>):
+											<?php else:?>
+												<?php echo $iter->name;?>:
+											<?php endif;?>
+										</strong><br>
+                                                                                <?php if($iter['description'] == '728x90' || $iter['description'] == '300x250'):?>
+                                                                                    <div class="checkbox-slider">
+                                                                                        <input type="checkbox" value="1" id="checkbox-slider-script-<?php echo $iter['description']?>" onChange="modefiTextArea('script', '<?php echo $iter['description']?>')"/>
+                                                                                        <label>Make this ad slide in on the page (yields a higher CPM).</label>
+                                                                                    </div>    
+                                                                                <?php endif;?>
+										<textarea id="textare-script-<?php echo $iter['description']?>" style="width:500px; height:125px">
+&lt;!-- MadAdsMedia.com Asynchronous Ad Tag For <?php echo $this->siteName['name'] ?> --&gt;
+&lt;!-- Size: <?php echo $iter->description;?> --&gt;
+<?php if($this->type['type']=='2'): ?>&lt;div style=&quot;width:<?php echo $iter->width;?>px; height:<?php echo $iter->height;?>px; text-align:left;&quot;&gt;<?php endif; ?>
+<?php if($this->siteName['siteType']==4):?>
+&lt;script language=&quot;JavaScript&quot; type=&quot;text/javascript&quot;&gt;
+var prot = document.location.protocol;
+document.write(&apos;&lt;script language=&quot;JavaScript&quot; type=&quot;text/javascript&quot;&apos;); document.write(&apos;src=&quot;'+prot+'//ads-by.madadsmedia.com/tags/<?php echo $this->userID ?>/<?php echo $this->siteID ?>/async/<?php echo $iter->file_name;?>.js&quot;>&apos;); document.write(&apos;&lt;\/scr' + 'ipt&gt;&apos;);
+&lt;/script&gt;
+<?php else: ?>
+&lt;script data-cfasync=&quot;false&quot; src=&quot;http://ads-by.madadsmedia.com/tags/<?php echo $this->userID ?>/<?php echo $this->siteID ?>/async/<?php echo $iter->file_name;?>.js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;
+<?php endif; ?>
+<?php if($this->type['type']=='2'): ?>&lt;a target=&quot;_top&quot; href=&quot;http://www.madadsmedia.com/tumblr-ads&quot; style=&quot;color:#414141; font: small-caps 10px 'Arial', Helvetica, sans-serif; text-decoration:none;&quot;>Ads for &lt;font color=&quot;#FF0000&quot;&gt;Tumblr&lt;/font&gt;&lt;/a&gt;&lt;/div&gt;<?php endif; ?>
+&lt;!-- MadAdsMedia.com Asynchronous Ad Tag For <?php echo $this->siteName['name'] ?> --&gt;
+										</textarea>
+										<?php if('160x600'==$iter->width.'x'.$iter->height):?>
+											</div>
+										<?php endif;?> 
+										<br>                                                                                                                        
+									<?php elseif($this->siteName['siteType']==6 && !$this->siteName['baner_320']): ?>
+										<strong>
+											<?php if('300x250'==$iter->width.'x'.$iter->height): ?>
+												<?php echo $iter->name;?> (<b>Highest CPM Ad Size</b>):
+											<?php elseif ('728x90'==$iter->width.'x'.$iter->height):?>
+												<?php echo $iter->name;?> (<b>2nd Highest CPM Ad Size</b>):
+											<?php elseif ('160x600'==$iter->width.'x'.$iter->height):?>
+												<?php echo $iter->name;?> (<b>3rd Highest CPM Ad Size</b>):
+											<?php else:?>
+												<?php echo $iter->name;?>:
+											<?php endif;?>
+										</strong><br>
+										<?php if($this->wantBaner>0): ?>
+										<a class="sendMasBtn NewAdsize" style="float:left; width: 170px;" title="" data-type="rubicon"  data-banner="<?php echo $iter->width.'x'.$iter->height;?>" onclick="return false;" href="#">Request Submitted</a><br><br><br>
+										<?php else: ?>
+										<a class="sendMasBtn NewAdsize" style="float:left; width: 170px;" title="" data-type="rubicon" data-banner="<?php echo $iter->width.'x'.$iter->height;?>" href="#">Request This Ad Size</a><br><br><br>
+										<?php endif; ?>
+										<?php if('160x600'==$iter->width.'x'.$iter->height):?>
+											</div>
+										<?php endif;?> 
+									<?php elseif($this->siteName['siteType']==5 && $this->siteName['baner_320']==1): ?>
+										<strong>
+											<?php if('300x250'==$iter->width.'x'.$iter->height): ?>
+												<?php echo $iter->name;?> (<b>Highest CPM Ad Size</b>):
+											<?php elseif ('728x90'==$iter->width.'x'.$iter->height):?>
+												<?php echo $iter->name;?> (<b>2nd Highest CPM Ad Size</b>):
+											<?php elseif ('160x600'==$iter->width.'x'.$iter->height):?>
+												<?php echo $iter->name;?> (<b>3rd Highest CPM Ad Size</b>):
+											<?php else:?>
+												<?php echo $iter->name;?>:
+											<?php endif;?>
+										</strong><br>
+                                                                                <?php if($iter['description'] == '728x90' || $iter['description'] == '300x250'):?>
+                                                                                    <div class="checkbox-slider">
+                                                                                        <input type="checkbox" value="1" id="checkbox-slider-script-<?php echo $iter['description']?>" onChange="modefiTextArea('script', '<?php echo $iter['description']?>')"/>
+                                                                                        <label>Make this ad slide in on the page (yields a higher CPM).</label>
+                                                                                    </div>    
+                                                                                <?php endif;?>
+										<textarea id="textare-script-<?php echo $iter['description']?>" style="width:500px; height:125px">
+&lt;!-- MadAdsMedia.com Asynchronous Ad Tag For <?php echo $this->siteName['name'] ?> --&gt;
+&lt;!-- Size: <?php echo $iter->description;?> --&gt;
+<?php if($this->type['type']=='2'): ?>&lt;div style=&quot;width:<?php echo $iter->width;?>px; height:<?php echo $iter->height;?>px; text-align:left;&quot;&gt;<?php endif; ?>
+&lt;script data-cfasync=&quot;false&quot; src=&quot;http://ads-by.madadsmedia.com/tags/<?php echo $this->userID ?>/<?php echo $this->siteID ?>/async/<?php echo $iter->file_name;?>.js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;
+<?php if($this->type['type']=='2'): ?>&lt;a target=&quot;_top&quot; href=&quot;http://www.madadsmedia.com/tumblr-ads&quot; style=&quot;color:#414141; font: small-caps 10px 'Arial', Helvetica, sans-serif; text-decoration:none;&quot;>Ads for &lt;font color=&quot;#FF0000&quot;&gt;Tumblr&lt;/font&gt;&lt;/a&gt;&lt;/div&gt;<?php endif; ?>
+&lt;!-- MadAdsMedia.com Asynchronous Ad Tag For <?php echo $this->siteName['name'] ?> --&gt;
+										</textarea>
+										<br>
+										<?php if('160x600'==$iter->width.'x'.$iter->height):?>
+											</div>
+										<?php endif;?>                                                                                                                                                     
+									<?php endif; ?>
+								<?php elseif('300x600'==$iter->width.'x'.$iter->height): ?>
+									<?php if($this->siteName['siteType']=='6' || !empty($this->creative_adexchange['300x600'])): ?>
+										<strong>
+											<?php if('300x250'==$iter->width.'x'.$iter->height): ?>
+												<?php echo $iter->name;?> (<b>Highest CPM Ad Size</b>):
+											<?php elseif ('728x90'==$iter->width.'x'.$iter->height):?>
+												<?php echo $iter->name;?> (<b>2nd Highest CPM Ad Size</b>):
+											<?php elseif ('160x600'==$iter->width.'x'.$iter->height):?>
+												<?php echo $iter->name;?> (<b>3rd Highest CPM Ad Size</b>):
+											<?php else:?>
+												<?php echo $iter->name;?>:
+											<?php endif;?>
+										</strong><br>
+                                                                                <?php if($iter['description'] == '728x90' || $iter['description'] == '300x250'):?>
+                                                                                    <div class="checkbox-slider">
+                                                                                        <input type="checkbox" value="1" id="checkbox-slider-script-<?php echo $iter['description']?>" onChange="modefiTextArea('script', '<?php echo $iter['description']?>')"/>
+                                                                                        <label>Make this ad slide in on the page (yields a higher CPM).</label>
+                                                                                    </div>    
+                                                                                <?php endif;?>
+										<textarea id="textare-script-<?php echo $iter['description']?>" style="width:500px; height:125px">
+&lt;!-- MadAdsMedia.com Asynchronous Ad Tag For <?php echo $this->siteName['name'] ?> --&gt;
+&lt;!-- Size: <?php echo $iter->description;?> --&gt;
+<?php if($this->type['type']=='2'): ?>&lt;div style=&quot;width:<?php echo $iter->width;?>px; height:<?php echo $iter->height;?>px; text-align:left;&quot;&gt;<?php endif; ?>
+<?php if($this->siteName['siteType']==4):?>
+&lt;script language=&quot;JavaScript&quot; type=&quot;text/javascript&quot;&gt;
+var prot = document.location.protocol;
+document.write(&apos;&lt;script language=&quot;JavaScript&quot; type=&quot;text/javascript&quot;&apos;); document.write(&apos;src=&quot;'+prot+'//ads-by.madadsmedia.com/tags/<?php echo $this->userID ?>/<?php echo $this->siteID ?>/async/<?php echo $iter->file_name;?>.js&quot;>&apos;); document.write(&apos;&lt;\/scr' + 'ipt&gt;&apos;);
+&lt;/script&gt;
+<?php else: ?>
+&lt;script data-cfasync=&quot;false&quot; src=&quot;http://ads-by.madadsmedia.com/tags/<?php echo $this->userID ?>/<?php echo $this->siteID ?>/async/<?php echo $iter->file_name;?>.js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;
+<?php endif; ?>
+<?php if($this->type['type']=='2'): ?>&lt;a target=&quot;_top&quot; href=&quot;http://www.madadsmedia.com/tumblr-ads&quot; style=&quot;color:#414141; font: small-caps 10px 'Arial', Helvetica, sans-serif; text-decoration:none;&quot;>Ads for &lt;font color=&quot;#FF0000&quot;&gt;Tumblr&lt;/font&gt;&lt;/a&gt;&lt;/div&gt;<?php endif; ?>
+&lt;!-- MadAdsMedia.com Asynchronous Ad Tag For <?php echo $this->siteName['name'] ?> --&gt;
+										</textarea>
+										<br>
+										<?php if('160x600'==$iter->width.'x'.$iter->height):?>
+											</div>
+										<?php endif;?>                                                                                                                         
+									<?php endif; ?>
+								<?php else: ?>
+									<strong>
+										<?php if('300x250'==$iter->width.'x'.$iter->height): ?>
+											<?php echo $iter->name;?> (<b>Highest CPM Ad Size</b>):
+										<?php elseif ('728x90'==$iter->width.'x'.$iter->height):?>
+											<?php echo $iter->name;?> (<b>2nd Highest CPM Ad Size</b>):
+										<?php elseif ('160x600'==$iter->width.'x'.$iter->height):?>
+											<?php echo $iter->name;?> (<b>3rd Highest CPM Ad Size</b>):
+										<?php else:?>
+											<?php echo $iter->name;?>:
+										<?php endif;?>
+                                                                        </strong><br>
+                                                                        <?php if($iter['description'] == '728x90' || $iter['description'] == '300x250'):?>
+                                                                            <div class="checkbox-slider">
+                                                                                <input type="checkbox" value="1" id="checkbox-slider-script-<?php echo $iter['description']?>" onChange="modefiTextArea('script', '<?php echo $iter['description']?>')"/>
+                                                                                <label>Make this ad slide in on the page (yields a higher CPM).</label>
+                                                                            </div>    
+                                                                        <?php endif;?>
+									<textarea id="textare-script-<?php echo $iter['description']?>" style="width:500px; height:125px">
+&lt;!-- MadAdsMedia.com Asynchronous Ad Tag For <?php echo $this->siteName['name'] ?> --&gt;
+&lt;!-- Size: <?php echo $iter->description;?> --&gt;
+<?php if($this->type['type']=='2'): ?>&lt;div style=&quot;width:<?php echo $iter->width;?>px; height:<?php echo $iter->height?>px; text-align:left;&quot;&gt;<?php endif; ?>
+<?php if($this->siteName['siteType']==4):?>
+&lt;script language=&quot;JavaScript&quot; type=&quot;text/javascript&quot;&gt;
+var prot = document.location.protocol;
+document.write(&apos;&lt;script language=&quot;JavaScript&quot; type=&quot;text/javascript&quot;&apos;); document.write(&apos;src=&quot;'+prot+'//ads-by.madadsmedia.com/tags/<?php echo $this->userID ?>/<?php echo $this->siteID ?>/async/<?php echo $iter->file_name;?>.js&quot;>&apos;); document.write(&apos;&lt;\/scr' + 'ipt&gt;&apos;);
+&lt;/script&gt;
+<?php else: ?>
+&lt;script data-cfasync=&quot;false&quot; src=&quot;http://ads-by.madadsmedia.com/tags/<?php echo $this->userID ?>/<?php echo $this->siteID ?>/async/<?php echo $iter->file_name;?>.js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;
+<?php endif; ?>
+<?php if($this->type['type']=='2'): ?>&lt;a target=&quot;_top&quot; href=&quot;http://www.madadsmedia.com/tumblr-ads&quot; style=&quot;color:#414141; font: small-caps 10px 'Arial', Helvetica, sans-serif; text-decoration:none;&quot;>Ads for &lt;font color=&quot;#FF0000&quot;&gt;Tumblr&lt;/font&gt;&lt;/a&gt;&lt;/div&gt;<?php endif; ?>
+&lt;!-- MadAdsMedia.com Asynchronous Ad Tag For <?php echo $this->siteName['name'] ?> --&gt;
+									</textarea>
+									<br>
+									<?php if('160x600'==$iter->width.'x'.$iter->height):?>
+										</div>
+									<?php endif;?>                                                                                                 
+								<?php endif; ?>
+							<?php endif; ?>
+							<?php endif; ?>
+						<?php endforeach;?>	
+					<?php elseif($this->siteName['siteType']==6 && $this->siteName['new_burst_tags']!=1): ?>						<p>Your ad tags need to be upgraded to our latest platform.</p>
+						<br>
+						<?php if($this->wanted_new_burst_site): ?>
+						<a class="sendMasBtn" style="float:left; width: 170px;" title="" onclick="return false;" href="#">Request Submitted</a><br><br><br>						
+						<?php else: ?>
+						<a class="sendMasBtn BurstRequest" style="float:left; width: 170px;" title="" onclick="return false;" href="#">Request New Ad Tags</a><br><br><br>					
+						<?php endif; ?>
+					<!-- START MadX -->
+					<?php elseif($this->siteName['siteType']==7):?>
+					<div style="background-color:#FFFFCC; width:720px; margin-left: -5px; padding:5px;">
+					<div style="color:red; font-weight:bold; font-size:13px; margin-bottom:8px; text-decoration:underline">Recommended Ad Sizes:</div>
+					
+						<?php foreach($this->size as $key => $iter):?>
+			<?php if($iter->file_name!='468x60' && $iter->file_name!='300x600' && $iter->file_name!='120x600'): ?>  
+							<?php if( ($iter->hide_rubicon!=1 && $this->siteName['siteType']==7)): ?>
+								<?php if('320x50'==$iter->width.'x'.$iter->height): ?>
+									<?php if(!empty($this->creative_adexchange['320x50'])): ?>
+										<strong>
+											<?php if('300x250'==$iter->width.'x'.$iter->height): ?>
+												<?php echo $iter->name;?> (<b>Highest CPM Ad Size</b>):
+											<?php elseif ('728x90'==$iter->width.'x'.$iter->height):?>
+												<?php echo $iter->name;?> (<b>2nd Highest CPM Ad Size</b>):
+											<?php elseif ('160x600'==$iter->width.'x'.$iter->height):?>
+												<?php echo $iter->name;?> (<b>3rd Highest CPM Ad Size</b>):
+											<?php else:?>
+												<?php echo $iter->name;?>:
+											<?php endif;?>
+										</strong><br>
+                                                                                <?php if($iter['description'] == '728x90' || $iter['description'] == '300x250'):?>
+                                                                                    <div class="checkbox-slider">
+                                                                                        <input type="checkbox" value="1" id="checkbox-slider-script-<?php echo $iter['description']?>" onChange="modefiTextArea('script', '<?php echo $iter['description']?>')"/>
+                                                                                        <label>Make this ad slide in on the page (yields a higher CPM).</label>
+                                                                                    </div>    
+                                                                                <?php endif;?>
+										<textarea id="textare-script-<?php echo $iter['description']?>" style="width:500px; height:125px">
+&lt;!-- MadAdsMedia.com Asynchronous Ad Tag For <?php echo $this->siteName['name'] ?> --&gt;
+&lt;!-- Size: <?php echo $iter->description;?> --&gt;
+<?php if($this->type['type']=='2'): ?>&lt;div style=&quot;width:<?php echo $iter->width;?>px; height:<?php echo $iter->height;?>px; text-align:left;&quot;&gt;<?php endif; ?>
+<?php if($this->siteName['siteType']==4):?>
+&lt;script language=&quot;JavaScript&quot; type=&quot;text/javascript&quot;&gt;
+var prot = document.location.protocol;
+document.write(&apos;&lt;script language=&quot;JavaScript&quot; type=&quot;text/javascript&quot;&apos;); document.write(&apos;src=&quot;'+prot+'//ads-by.madadsmedia.com/tags/<?php echo $this->userID ?>/<?php echo $this->siteID ?>/async/<?php echo $iter->file_name;?>.js&quot;>&apos;); document.write(&apos;&lt;\/scr' + 'ipt&gt;&apos;);
+&lt;/script&gt;
+<?php else: ?>
+&lt;script data-cfasync=&quot;false&quot; src=&quot;http://ads-by.madadsmedia.com/tags/<?php echo $this->userID ?>/<?php echo $this->siteID ?>/async/<?php echo $iter->file_name;?>.js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;
+<?php endif; ?>
+<?php if($this->type['type']=='2'): ?>&lt;a target=&quot;_top&quot; href=&quot;http://www.madadsmedia.com/tumblr-ads&quot; style=&quot;color:#414141; font: small-caps 10px 'Arial', Helvetica, sans-serif; text-decoration:none;&quot;>Ads for &lt;font color=&quot;#FF0000&quot;&gt;Tumblr&lt;/font&gt;&lt;/a&gt;&lt;/div&gt;<?php endif; ?>
+&lt;!-- MadAdsMedia.com Asynchronous Ad Tag For <?php echo $this->siteName['name'] ?> --&gt;
+										</textarea>
+										<?php if('160x600'==$iter->width.'x'.$iter->height):?>
+											</div>
+										<?php endif;?> 
+										<br>                                                                                                                        
+									<?php elseif($this->siteName['siteType']==7 && !$this->siteName['baner_320']): ?>
+										<strong>
+											<?php if('300x250'==$iter->width.'x'.$iter->height): ?>
+												<?php echo $iter->name;?> (<b>Highest CPM Ad Size</b>):
+											<?php elseif ('728x90'==$iter->width.'x'.$iter->height):?>
+												<?php echo $iter->name;?> (<b>2nd Highest CPM Ad Size</b>):
+											<?php elseif ('160x600'==$iter->width.'x'.$iter->height):?>
+												<?php echo $iter->name;?> (<b>3rd Highest CPM Ad Size</b>):
+											<?php else:?>
+												<?php echo $iter->name;?>:
+											<?php endif;?>
+										</strong><br>
+										<?php if($this->wantBaner>0): ?>
+										<a class="sendMasBtn NewAdsize" style="float:left; width: 170px;" title="" data-type="rubicon"  data-banner="<?php echo $iter->width.'x'.$iter->height;?>" onclick="return false;" href="#">Request Submitted</a><br><br><br>
+										<?php else: ?>
+										<a class="sendMasBtn NewAdsize" style="float:left; width: 170px;" title="" data-type="rubicon" data-banner="<?php echo $iter->width.'x'.$iter->height;?>" href="#">Request This Ad Size</a><br><br><br>
+										<?php endif; ?>
+										<?php if('160x600'==$iter->width.'x'.$iter->height):?>
+											</div>
+										<?php endif;?> 
+									<?php elseif($this->siteName['siteType']==7 && $this->siteName['baner_320']==1): ?>
+										<strong>
+											<?php if('300x250'==$iter->width.'x'.$iter->height): ?>
+												<?php echo $iter->name;?> (<b>Highest CPM Ad Size</b>):
+											<?php elseif ('728x90'==$iter->width.'x'.$iter->height):?>
+												<?php echo $iter->name;?> (<b>2nd Highest CPM Ad Size</b>):
+											<?php elseif ('160x600'==$iter->width.'x'.$iter->height):?>
+												<?php echo $iter->name;?> (<b>3rd Highest CPM Ad Size</b>):
+											<?php else:?>
+												<?php echo $iter->name;?>:
+											<?php endif;?>
+										</strong><br>
+                                                                                <?php if($iter['description'] == '728x90' || $iter['description'] == '300x250'):?>
+                                                                                    <div class="checkbox-slider">
+                                                                                        <input type="checkbox" value="1" id="checkbox-slider-script-<?php echo $iter['description']?>" onChange="modefiTextArea('script', '<?php echo $iter['description']?>')"/>
+                                                                                        <label>Make this ad slide in on the page (yields a higher CPM).</label>
+                                                                                    </div>    
+                                                                                <?php endif;?>
+										<textarea id="textare-script-<?php echo $iter['description']?>" style="width:500px; height:125px">
+&lt;!-- MadAdsMedia.com Asynchronous Ad Tag For <?php echo $this->siteName['name'] ?> --&gt;
+&lt;!-- Size: <?php echo $iter->description;?> --&gt;
+<?php if($this->type['type']=='2'): ?>&lt;div style=&quot;width:<?php echo $iter->width;?>px; height:<?php echo $iter->height;?>px; text-align:left;&quot;&gt;<?php endif; ?>
+&lt;script data-cfasync=&quot;false&quot; src=&quot;http://ads-by.madadsmedia.com/tags/<?php echo $this->userID ?>/<?php echo $this->siteID ?>/async/<?php echo $iter->file_name;?>.js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;
+<?php if($this->type['type']=='2'): ?>&lt;a target=&quot;_top&quot; href=&quot;http://www.madadsmedia.com/tumblr-ads&quot; style=&quot;color:#414141; font: small-caps 10px 'Arial', Helvetica, sans-serif; text-decoration:none;&quot;>Ads for &lt;font color=&quot;#FF0000&quot;&gt;Tumblr&lt;/font&gt;&lt;/a&gt;&lt;/div&gt;<?php endif; ?>
+&lt;!-- MadAdsMedia.com Asynchronous Ad Tag For <?php echo $this->siteName['name'] ?> --&gt;
+										</textarea>
+										<br>
+										<?php if('160x600'==$iter->width.'x'.$iter->height):?>
+											</div>
+										<?php endif;?>                                                                                                                                                     
+									<?php endif; ?>
+								<?php elseif('300x600'==$iter->width.'x'.$iter->height): ?>
+									<?php if($this->siteName['siteType']=='7' || !empty($this->creative_adexchange['300x600'])): ?>
+										<strong>
+											<?php if('300x250'==$iter->width.'x'.$iter->height): ?>
+												<?php echo $iter->name;?> (<b>Highest CPM Ad Size</b>):
+											<?php elseif ('728x90'==$iter->width.'x'.$iter->height):?>
+												<?php echo $iter->name;?> (<b>2nd Highest CPM Ad Size</b>):
+											<?php elseif ('160x600'==$iter->width.'x'.$iter->height):?>
+												<?php echo $iter->name;?> (<b>3rd Highest CPM Ad Size</b>):
+											<?php else:?>
+												<?php echo $iter->name;?>:
+											<?php endif;?>
+										</strong><br>
+                                                                                <?php if($iter['description'] == '728x90' || $iter['description'] == '300x250'):?>
+                                                                                    <div class="checkbox-slider">
+                                                                                        <input type="checkbox" value="1" id="checkbox-slider-script-<?php echo $iter['description']?>" onChange="modefiTextArea('script', '<?php echo $iter['description']?>')"/>
+                                                                                        <label>Make this ad slide in on the page (yields a higher CPM).</label>
+                                                                                    </div>    
+                                                                                <?php endif;?>
+										<textarea id="textare-script-<?php echo $iter['description']?>" style="width:500px; height:125px">
+&lt;!-- MadAdsMedia.com Asynchronous Ad Tag For <?php echo $this->siteName['name'] ?> --&gt;
+&lt;!-- Size: <?php echo $iter->description;?> --&gt;
+<?php if($this->type['type']=='2'): ?>&lt;div style=&quot;width:<?php echo $iter->width;?>px; height:<?php echo $iter->height;?>px; text-align:left;&quot;&gt;<?php endif; ?>
+<?php if($this->siteName['siteType']==4):?>
+&lt;script language=&quot;JavaScript&quot; type=&quot;text/javascript&quot;&gt;
+var prot = document.location.protocol;
+document.write(&apos;&lt;script language=&quot;JavaScript&quot; type=&quot;text/javascript&quot;&apos;); document.write(&apos;src=&quot;'+prot+'//ads-by.madadsmedia.com/tags/<?php echo $this->userID ?>/<?php echo $this->siteID ?>/async/<?php echo $iter->file_name;?>.js&quot;>&apos;); document.write(&apos;&lt;\/scr' + 'ipt&gt;&apos;);
+&lt;/script&gt;
+<?php else: ?>
+&lt;script data-cfasync=&quot;false&quot; src=&quot;http://ads-by.madadsmedia.com/tags/<?php echo $this->userID ?>/<?php echo $this->siteID ?>/async/<?php echo $iter->file_name;?>.js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;
+<?php endif; ?>
+<?php if($this->type['type']=='2'): ?>&lt;a target=&quot;_top&quot; href=&quot;http://www.madadsmedia.com/tumblr-ads&quot; style=&quot;color:#414141; font: small-caps 10px 'Arial', Helvetica, sans-serif; text-decoration:none;&quot;>Ads for &lt;font color=&quot;#FF0000&quot;&gt;Tumblr&lt;/font&gt;&lt;/a&gt;&lt;/div&gt;<?php endif; ?>
+&lt;!-- MadAdsMedia.com Asynchronous Ad Tag For <?php echo $this->siteName['name'] ?> --&gt;
+										</textarea>
+										<br>
+										<?php if('160x600'==$iter->width.'x'.$iter->height):?>
+											</div>
+										<?php endif;?>                                                                                                                         
+									<?php endif; ?>
+								<?php else: ?>
+									<strong>
+										<?php if('300x250'==$iter->width.'x'.$iter->height): ?>
+											<?php echo $iter->name;?> (<b>Highest CPM Ad Size</b>):
+										<?php elseif ('728x90'==$iter->width.'x'.$iter->height):?>
+											<?php echo $iter->name;?> (<b>2nd Highest CPM Ad Size</b>):
+										<?php elseif ('160x600'==$iter->width.'x'.$iter->height):?>
+											<?php echo $iter->name;?> (<b>3rd Highest CPM Ad Size</b>):
+										<?php else:?>
+											<?php echo $iter->name;?>:
+										<?php endif;?>
+                                                                        </strong><br>
+                                                                        <?php if($iter['description'] == '728x90' || $iter['description'] == '300x250'):?>
+                                                                            <div class="checkbox-slider">
+                                                                                <input type="checkbox" value="1" id="checkbox-slider-script-<?php echo $iter['description']?>" onChange="modefiTextArea('script', '<?php echo $iter['description']?>')"/>
+                                                                                <label>Make this ad slide in on the page (yields a higher CPM).</label>
+                                                                            </div>    
+                                                                        <?php endif;?>
+									<textarea id="textare-script-<?php echo $iter['description']?>" style="width:500px; height:125px">
+&lt;!-- MadAdsMedia.com Asynchronous Ad Tag For <?php echo $this->siteName['name'] ?> --&gt;
+&lt;!-- Size: <?php echo $iter->description;?> --&gt;
+<?php if($this->type['type']=='2'): ?>&lt;div style=&quot;width:<?php echo $iter->width;?>px; height:<?php echo $iter->height?>px; text-align:left;&quot;&gt;<?php endif; ?>
+<?php if($this->siteName['siteType']==4):?>
+&lt;script language=&quot;JavaScript&quot; type=&quot;text/javascript&quot;&gt;
+var prot = document.location.protocol;
+document.write(&apos;&lt;script language=&quot;JavaScript&quot; type=&quot;text/javascript&quot;&apos;); document.write(&apos;src=&quot;'+prot+'//ads-by.madadsmedia.com/tags/<?php echo $this->userID ?>/<?php echo $this->siteID ?>/async/<?php echo $iter->file_name;?>.js&quot;>&apos;); document.write(&apos;&lt;\/scr' + 'ipt&gt;&apos;);
+&lt;/script&gt;
+<?php else: ?>
+&lt;script data-cfasync=&quot;false&quot; src=&quot;http://ads-by.madadsmedia.com/tags/<?php echo $this->userID ?>/<?php echo $this->siteID ?>/async/<?php echo $iter->file_name;?>.js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;
+<?php endif; ?>
+<?php if($this->type['type']=='2'): ?>&lt;a target=&quot;_top&quot; href=&quot;http://www.madadsmedia.com/tumblr-ads&quot; style=&quot;color:#414141; font: small-caps 10px 'Arial', Helvetica, sans-serif; text-decoration:none;&quot;>Ads for &lt;font color=&quot;#FF0000&quot;&gt;Tumblr&lt;/font&gt;&lt;/a&gt;&lt;/div&gt;<?php endif; ?>
+&lt;!-- MadAdsMedia.com Asynchronous Ad Tag For <?php echo $this->siteName['name'] ?> --&gt;
+									</textarea>
+									<br>
+									<?php if('160x600'==$iter->width.'x'.$iter->height):?>
+										</div>
+									<?php endif;?>                                                                                                 
+								<?php endif; ?>
+							<?php endif; ?>
+							<?php endif; ?>
+						<?php endforeach;?>					
+						
+					<!--Pubmatic-->
+					<?php elseif($this->siteName['siteType']==8): ?>
+					<div style="background-color:#FFFFCC; width:720px; margin-left: -5px; padding:5px;">
+						<div style="color:red; font-weight:bold; font-size:13px; margin-bottom:8px; text-decoration:underline">Recommended Ad Sizes:</div>
+						<?php foreach($this->size as $key => $iter):?>
+							<?php if(!empty($this->kPubID[$iter->description]) &&
+									!empty($this->kSiteID[$iter->description]) &&
+									!empty($this->kadID[$iter->description]) &&
+									!empty($this->kadWidth[$iter->description]) &&
+									!empty($this->kadHeight[$iter->description]) &&
+									!empty($this->kadType[$iter->description]) &&
+									!empty($this->kadPageUrl[$iter->description])): ?>
+										<strong>
+											<?php if('300x250'==$iter->width.'x'.$iter->height): ?>
+												<?php echo $iter->name;?> (<b>Highest CPM Ad Size</b>):
+											<?php elseif ('728x90'==$iter->width.'x'.$iter->height):?>
+												<?php echo $iter->name;?> (<b>2nd Highest CPM Ad Size</b>):
+											<?php elseif ('160x600'==$iter->width.'x'.$iter->height):?>
+												<?php echo $iter->name;?> (<b>3rd Highest CPM Ad Size</b>):
+											<?php else:?>
+												<?php echo $iter->name;?>:
+											<?php endif;?>
+										</strong><br>							
+									<textarea id="textare-script-<?php echo $iter['description']?>" style="width:500px; height:125px">
+&lt;!-- MadAdsMedia.com Asynchronous Ad Tag For <?php echo $this->siteName['name'] ?> --&gt;
+&lt;!-- Size: <?php echo $iter->description;?> --&gt;
+<?php if($this->type['type']=='2'): ?>&lt;div style=&quot;width:<?php echo $iter->width;?>px; height:<?php echo $iter->height?>px; text-align:left;&quot;&gt;<?php endif; ?>
+<?php if($this->siteName['siteType']==4):?>
+&lt;script language=&quot;JavaScript&quot; type=&quot;text/javascript&quot;&gt;
+var prot = document.location.protocol;
+document.write(&apos;&lt;script language=&quot;JavaScript&quot; type=&quot;text/javascript&quot;&apos;); document.write(&apos;src=&quot;'+prot+'//ads-by.madadsmedia.com/tags/<?php echo $this->userID ?>/<?php echo $this->siteID ?>/async/<?php echo $iter->file_name;?>.js&quot;>&apos;); document.write(&apos;&lt;\/scr' + 'ipt&gt;&apos;);
+&lt;/script&gt;
+<?php else: ?>
+&lt;script data-cfasync=&quot;false&quot; src=&quot;http://ads-by.madadsmedia.com/tags/<?php echo $this->userID ?>/<?php echo $this->siteID ?>/async/<?php echo $iter->file_name;?>.js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;
+<?php endif; ?>
+<?php if($this->type['type']=='2'): ?>&lt;a target=&quot;_top&quot; href=&quot;http://www.madadsmedia.com/tumblr-ads&quot; style=&quot;color:#414141; font: small-caps 10px 'Arial', Helvetica, sans-serif; text-decoration:none;&quot;>Ads for &lt;font color=&quot;#FF0000&quot;&gt;Tumblr&lt;/font&gt;&lt;/a&gt;&lt;/div&gt;<?php endif; ?>
+&lt;!-- MadAdsMedia.com Asynchronous Ad Tag For <?php echo $this->siteName['name'] ?> --&gt;
+									</textarea>
+									<br>
+							<?php endif; ?>
+						<?php endforeach; ?>
+                    </div>
+
+            <!--Amazon-->
+        <?php elseif($this->siteName['siteType']==9): ?>
+            <div style="background-color:#FFFFCC; width:720px; margin-left: -5px; padding:5px;">
+                <div style="color:red; font-weight:bold; font-size:13px; margin-bottom:8px; text-decoration:underline">Recommended Ad Sizes:</div>
+                <?php foreach($this->size as $key => $iter):?>
+                    <?php if($iter->id==2 || $iter->id==1 || $iter->id==3): ?>
+                        <strong>
+                            <?php if('300x250'==$iter->width.'x'.$iter->height): ?>
+                                <?php echo $iter->name;?> (<b>Highest CPM Ad Size</b>):
+                            <?php elseif ('728x90'==$iter->width.'x'.$iter->height):?>
+                                <?php echo $iter->name;?> (<b>2nd Highest CPM Ad Size</b>):
+                            <?php elseif ('160x600'==$iter->width.'x'.$iter->height):?>
+                                <?php echo $iter->name;?> (<b>3rd Highest CPM Ad Size</b>):
+                            <?php else:?>
+                                <?php echo $iter->name;?>:
+                            <?php endif;?>
+                        </strong><br>
+                        <textarea id="textare-script-<?php echo $iter['description']?>" style="width:500px; height:125px">
+&lt;!-- MadAdsMedia.com Asynchronous Ad Tag For <?php echo $this->siteName['name'] ?> --&gt;
+&lt;!-- Size: <?php echo $iter->description;?> --&gt;
+<?php if($this->type['type']=='2'): ?>&lt;div style=&quot;width:<?php echo $iter->width;?>px; height:<?php echo $iter->height?>px; text-align:left;&quot;&gt;<?php endif; ?>
+<?php if($this->siteName['siteType']==4):?>
+&lt;script language=&quot;JavaScript&quot; type=&quot;text/javascript&quot;&gt;
+var prot = document.location.protocol;
+document.write(&apos;&lt;script language=&quot;JavaScript&quot; type=&quot;text/javascript&quot;&apos;); document.write(&apos;src=&quot;'+prot+'//ads-by.madadsmedia.com/tags/<?php echo $this->userID ?>/<?php echo $this->siteID ?>/async/<?php echo $iter->file_name;?>.js&quot;>&apos;); document.write(&apos;&lt;\/scr' + 'ipt&gt;&apos;);
+&lt;/script&gt;
+<?php else: ?>
+&lt;script data-cfasync=&quot;false&quot; src=&quot;http://ads-by.madadsmedia.com/tags/<?php echo $this->userID ?>/<?php echo $this->siteID ?>/async/<?php echo $iter->file_name;?>.js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;
+<?php endif; ?>
+<?php if($this->type['type']=='2'): ?>&lt;a target=&quot;_top&quot; href=&quot;http://www.madadsmedia.com/tumblr-ads&quot; style=&quot;color:#414141; font: small-caps 10px 'Arial', Helvetica, sans-serif; text-decoration:none;&quot;>Ads for &lt;font color=&quot;#FF0000&quot;&gt;Tumblr&lt;/font&gt;&lt;/a&gt;&lt;/div&gt;<?php endif; ?>
+&lt;!-- MadAdsMedia.com Asynchronous Ad Tag For <?php echo $this->siteName['name'] ?> --&gt;
+									</textarea>
+                        <br>
+                    <?php endif; ?>
+                <?php endforeach; ?>
+
+            </div>
+
+            <!--PulsePoint-->
+        <?php elseif($this->siteName['siteType']==10): ?>
+            <div style="background-color:#FFFFCC; width:720px; margin-left: -5px; padding:5px;">
+                <div style="color:red; font-weight:bold; font-size:13px; margin-bottom:8px; text-decoration:underline">Recommended Ad Sizes:</div>
+                <?php foreach($this->size as $key => $iter):?>
+                    <?php if($iter->id==2 || $iter->id==1 || $iter->id==3 || $iter->id==9 || $iter->id==15 || $iter->id==16): ?>
+                        <?php if(!empty($this->PulsePubID[$iter->description]) &&
+                            !empty($this->PulseTagID[$iter->description]) ): ?>
+                        <strong>
+                            <?php if('300x250'==$iter->width.'x'.$iter->height): ?>
+                                <?php echo $iter->name;?> (<b>Highest CPM Ad Size</b>):
+                            <?php elseif ('728x90'==$iter->width.'x'.$iter->height):?>
+                                <?php echo $iter->name;?> (<b>2nd Highest CPM Ad Size</b>):
+                            <?php elseif ('160x600'==$iter->width.'x'.$iter->height):?>
+                                <?php echo $iter->name;?> (<b>3rd Highest CPM Ad Size</b>):
+                            <?php else:?>
+                                <?php echo $iter->name;?>:
+                            <?php endif;?>
+                        </strong><br>
+                        <textarea id="textare-script-<?php echo $iter['description']?>" style="width:500px; height:125px">
+&lt;!-- MadAdsMedia.com Asynchronous Ad Tag For <?php echo $this->siteName['name'] ?> --&gt;
+&lt;!-- Size: <?php echo $iter->description;?> --&gt;
+<?php if($this->type['type']=='2'): ?>&lt;div style=&quot;width:<?php echo $iter->width;?>px; height:<?php echo $iter->height?>px; text-align:left;&quot;&gt;<?php endif; ?>
+<?php if($this->siteName['siteType']==4):?>
+&lt;script language=&quot;JavaScript&quot; type=&quot;text/javascript&quot;&gt;
+var prot = document.location.protocol;
+document.write(&apos;&lt;script language=&quot;JavaScript&quot; type=&quot;text/javascript&quot;&apos;); document.write(&apos;src=&quot;'+prot+'//ads-by.madadsmedia.com/tags/<?php echo $this->userID ?>/<?php echo $this->siteID ?>/async/<?php echo $iter->file_name;?>.js&quot;>&apos;); document.write(&apos;&lt;\/scr' + 'ipt&gt;&apos;);
+&lt;/script&gt;
+<?php else: ?>
+&lt;script data-cfasync=&quot;false&quot; src=&quot;http://ads-by.madadsmedia.com/tags/<?php echo $this->userID ?>/<?php echo $this->siteID ?>/async/<?php echo $iter->file_name;?>.js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;
+<?php endif; ?>
+<?php if($this->type['type']=='2'): ?>&lt;a target=&quot;_top&quot; href=&quot;http://www.madadsmedia.com/tumblr-ads&quot; style=&quot;color:#414141; font: small-caps 10px 'Arial', Helvetica, sans-serif; text-decoration:none;&quot;>Ads for &lt;font color=&quot;#FF0000&quot;&gt;Tumblr&lt;/font&gt;&lt;/a&gt;&lt;/div&gt;<?php endif; ?>
+&lt;!-- MadAdsMedia.com Asynchronous Ad Tag For <?php echo $this->siteName['name'] ?> --&gt;
+									</textarea>
+                        <br>
+                            <?php endif; ?>
+                <?php endif; ?>
+                <?php endforeach; ?>
+
+					</div>					
+					<?php endif;?>
+					<!-- END ADMANAGER -->
+					</p>               
+				<?php endif; ?>
+			</div>
+			<!--
+			///////////////
+			IFRAME TAB
+			/////////////// 
+			 -->
+			<div id="tabs-2">
+				<?php if($this->siteID && $this->userID && $this->iframe_tags==1): ?>					
+					<p>
+					<?php if($this->siteName['siteType']==4): ?>
+						<div style="background-color:#FFFFCC; width:720px; margin-left: -5px; padding:5px;">
+						<div style="color:red; font-weight:bold; font-size:13px; margin-bottom:8px; text-decoration:underline">Recommended Ad Sizes:</div>
+					
+						<?php foreach($this->size as $key => $iter):?>   
+							<?php if($iter->hide_google!=1): ?>
+								<?php foreach($this->creative_adexchange as $creative_key => $creative_value):?>
+									<?php if($creative_key == $iter->width.'x'.$iter->height): ?>
+										<?php  if(!empty($this->creative_adexchange[$creative_key])): ?>
+											<strong>
+												<?php if('300x250'==$iter->width.'x'.$iter->height): ?>
+													<?php echo $iter->name;?> (<b>Highest CPM Ad Size</b>):
+												<?php elseif ('728x90'==$iter->width.'x'.$iter->height):?>
+													<?php echo $iter->name;?> (<b>2nd Highest CPM Ad Size</b>):
+												<?php elseif ('160x600'==$iter->width.'x'.$iter->height):?>
+													<?php echo $iter->name;?> (<b>3rd Highest CPM Ad Size</b>):
+												<?php else:?>
+													<?php echo $iter->name;?>:
+												<?php endif;?>
+											</strong>
+											<br>
+                                                                                       	<textarea style="width:500px; height:125px">
+&lt;!-- MadAdsMedia.com Iframe Ad Tag For <?php echo $this->siteName['name'] ?> --&gt;
+&lt;!-- Size: <?php echo $iter->description;?> --&gt;
+<?php if($this->type['type']=='2'): ?>&lt;div style=&quot;width:<?php echo $iter->width ?>px; height:<?php echo $iter->height ?>px; text-align:left;&quot;&gt;<?php endif; ?>
+&lt;iframe src=&quot;http://ads-by.madadsmedia.com/tags/<?php echo $this->userID ?>/<?php echo $this->siteID ?>/iframe/<?php echo $iter->file_name;?>.html&quot; width=&quot;<?php echo $iter->width ?>&quot; height=&quot;<?php echo $iter->height ?>&quot; scrolling=&quot;no&quot; frameborder=&quot;0&quot; marginwidth=&quot;0&quot; marginheight=&quot;0&quot; &gt;&lt;/iframe&gt;
+<?php if($this->type['type']=='2'): ?>&lt;a target=&quot;_top&quot; href=&quot;http://www.madadsmedia.com/tumblr-ads&quot; style=&quot;color:#414141; font: small-caps 10px 'Arial', Helvetica, sans-serif; text-decoration:none;&quot;>Ads for &lt;font color=&quot;#FF0000&quot;&gt;Tumblr&lt;/font&gt;&lt;/a&gt;&lt;/div&gt;<?php endif; ?>
+&lt;!-- MadAdsMedia.com Iframe Ad Tag For <?php echo $this->siteName['name'] ?> --&gt;
+											</textarea><br /> 
+											<br>
+											<?php if('160x600'==$iter->width.'x'.$iter->height):?>
+												</div>
+											<?php endif;?>          
+										<?php else: ?>
+											<strong>
+												<?php if('300x250'==$iter->width.'x'.$iter->height): ?>
+													<?php echo $iter->name;?> (<b>Highest CPM Ad Size</b>):
+												<?php elseif ('728x90'==$iter->width.'x'.$iter->height):?>
+													<?php echo $iter->name;?> (<b>2nd Highest CPM Ad Size</b>):
+												<?php elseif ('160x600'==$iter->width.'x'.$iter->height):?>
+													<?php echo $iter->name;?> (<b>3rd Highest CPM Ad Size</b>):
+												<?php else:?>
+													<?php echo $iter->name;?>:
+												<?php endif;?>
+											</strong><br>
+											<?php $wanted = false;?>
+											<?php foreach ($this->wanted_banners_for_site as $wanted_banner):?>
+												<?php if($wanted_banner['height'] == $iter->height AND $wanted_banner['width'] == $iter['width'] AND $wanted_banner['value'] ==  1):?>
+													<?php $wanted = true;?>
+												<?php endif;?>
+											<?php endforeach;?>
+											<?php if($wanted): ?>
+												<?php $wanted = false;?>
+												<a class="sendMasBtn NewAdsize" style="float:left; width: 170px;" title="" data-type="admanager" data-banner="<?php echo $iter->width.'x'.$iter->height;?>" onclick="return false;" href="#">Request Submitted</a><br><br><br>
+											<?php else: ?>
+												<a class="sendMasBtn NewAdsize" style="float:left; width: 170px;" title="" data-type="admanager" data-banner="<?php echo $iter->width.'x'.$iter->height;?>" onclick="return false;" href="#">Request This Ad Size</a><br><br><br>
+											<?php endif; ?> 
+											<?php if('160x600'==$iter->width.'x'.$iter->height):?>
+												</div>
+											<?php endif;?>                                                                                                                                                                         
+										<?php endif; ?>                                                                                                
+									<?php endif; ?>
+								<?php endforeach;?>
+							<?php endif; ?>
+						<?php endforeach;?>
+					<?php elseif($this->siteName['siteType']==5):?>
+						<div style="background-color:#FFFFCC; width:720px; margin-left: -5px;  padding:5px;">
+						<div style="color:red; font-weight:bold; font-size:13px; margin-bottom:8px; text-decoration:underline">Recommended Ad Sizes:</div>
+					
+						<?php foreach($this->size as $key => $iter):?>
+			<?php if($iter->file_name!='300x600' && $iter->file_name!='120x600'): ?>  						
+							<?php if($iter->hide_rubicon!=1 && $this->siteName['siteType']==5): ?>
+								<?php if('320x50'==$iter->width.'x'.$iter->height): ?>
+									<?php if(!empty($this->creative_adexchange['320x50'])): ?>
+										<strong><?php echo $iter->name;?>:</strong><br />
+                                                                                <?php if($iter['description'] == '728x90' || $iter['description'] == '300x250'):?>
+                                                                               <!--<div class="checkbox-slider">
+                                                                                        <input type="checkbox" value="1" id="checkbox-slider-iframe-<?php echo $iter['description']?>" onChange="modefiIFrameTextArea('<?php echo $iter['description']?>')"/>
+                                                                                        <label>Make this ad slide in on the page (yields a higher CPM).</label>
+                                                                                    </div>-->
+                                                                                <?php endif;?>
+										<textarea id="textare-iframe-<?php echo $iter['description']?>" style="width:500px; height:125px">
+&lt;!-- MadAdsMedia.com Iframe Ad Tag For <?php echo $this->siteName['name'] ?> --&gt;
+&lt;!-- Size: <?php echo $iter->description;?> --&gt;
+<?php if($this->type['type']=='2'): ?>&lt;div style=&quot;width:<?php echo $iter->width ?>px; height:<?php echo $iter->height ?>px; text-align:left;&quot;&gt;<?php endif; ?>
+&lt;iframe src=&quot;http://ads-by.madadsmedia.com/tags/<?php echo $this->userID ?>/<?php echo $this->siteID ?>/iframe/<?php echo $iter->file_name;?>.html&quot; width=&quot;<?php echo $iter->width ?>&quot; height=&quot;<?php echo $iter->height ?>&quot; scrolling=&quot;no&quot; frameborder=&quot;0&quot; marginwidth=&quot;0&quot; marginheight=&quot;0&quot; &gt;&lt;/iframe&gt;
+<?php if($this->type['type']=='2'): ?>&lt;a target=&quot;_top&quot; href=&quot;http://www.madadsmedia.com/tumblr-ads&quot; style=&quot;color:#414141; font: small-caps 10px 'Arial', Helvetica, sans-serif; text-decoration:none;&quot;>Ads for &lt;font color=&quot;#FF0000&quot;&gt;Tumblr&lt;/font&gt;&lt;/a&gt;&lt;/div&gt;<?php endif; ?>
+&lt;!-- MadAdsMedia.com Iframe Ad Tag For <?php echo $this->siteName['name'] ?> --&gt;
+										</textarea><br />
+										<?php if('160x600'==$iter->width.'x'.$iter->height):?>
+											</div>
+										<?php endif;?>     
+									<?php elseif($this->siteName['siteType']==5 && '320x50'==$iter->width.'x'.$iter->height): ?>
+										<strong>
+											<?php if('300x250'==$iter->width.'x'.$iter->height): ?>
+												<?php echo $iter->name;?> (<b>Highest CPM Ad Size</b>):
+											<?php elseif ('728x90'==$iter->width.'x'.$iter->height):?>
+												<?php echo $iter->name;?> (<b>2nd Highest CPM Ad Size</b>):
+											<?php elseif ('160x600'==$iter->width.'x'.$iter->height):?>
+												<?php echo $iter->name;?> (<b>3rd Highest CPM Ad Size</b>):
+											<?php else:?>
+												<?php echo $iter->name;?>:
+											<?php endif;?>
+										</strong><br>
+<?php if($iter['description'] == '728x90' || $iter['description'] == '300x250'):?>
+<!--<div class="checkbox-slider">
+        <input type="checkbox" value="1" id="checkbox-slider-iframe-<?php echo $iter['description']?>" onChange="modefiIFrameTextArea('<?php echo $iter['description']?>')"/>
+        <label>Make this ad slide in on the page (yields a higher CPM).</label>
+    </div>-->
+<?php endif;?>                                                                                
+<textarea id="textare-iframe-<?php echo $iter['description']?>" style="width:500px; height:125px">
+&lt;!-- MadAdsMedia.com Iframe Ad Tag For <?php echo $this->siteName['name'] ?> --&gt;
+&lt;!-- Size: <?php echo $iter->description;?> --&gt;
+<?php if($this->type['type']=='2'): ?>&lt;div style=&quot;width:<?php echo $iter->width ?>px; height:<?php echo $iter->height ?>px; text-align:left;&quot;&gt;<?php endif; ?>
+&lt;iframe src=&quot;http://ads-by.madadsmedia.com/tags/<?php echo $this->userID ?>/<?php echo $this->siteID ?>/iframe/<?php echo $iter->file_name;?>.html&quot; width=&quot;<?php echo $iter->width ?>&quot; height=&quot;<?php echo $iter->height ?>&quot; scrolling=&quot;no&quot; frameborder=&quot;0&quot; marginwidth=&quot;0&quot; marginheight=&quot;0&quot; &gt;&lt;/iframe&gt;
+<?php if($this->type['type']=='2'): ?>&lt;a target=&quot;_top&quot; href=&quot;http://www.madadsmedia.com/tumblr-ads&quot; style=&quot;color:#414141; font: small-caps 10px 'Arial', Helvetica, sans-serif; text-decoration:none;&quot;>Ads for &lt;font color=&quot;#FF0000&quot;&gt;Tumblr&lt;/font&gt;&lt;/a&gt;&lt;/div&gt;<?php endif; ?>
+&lt;!-- MadAdsMedia.com Iframe Ad Tag For <?php echo $this->siteName['name'] ?> --&gt;
+										</textarea>
+										<br>
+										<?php if('160x600'==$iter->width.'x'.$iter->height):?>
+											</div>
+										<?php endif;?>                                                                                                                                                                                     
+									<?php endif; ?>
+								<?php elseif('300x600'==$iter->width.'x'.$iter->height): ?>
+									<?php if($this->siteName['siteType']=='5' || !empty($this->creative_adexchange['300x600'])): ?>
+										<strong>
+											<?php if('300x250'==$iter->width.'x'.$iter->height): ?>
+												<?php echo $iter->name;?> (<b>Highest CPM Ad Size</b>):
+											<?php elseif ('728x90'==$iter->width.'x'.$iter->height):?>
+												<?php echo $iter->name;?> (<b>2nd Highest CPM Ad Size</b>):
+											<?php elseif ('160x600'==$iter->width.'x'.$iter->height):?>
+												<?php echo $iter->name;?> (<b>3rd Highest CPM Ad Size</b>):
+											<?php else:?>
+												<?php echo $iter->name;?>:
+											<?php endif;?>
+										</strong><br />
+                                                                                <?php if($iter['description'] == '728x90' || $iter['description'] == '300x250'):?>
+                                                                               <!--<div class="checkbox-slider">
+                                                                                        <input type="checkbox" value="1" id="checkbox-slider-iframe-<?php echo $iter['description']?>" onChange="modefiIFrameTextArea('<?php echo $iter['description']?>')"/>
+                                                                                        <label>Make this ad slide in on the page (yields a higher CPM).</label>
+                                                                                    </div>-->
+                                                                                <?php endif;?>
+										<textarea id="textare-iframe-<?php echo $iter['description']?>" style="width:500px; height:125px">
+&lt;!-- MadAdsMedia.com Iframe Ad Tag For <?php echo $this->siteName['name'] ?> --&gt;
+&lt;!-- Size: <?php echo $iter->description;?> --&gt;
+<?php if($this->type['type']=='2'): ?>&lt;div style=&quot;width:<?php echo $iter->width ?>px; height:<?php echo $iter->height ?>px; text-align:left;&quot;&gt;<?php endif; ?>
+&lt;iframe src=&quot;http://ads-by.madadsmedia.com/tags/<?php echo $this->userID ?>/<?php echo $this->siteID ?>/iframe/<?php echo $iter->file_name;?>.html&quot; width=&quot;<?php echo $iter->width ?>&quot; height=&quot;<?php echo $iter->height ?>&quot; scrolling=&quot;no&quot; frameborder=&quot;0&quot; marginwidth=&quot;0&quot; marginheight=&quot;0&quot; &gt;&lt;/iframe&gt;
+<?php if($this->type['type']=='2'): ?>&lt;a target=&quot;_top&quot; href=&quot;http://www.madadsmedia.com/tumblr-ads&quot; style=&quot;color:#414141; font: small-caps 10px 'Arial', Helvetica, sans-serif; text-decoration:none;&quot;>Ads for &lt;font color=&quot;#FF0000&quot;&gt;Tumblr&lt;/font&gt;&lt;/a&gt;&lt;/div&gt;<?php endif; ?>
+&lt;!-- MadAdsMedia.com Iframe Ad Tag For <?php echo $this->siteName['name'] ?> --&gt;
+										</textarea><br />
+										<?php if('160x600'==$iter->width.'x'.$iter->height):?>
+											</div>
+										<?php endif;?>                             
+									<?php endif; ?>
+								<?php else: ?>
+									<strong>
+											<?php if('300x250'==$iter->width.'x'.$iter->height): ?>
+												<?php echo $iter->name;?> (<b>Highest CPM Ad Size</b>):
+											<?php elseif ('728x90'==$iter->width.'x'.$iter->height):?>
+												<?php echo $iter->name;?> (<b>2nd Highest CPM Ad Size</b>):
+											<?php elseif ('160x600'==$iter->width.'x'.$iter->height):?>
+												<?php echo $iter->name;?> (<b>3rd Highest CPM Ad Size</b>):
+											<?php else:?>
+												<?php echo $iter->name;?>:
+											<?php endif;?>
+									</strong><br />
+                                                                        <?php if($iter['description'] == '728x90' || $iter['description'] == '300x250'):?>
+                                                                        <!--<div class="checkbox-slider">
+                                                                                <input type="checkbox" value="1" id="checkbox-slider-iframe-<?php echo $iter['description']?>" onChange="modefiIFrameTextArea('<?php echo $iter['description']?>')"/>
+                                                                                <label>Make this ad slide in on the page (yields a higher CPM).</label>
+                                                                            </div>-->
+                                                                        <?php endif;?>
+									<textarea id="textare-iframe-<?php echo $iter['description']?>" style="width:500px; height:125px;">
+&lt;!-- MadAdsMedia.com Iframe Ad Tag For <?php echo $this->siteName['name'] ?> --&gt;
+&lt;!-- Size: <?php echo $iter->description;?> --&gt;
+<?php if($this->type['type']=='2'): ?>&lt;div style=&quot;width:<?php echo $iter->width ?>px; height:<?php echo $iter->height ?>px; text-align:left;&quot;&gt;<?php endif; ?>
+&lt;iframe src=&quot;http://ads-by.madadsmedia.com/tags/<?php echo $this->userID ?>/<?php echo $this->siteID ?>/iframe/<?php echo $iter->file_name;?>.html&quot; width=&quot;<?php echo $iter->width ?>&quot; height=&quot;<?php echo $iter->height ?>&quot; scrolling=&quot;no&quot; frameborder=&quot;0&quot; marginwidth=&quot;0&quot; marginheight=&quot;0&quot; &gt;&lt;/iframe&gt;
+<?php if($this->type['type']=='2'): ?>&lt;a target=&quot;_top&quot; href=&quot;http://www.madadsmedia.com/tumblr-ads&quot; style=&quot;color:#414141; font: small-caps 10px 'Arial', Helvetica, sans-serif; text-decoration:none;&quot;>Ads for &lt;font color=&quot;#FF0000&quot;&gt;Tumblr&lt;/font&gt;&lt;/a&gt;&lt;/div&gt;<?php endif; ?>
+&lt;!-- MadAdsMedia.com Iframe Ad Tag For <?php echo $this->siteName['name'] ?> --&gt;
+									</textarea><br />
+									<?php if('160x600'==$iter->width.'x'.$iter->height):?>
+										</div>
+									<?php endif;?>                             
+								<?php endif; ?> 
+							<?php endif; ?>
+							<?php endif; ?>
+						<?php endforeach;?>					
+					<?php elseif($this->siteName['siteType']==6 && $this->siteName['new_burst_tags']==1):?>
+						<div style="background-color:#FFFFCC; width:720px; margin-left: -5px;  padding:5px;">
+						<div style="color:red; font-weight:bold; font-size:13px; margin-bottom:8px; text-decoration:underline">Recommended Ad Sizes:</div>
+					
+						<?php foreach($this->size as $key => $iter):?>
+			<?php if($iter->file_name!='468x60' && $iter->file_name!='300x600' && $iter->file_name!='120x600'): ?>  						
+							<?php if($iter->hide_rubicon!=1 && $this->siteName['siteType']==6): ?>
+								<?php if('320x50'==$iter->width.'x'.$iter->height): ?>
+									<?php if(!empty($this->creative_adexchange['320x50'])): ?>
+										<strong><?php echo $iter->name;?>:</strong><br />
+                                                                                <?php if($iter['description'] == '728x90' || $iter['description'] == '300x250'):?>
+                                                                               <!--<div class="checkbox-slider">
+                                                                                        <input type="checkbox" value="1" id="checkbox-slider-iframe-<?php echo $iter['description']?>" onChange="modefiIFrameTextArea('<?php echo $iter['description']?>')"/>
+                                                                                        <label>Make this ad slide in on the page (yields a higher CPM).</label>
+                                                                                    </div>-->
+                                                                                <?php endif;?>
+										<textarea id="textare-iframe-<?php echo $iter['description']?>" style="width:500px; height:125px">
+&lt;!-- MadAdsMedia.com Iframe Ad Tag For <?php echo $this->siteName['name'] ?> --&gt;
+&lt;!-- Size: <?php echo $iter->description;?> --&gt;
+<?php if($this->type['type']=='2'): ?>&lt;div style=&quot;width:<?php echo $iter->width ?>px; height:<?php echo $iter->height ?>px; text-align:left;&quot;&gt;<?php endif; ?>
+&lt;iframe src=&quot;http://ads-by.madadsmedia.com/tags/<?php echo $this->userID ?>/<?php echo $this->siteID ?>/iframe/<?php echo $iter->file_name;?>.html&quot; width=&quot;<?php echo $iter->width ?>&quot; height=&quot;<?php echo $iter->height ?>&quot; scrolling=&quot;no&quot; frameborder=&quot;0&quot; marginwidth=&quot;0&quot; marginheight=&quot;0&quot; &gt;&lt;/iframe&gt;
+<?php if($this->type['type']=='2'): ?>&lt;a target=&quot;_top&quot; href=&quot;http://www.madadsmedia.com/tumblr-ads&quot; style=&quot;color:#414141; font: small-caps 10px 'Arial', Helvetica, sans-serif; text-decoration:none;&quot;>Ads for &lt;font color=&quot;#FF0000&quot;&gt;Tumblr&lt;/font&gt;&lt;/a&gt;&lt;/div&gt;<?php endif; ?>
+&lt;!-- MadAdsMedia.com Iframe Ad Tag For <?php echo $this->siteName['name'] ?> --&gt;
+										</textarea><br />
+										<?php if('160x600'==$iter->width.'x'.$iter->height):?>
+											</div>
+										<?php endif;?>     
+									<?php elseif($this->siteName['siteType']==6 && !$this->siteName['baner_320']): ?>
+										<strong>
+											<?php if('300x250'==$iter->width.'x'.$iter->height): ?>
+												<?php echo $iter->name;?> (<b>Highest CPM Ad Size</b>):
+											<?php elseif ('728x90'==$iter->width.'x'.$iter->height):?>
+												<?php echo $iter->name;?> (<b>2nd Highest CPM Ad Size</b>):
+											<?php elseif ('160x600'==$iter->width.'x'.$iter->height):?>
+												<?php echo $iter->name;?> (<b>3rd Highest CPM Ad Size</b>):
+											<?php else:?>
+												<?php echo $iter->name;?>:
+											<?php endif;?>
+										</strong><br>
+										<?php if($this->wantBaner>0): ?>
+										<a class="sendMasBtn NewAdsize" style="float:left; width: 170px;" title="" data-type="rubicon" data-banner="<?php echo $iter->width.'x'.$iter->height;?>" onclick="return false;" href="#">Request Submitted</a><br><br><br>
+										<?php else: ?>
+										<a class="sendMasBtn NewAdsize" style="float:left; width: 170px;" title="" data-type="rubicon" data-banner="<?php echo $iter->width.'x'.$iter->height;?>" href="">Request This Ad Size</a><br><br><br>
+										<?php endif; ?>
+										<?php if('160x600'==$iter->width.'x'.$iter->height):?>
+											</div>
+										<?php endif;?> 
+									<?php elseif($this->siteName['siteType']==6 && $this->siteName['baner_320']==1): ?>
+										<strong>
+											<?php if('300x250'==$iter->width.'x'.$iter->height): ?>
+												<?php echo $iter->name;?> (<b>Highest CPM Ad Size</b>):
+											<?php elseif ('728x90'==$iter->width.'x'.$iter->height):?>
+												<?php echo $iter->name;?> (<b>2nd Highest CPM Ad Size</b>):
+											<?php elseif ('160x600'==$iter->width.'x'.$iter->height):?>
+												<?php echo $iter->name;?> (<b>3rd Highest CPM Ad Size</b>):
+											<?php else:?>
+												<?php echo $iter->name;?>:
+											<?php endif;?>
+										</strong><br>
+<?php if($iter['description'] == '728x90' || $iter['description'] == '300x250'):?>
+<!--<div class="checkbox-slider">
+        <input type="checkbox" value="1" id="checkbox-slider-iframe-<?php echo $iter['description']?>" onChange="modefiIFrameTextArea('<?php echo $iter['description']?>')"/>
+        <label>Make this ad slide in on the page (yields a higher CPM).</label>
+    </div>-->
+<?php endif;?>                                                                                
+<textarea id="textare-iframe-<?php echo $iter['description']?>" style="width:500px; height:125px">
+&lt;!-- MadAdsMedia.com Iframe Ad Tag For <?php echo $this->siteName['name'] ?> --&gt;
+&lt;!-- Size: <?php echo $iter->description;?> --&gt;
+<?php if($this->type['type']=='2'): ?>&lt;div style=&quot;width:<?php echo $iter->width ?>px; height:<?php echo $iter->height ?>px; text-align:left;&quot;&gt;<?php endif; ?>
+&lt;iframe src=&quot;http://ads-by.madadsmedia.com/tags/<?php echo $this->userID ?>/<?php echo $this->siteID ?>/iframe/<?php echo $iter->file_name;?>.html&quot; width=&quot;<?php echo $iter->width ?>&quot; height=&quot;<?php echo $iter->height ?>&quot; scrolling=&quot;no&quot; frameborder=&quot;0&quot; marginwidth=&quot;0&quot; marginheight=&quot;0&quot; &gt;&lt;/iframe&gt;
+<?php if($this->type['type']=='2'): ?>&lt;a target=&quot;_top&quot; href=&quot;http://www.madadsmedia.com/tumblr-ads&quot; style=&quot;color:#414141; font: small-caps 10px 'Arial', Helvetica, sans-serif; text-decoration:none;&quot;>Ads for &lt;font color=&quot;#FF0000&quot;&gt;Tumblr&lt;/font&gt;&lt;/a&gt;&lt;/div&gt;<?php endif; ?>
+&lt;!-- MadAdsMedia.com Iframe Ad Tag For <?php echo $this->siteName['name'] ?> --&gt;
+										</textarea>
+										<br>
+										<?php if('160x600'==$iter->width.'x'.$iter->height):?>
+											</div>
+										<?php endif;?>                                                                                                                                                                                     
+									<?php endif; ?>
+								<?php elseif('300x600'==$iter->width.'x'.$iter->height): ?>
+									<?php if($this->siteName['siteType']=='6' || !empty($this->creative_adexchange['300x600'])): ?>
+										<strong>
+											<?php if('300x250'==$iter->width.'x'.$iter->height): ?>
+												<?php echo $iter->name;?> (<b>Highest CPM Ad Size</b>):
+											<?php elseif ('728x90'==$iter->width.'x'.$iter->height):?>
+												<?php echo $iter->name;?> (<b>2nd Highest CPM Ad Size</b>):
+											<?php elseif ('160x600'==$iter->width.'x'.$iter->height):?>
+												<?php echo $iter->name;?> (<b>3rd Highest CPM Ad Size</b>):
+											<?php else:?>
+												<?php echo $iter->name;?>:
+											<?php endif;?>
+										</strong><br />
+                                                                                <?php if($iter['description'] == '728x90' || $iter['description'] == '300x250'):?>
+                                                                               <!--<div class="checkbox-slider">
+                                                                                        <input type="checkbox" value="1" id="checkbox-slider-iframe-<?php echo $iter['description']?>" onChange="modefiIFrameTextArea('<?php echo $iter['description']?>')"/>
+                                                                                        <label>Make this ad slide in on the page (yields a higher CPM).</label>
+                                                                                    </div>-->
+                                                                                <?php endif;?>
+										<textarea id="textare-iframe-<?php echo $iter['description']?>" style="width:500px; height:125px">
+&lt;!-- MadAdsMedia.com Iframe Ad Tag For <?php echo $this->siteName['name'] ?> --&gt;
+&lt;!-- Size: <?php echo $iter->description;?> --&gt;
+<?php if($this->type['type']=='2'): ?>&lt;div style=&quot;width:<?php echo $iter->width ?>px; height:<?php echo $iter->height ?>px; text-align:left;&quot;&gt;<?php endif; ?>
+&lt;iframe src=&quot;http://ads-by.madadsmedia.com/tags/<?php echo $this->userID ?>/<?php echo $this->siteID ?>/iframe/<?php echo $iter->file_name;?>.html&quot; width=&quot;<?php echo $iter->width ?>&quot; height=&quot;<?php echo $iter->height ?>&quot; scrolling=&quot;no&quot; frameborder=&quot;0&quot; marginwidth=&quot;0&quot; marginheight=&quot;0&quot; &gt;&lt;/iframe&gt;
+<?php if($this->type['type']=='2'): ?>&lt;a target=&quot;_top&quot; href=&quot;http://www.madadsmedia.com/tumblr-ads&quot; style=&quot;color:#414141; font: small-caps 10px 'Arial', Helvetica, sans-serif; text-decoration:none;&quot;>Ads for &lt;font color=&quot;#FF0000&quot;&gt;Tumblr&lt;/font&gt;&lt;/a&gt;&lt;/div&gt;<?php endif; ?>
+&lt;!-- MadAdsMedia.com Iframe Ad Tag For <?php echo $this->siteName['name'] ?> --&gt;
+										</textarea><br />
+										<?php if('160x600'==$iter->width.'x'.$iter->height):?>
+											</div>
+										<?php endif;?>                             
+									<?php endif; ?>
+								<?php else: ?>
+									<strong>
+											<?php if('300x250'==$iter->width.'x'.$iter->height): ?>
+												<?php echo $iter->name;?> (<b>Highest CPM Ad Size</b>):
+											<?php elseif ('728x90'==$iter->width.'x'.$iter->height):?>
+												<?php echo $iter->name;?> (<b>2nd Highest CPM Ad Size</b>):
+											<?php elseif ('160x600'==$iter->width.'x'.$iter->height):?>
+												<?php echo $iter->name;?> (<b>3rd Highest CPM Ad Size</b>):
+											<?php else:?>
+												<?php echo $iter->name;?>:
+											<?php endif;?>
+									</strong><br />
+                                                                        <?php if($iter['description'] == '728x90' || $iter['description'] == '300x250'):?>
+                                                                        <!--<div class="checkbox-slider">
+                                                                                <input type="checkbox" value="1" id="checkbox-slider-iframe-<?php echo $iter['description']?>" onChange="modefiIFrameTextArea('<?php echo $iter['description']?>')"/>
+                                                                                <label>Make this ad slide in on the page (yields a higher CPM).</label>
+                                                                            </div>-->
+                                                                        <?php endif;?>
+									<textarea id="textare-iframe-<?php echo $iter['description']?>" style="width:500px; height:125px;">
+&lt;!-- MadAdsMedia.com Iframe Ad Tag For <?php echo $this->siteName['name'] ?> --&gt;
+&lt;!-- Size: <?php echo $iter->description;?> --&gt;
+<?php if($this->type['type']=='2'): ?>&lt;div style=&quot;width:<?php echo $iter->width ?>px; height:<?php echo $iter->height ?>px; text-align:left;&quot;&gt;<?php endif; ?>
+&lt;iframe src=&quot;http://ads-by.madadsmedia.com/tags/<?php echo $this->userID ?>/<?php echo $this->siteID ?>/iframe/<?php echo $iter->file_name;?>.html&quot; width=&quot;<?php echo $iter->width ?>&quot; height=&quot;<?php echo $iter->height ?>&quot; scrolling=&quot;no&quot; frameborder=&quot;0&quot; marginwidth=&quot;0&quot; marginheight=&quot;0&quot; &gt;&lt;/iframe&gt;
+<?php if($this->type['type']=='2'): ?>&lt;a target=&quot;_top&quot; href=&quot;http://www.madadsmedia.com/tumblr-ads&quot; style=&quot;color:#414141; font: small-caps 10px 'Arial', Helvetica, sans-serif; text-decoration:none;&quot;>Ads for &lt;font color=&quot;#FF0000&quot;&gt;Tumblr&lt;/font&gt;&lt;/a&gt;&lt;/div&gt;<?php endif; ?>
+&lt;!-- MadAdsMedia.com Iframe Ad Tag For <?php echo $this->siteName['name'] ?> --&gt;
+									</textarea><br />
+									<?php if('160x600'==$iter->width.'x'.$iter->height):?>
+										</div>
+									<?php endif;?>                             
+								<?php endif; ?> 
+							<?php endif; ?>
+							<?php endif; ?>
+						<?php endforeach;?>												
+					<?php elseif($this->siteName['siteType']==6 && $this->siteName['new_burst_tags']!=1): ?>
+						<p>Your ad tags need to be upgraded to our latest platform.</p>
+						<br>
+						<?php if($this->wanted_new_burst_site): ?>
+						<a class="sendMasBtn" style="float:left; width: 170px;" title="" onclick="return false;" href="#">Request Submitted</a><br><br><br>						
+						<?php else: ?>
+						<a class="sendMasBtn BurstRequest" style="float:left; width: 170px;" title="" onclick="return false;" href="#">Request New Ad Tags</a><br><br><br>					
+						<?php endif; ?>
+					<?php elseif($this->siteName['siteType']==7):?>
+						<div style="background-color:#FFFFCC; width:720px; margin-left: -5px;  padding:5px;">
+						<div style="color:red; font-weight:bold; font-size:13px; margin-bottom:8px; text-decoration:underline">Recommended Ad Sizes:</div>
+					
+						<?php foreach($this->size as $key => $iter):?>
+			<?php if($iter->file_name!='468x60' && $iter->file_name!='300x600' && $iter->file_name!='120x600'): ?>  						
+							<?php if($iter->hide_rubicon!=1 && $this->siteName['siteType']==7): ?>
+								<?php if('320x50'==$iter->width.'x'.$iter->height): ?>
+									<?php if(!empty($this->creative_adexchange['320x50'])): ?>
+										<strong><?php echo $iter->name;?>:</strong><br />
+                                                                                <?php if($iter['description'] == '728x90' || $iter['description'] == '300x250'):?>
+                                                                               <!--<div class="checkbox-slider">
+                                                                                        <input type="checkbox" value="1" id="checkbox-slider-iframe-<?php echo $iter['description']?>" onChange="modefiIFrameTextArea('<?php echo $iter['description']?>')"/>
+                                                                                        <label>Make this ad slide in on the page (yields a higher CPM).</label>
+                                                                                    </div>-->
+                                                                                <?php endif;?>
+										<textarea id="textare-iframe-<?php echo $iter['description']?>" style="width:500px; height:125px">
+&lt;!-- MadAdsMedia.com Iframe Ad Tag For <?php echo $this->siteName['name'] ?> --&gt;
+&lt;!-- Size: <?php echo $iter->description;?> --&gt;
+<?php if($this->type['type']=='2'): ?>&lt;div style=&quot;width:<?php echo $iter->width ?>px; height:<?php echo $iter->height ?>px; text-align:left;&quot;&gt;<?php endif; ?>
+&lt;iframe src=&quot;http://ads-by.madadsmedia.com/tags/<?php echo $this->userID ?>/<?php echo $this->siteID ?>/iframe/<?php echo $iter->file_name;?>.html&quot; width=&quot;<?php echo $iter->width ?>&quot; height=&quot;<?php echo $iter->height ?>&quot; scrolling=&quot;no&quot; frameborder=&quot;0&quot; marginwidth=&quot;0&quot; marginheight=&quot;0&quot; &gt;&lt;/iframe&gt;
+<?php if($this->type['type']=='2'): ?>&lt;a target=&quot;_top&quot; href=&quot;http://www.madadsmedia.com/tumblr-ads&quot; style=&quot;color:#414141; font: small-caps 10px 'Arial', Helvetica, sans-serif; text-decoration:none;&quot;>Ads for &lt;font color=&quot;#FF0000&quot;&gt;Tumblr&lt;/font&gt;&lt;/a&gt;&lt;/div&gt;<?php endif; ?>
+&lt;!-- MadAdsMedia.com Iframe Ad Tag For <?php echo $this->siteName['name'] ?> --&gt;
+										</textarea><br />
+										<?php if('160x600'==$iter->width.'x'.$iter->height):?>
+											</div>
+										<?php endif;?>     
+									<?php elseif($this->siteName['siteType']==7 && !$this->siteName['baner_320']): ?>
+										<strong>
+											<?php if('300x250'==$iter->width.'x'.$iter->height): ?>
+												<?php echo $iter->name;?> (<b>Highest CPM Ad Size</b>):
+											<?php elseif ('728x90'==$iter->width.'x'.$iter->height):?>
+												<?php echo $iter->name;?> (<b>2nd Highest CPM Ad Size</b>):
+											<?php elseif ('160x600'==$iter->width.'x'.$iter->height):?>
+												<?php echo $iter->name;?> (<b>3rd Highest CPM Ad Size</b>):
+											<?php else:?>
+												<?php echo $iter->name;?>:
+											<?php endif;?>
+										</strong><br>
+										<?php if($this->wantBaner>0): ?>
+										<a class="sendMasBtn NewAdsize" style="float:left; width: 170px;" title="" data-type="rubicon" data-banner="<?php echo $iter->width.'x'.$iter->height;?>" onclick="return false;" href="#">Request Submitted</a><br><br><br>
+										<?php else: ?>
+										<a class="sendMasBtn NewAdsize" style="float:left; width: 170px;" title="" data-type="rubicon" data-banner="<?php echo $iter->width.'x'.$iter->height;?>" href="">Request This Ad Size</a><br><br><br>
+										<?php endif; ?>
+										<?php if('160x600'==$iter->width.'x'.$iter->height):?>
+											</div>
+										<?php endif;?> 
+									<?php elseif($this->siteName['siteType']==7 && $this->siteName['baner_320']==1): ?>
+										<strong>
+											<?php if('300x250'==$iter->width.'x'.$iter->height): ?>
+												<?php echo $iter->name;?> (<b>Highest CPM Ad Size</b>):
+											<?php elseif ('728x90'==$iter->width.'x'.$iter->height):?>
+												<?php echo $iter->name;?> (<b>2nd Highest CPM Ad Size</b>):
+											<?php elseif ('160x600'==$iter->width.'x'.$iter->height):?>
+												<?php echo $iter->name;?> (<b>3rd Highest CPM Ad Size</b>):
+											<?php else:?>
+												<?php echo $iter->name;?>:
+											<?php endif;?>
+										</strong><br>
+<?php if($iter['description'] == '728x90' || $iter['description'] == '300x250'):?>
+<!--<div class="checkbox-slider">
+        <input type="checkbox" value="1" id="checkbox-slider-iframe-<?php echo $iter['description']?>" onChange="modefiIFrameTextArea('<?php echo $iter['description']?>')"/>
+        <label>Make this ad slide in on the page (yields a higher CPM).</label>
+    </div>-->
+<?php endif;?>                                                                                
+<textarea id="textare-iframe-<?php echo $iter['description']?>" style="width:500px; height:125px">
+&lt;!-- MadAdsMedia.com Iframe Ad Tag For <?php echo $this->siteName['name'] ?> --&gt;
+&lt;!-- Size: <?php echo $iter->description;?> --&gt;
+<?php if($this->type['type']=='2'): ?>&lt;div style=&quot;width:<?php echo $iter->width ?>px; height:<?php echo $iter->height ?>px; text-align:left;&quot;&gt;<?php endif; ?>
+&lt;iframe src=&quot;http://ads-by.madadsmedia.com/tags/<?php echo $this->userID ?>/<?php echo $this->siteID ?>/iframe/<?php echo $iter->file_name;?>.html&quot; width=&quot;<?php echo $iter->width ?>&quot; height=&quot;<?php echo $iter->height ?>&quot; scrolling=&quot;no&quot; frameborder=&quot;0&quot; marginwidth=&quot;0&quot; marginheight=&quot;0&quot; &gt;&lt;/iframe&gt;
+<?php if($this->type['type']=='2'): ?>&lt;a target=&quot;_top&quot; href=&quot;http://www.madadsmedia.com/tumblr-ads&quot; style=&quot;color:#414141; font: small-caps 10px 'Arial', Helvetica, sans-serif; text-decoration:none;&quot;>Ads for &lt;font color=&quot;#FF0000&quot;&gt;Tumblr&lt;/font&gt;&lt;/a&gt;&lt;/div&gt;<?php endif; ?>
+&lt;!-- MadAdsMedia.com Iframe Ad Tag For <?php echo $this->siteName['name'] ?> --&gt;
+										</textarea>
+										<br>
+										<?php if('160x600'==$iter->width.'x'.$iter->height):?>
+											</div>
+										<?php endif;?>                                                                                                                                                                                     
+									<?php endif; ?>
+								<?php elseif('300x600'==$iter->width.'x'.$iter->height): ?>
+									<?php if($this->siteName['siteType']=='7' || !empty($this->creative_adexchange['300x600'])): ?>
+										<strong>
+											<?php if('300x250'==$iter->width.'x'.$iter->height): ?>
+												<?php echo $iter->name;?> (<b>Highest CPM Ad Size</b>):
+											<?php elseif ('728x90'==$iter->width.'x'.$iter->height):?>
+												<?php echo $iter->name;?> (<b>2nd Highest CPM Ad Size</b>):
+											<?php elseif ('160x600'==$iter->width.'x'.$iter->height):?>
+												<?php echo $iter->name;?> (<b>3rd Highest CPM Ad Size</b>):
+											<?php else:?>
+												<?php echo $iter->name;?>:
+											<?php endif;?>
+										</strong><br />
+                                                                                <?php if($iter['description'] == '728x90' || $iter['description'] == '300x250'):?>
+                                                                               <!--<div class="checkbox-slider">
+                                                                                        <input type="checkbox" value="1" id="checkbox-slider-iframe-<?php echo $iter['description']?>" onChange="modefiIFrameTextArea('<?php echo $iter['description']?>')"/>
+                                                                                        <label>Make this ad slide in on the page (yields a higher CPM).</label>
+                                                                                    </div>-->
+                                                                                <?php endif;?>
+										<textarea id="textare-iframe-<?php echo $iter['description']?>" style="width:500px; height:125px">
+&lt;!-- MadAdsMedia.com Iframe Ad Tag For <?php echo $this->siteName['name'] ?> --&gt;
+&lt;!-- Size: <?php echo $iter->description;?> --&gt;
+<?php if($this->type['type']=='2'): ?>&lt;div style=&quot;width:<?php echo $iter->width ?>px; height:<?php echo $iter->height ?>px; text-align:left;&quot;&gt;<?php endif; ?>
+&lt;iframe src=&quot;http://ads-by.madadsmedia.com/tags/<?php echo $this->userID ?>/<?php echo $this->siteID ?>/iframe/<?php echo $iter->file_name;?>.html&quot; width=&quot;<?php echo $iter->width ?>&quot; height=&quot;<?php echo $iter->height ?>&quot; scrolling=&quot;no&quot; frameborder=&quot;0&quot; marginwidth=&quot;0&quot; marginheight=&quot;0&quot; &gt;&lt;/iframe&gt;
+<?php if($this->type['type']=='2'): ?>&lt;a target=&quot;_top&quot; href=&quot;http://www.madadsmedia.com/tumblr-ads&quot; style=&quot;color:#414141; font: small-caps 10px 'Arial', Helvetica, sans-serif; text-decoration:none;&quot;>Ads for &lt;font color=&quot;#FF0000&quot;&gt;Tumblr&lt;/font&gt;&lt;/a&gt;&lt;/div&gt;<?php endif; ?>
+&lt;!-- MadAdsMedia.com Iframe Ad Tag For <?php echo $this->siteName['name'] ?> --&gt;
+										</textarea><br />
+										<?php if('160x600'==$iter->width.'x'.$iter->height):?>
+											</div>
+										<?php endif;?>                             
+									<?php endif; ?>
+								<?php else: ?>
+									<strong>
+											<?php if('300x250'==$iter->width.'x'.$iter->height): ?>
+												<?php echo $iter->name;?> (<b>Highest CPM Ad Size</b>):
+											<?php elseif ('728x90'==$iter->width.'x'.$iter->height):?>
+												<?php echo $iter->name;?> (<b>2nd Highest CPM Ad Size</b>):
+											<?php elseif ('160x600'==$iter->width.'x'.$iter->height):?>
+												<?php echo $iter->name;?> (<b>3rd Highest CPM Ad Size</b>):
+											<?php else:?>
+												<?php echo $iter->name;?>:
+											<?php endif;?>
+									</strong><br />
+                                                                        <?php if($iter['description'] == '728x90' || $iter['description'] == '300x250'):?>
+                                                                        <!--<div class="checkbox-slider">
+                                                                                <input type="checkbox" value="1" id="checkbox-slider-iframe-<?php echo $iter['description']?>" onChange="modefiIFrameTextArea('<?php echo $iter['description']?>')"/>
+                                                                                <label>Make this ad slide in on the page (yields a higher CPM).</label>
+                                                                            </div>-->
+                                                                        <?php endif;?>
+									<textarea id="textare-iframe-<?php echo $iter['description']?>" style="width:500px; height:125px;">
+&lt;!-- MadAdsMedia.com Iframe Ad Tag For <?php echo $this->siteName['name'] ?> --&gt;
+&lt;!-- Size: <?php echo $iter->description;?> --&gt;
+<?php if($this->type['type']=='2'): ?>&lt;div style=&quot;width:<?php echo $iter->width ?>px; height:<?php echo $iter->height ?>px; text-align:left;&quot;&gt;<?php endif; ?>
+&lt;iframe src=&quot;http://ads-by.madadsmedia.com/tags/<?php echo $this->userID ?>/<?php echo $this->siteID ?>/iframe/<?php echo $iter->file_name;?>.html&quot; width=&quot;<?php echo $iter->width ?>&quot; height=&quot;<?php echo $iter->height ?>&quot; scrolling=&quot;no&quot; frameborder=&quot;0&quot; marginwidth=&quot;0&quot; marginheight=&quot;0&quot; &gt;&lt;/iframe&gt;
+<?php if($this->type['type']=='2'): ?>&lt;a target=&quot;_top&quot; href=&quot;http://www.madadsmedia.com/tumblr-ads&quot; style=&quot;color:#414141; font: small-caps 10px 'Arial', Helvetica, sans-serif; text-decoration:none;&quot;>Ads for &lt;font color=&quot;#FF0000&quot;&gt;Tumblr&lt;/font&gt;&lt;/a&gt;&lt;/div&gt;<?php endif; ?>
+&lt;!-- MadAdsMedia.com Iframe Ad Tag For <?php echo $this->siteName['name'] ?> --&gt;
+									</textarea><br />
+									<?php if('160x600'==$iter->width.'x'.$iter->height):?>
+										</div>
+									<?php endif;?>                             
+								<?php endif; ?> 
+							<?php endif; ?>
+							<?php endif; ?>
+						<?php endforeach;?>
+					<!--Pubmatic-->
+					<?php elseif($this->siteName['siteType']==8): ?>
+					<div style="background-color:#FFFFCC; width:720px; margin-left: -5px; padding:5px;">
+						<div style="color:red; font-weight:bold; font-size:13px; margin-bottom:8px; text-decoration:underline">Recommended Ad Sizes:</div>
+						<?php foreach($this->size as $key => $iter):?>
+							<?php if(!empty($this->kPubID[$iter->description]) &&
+									!empty($this->kSiteID[$iter->description]) &&
+									!empty($this->kadID[$iter->description]) &&
+									!empty($this->kadWidth[$iter->description]) &&
+									!empty($this->kadHeight[$iter->description]) &&
+									!empty($this->kadType[$iter->description]) &&
+									!empty($this->kadPageUrl[$iter->description])): ?>
+										<strong>
+											<?php if('300x250'==$iter->width.'x'.$iter->height): ?>
+												<?php echo $iter->name;?> (<b>Highest CPM Ad Size</b>):
+											<?php elseif ('728x90'==$iter->width.'x'.$iter->height):?>
+												<?php echo $iter->name;?> (<b>2nd Highest CPM Ad Size</b>):
+											<?php elseif ('160x600'==$iter->width.'x'.$iter->height):?>
+												<?php echo $iter->name;?> (<b>3rd Highest CPM Ad Size</b>):
+											<?php else:?>
+												<?php echo $iter->name;?>:
+											<?php endif;?>
+										</strong><br>							
+									<textarea id="textare-iframe-<?php echo $iter['description']?>" style="width:500px; height:125px;">
+&lt;!-- MadAdsMedia.com Iframe Ad Tag For <?php echo $this->siteName['name'] ?> --&gt;
+&lt;!-- Size: <?php echo $iter->description;?> --&gt;
+<?php if($this->type['type']=='2'): ?>&lt;div style=&quot;width:<?php echo $iter->width ?>px; height:<?php echo $iter->height ?>px; text-align:left;&quot;&gt;<?php endif; ?>
+&lt;iframe src=&quot;http://ads-by.madadsmedia.com/tags/<?php echo $this->userID ?>/<?php echo $this->siteID ?>/iframe/<?php echo $iter->file_name;?>.html&quot; width=&quot;<?php echo $iter->width ?>&quot; height=&quot;<?php echo $iter->height ?>&quot; scrolling=&quot;no&quot; frameborder=&quot;0&quot; marginwidth=&quot;0&quot; marginheight=&quot;0&quot; &gt;&lt;/iframe&gt;
+<?php if($this->type['type']=='2'): ?>&lt;a target=&quot;_top&quot; href=&quot;http://www.madadsmedia.com/tumblr-ads&quot; style=&quot;color:#414141; font: small-caps 10px 'Arial', Helvetica, sans-serif; text-decoration:none;&quot;>Ads for &lt;font color=&quot;#FF0000&quot;&gt;Tumblr&lt;/font&gt;&lt;/a&gt;&lt;/div&gt;<?php endif; ?>
+&lt;!-- MadAdsMedia.com Iframe Ad Tag For <?php echo $this->siteName['name'] ?> --&gt;
+									</textarea><br />
+							<?php endif; ?>
+						<?php endforeach; ?>
+					</div>
+
+            <!--Amazon-->
+        <?php elseif($this->siteName['siteType']==9): ?>
+            <div style="background-color:#FFFFCC; width:720px; margin-left: -5px; padding:5px;">
+                <div style="color:red; font-weight:bold; font-size:13px; margin-bottom:8px; text-decoration:underline">Recommended Ad Sizes:</div>
+                <?php foreach($this->size as $key => $iter):?>
+                    <?php if($iter->id==2 || $iter->id==1 || $iter->id==3): ?>
+                        <strong>
+                            <?php if('300x250'==$iter->width.'x'.$iter->height): ?>
+                                <?php echo $iter->name;?> (<b>Highest CPM Ad Size</b>):
+                            <?php elseif ('728x90'==$iter->width.'x'.$iter->height):?>
+                                <?php echo $iter->name;?> (<b>2nd Highest CPM Ad Size</b>):
+                            <?php elseif ('160x600'==$iter->width.'x'.$iter->height):?>
+                                <?php echo $iter->name;?> (<b>3rd Highest CPM Ad Size</b>):
+                            <?php else:?>
+                                <?php echo $iter->name;?>:
+                            <?php endif;?>
+                        </strong><br>
+                        <textarea id="textare-iframe-<?php echo $iter['description']?>" style="width:500px; height:125px;">
+&lt;!-- MadAdsMedia.com Iframe Ad Tag For <?php echo $this->siteName['name'] ?> --&gt;
+&lt;!-- Size: <?php echo $iter->description;?> --&gt;
+<?php if($this->type['type']=='2'): ?>&lt;div style=&quot;width:<?php echo $iter->width ?>px; height:<?php echo $iter->height ?>px; text-align:left;&quot;&gt;<?php endif; ?>
+&lt;iframe src=&quot;http://ads-by.madadsmedia.com/tags/<?php echo $this->userID ?>/<?php echo $this->siteID ?>/iframe/<?php echo $iter->file_name;?>.html&quot; width=&quot;<?php echo $iter->width ?>&quot; height=&quot;<?php echo $iter->height ?>&quot; scrolling=&quot;no&quot; frameborder=&quot;0&quot; marginwidth=&quot;0&quot; marginheight=&quot;0&quot; &gt;&lt;/iframe&gt;
+<?php if($this->type['type']=='2'): ?>&lt;a target=&quot;_top&quot; href=&quot;http://www.madadsmedia.com/tumblr-ads&quot; style=&quot;color:#414141; font: small-caps 10px 'Arial', Helvetica, sans-serif; text-decoration:none;&quot;>Ads for &lt;font color=&quot;#FF0000&quot;&gt;Tumblr&lt;/font&gt;&lt;/a&gt;&lt;/div&gt;<?php endif; ?>
+&lt;!-- MadAdsMedia.com Iframe Ad Tag For <?php echo $this->siteName['name'] ?> --&gt;
+									</textarea><br />
+                    <?php endif; ?>
+                <?php endforeach; ?>
+            </div>
+
+            <!--PulsePoint-->
+        <?php elseif($this->siteName['siteType']==10): ?>
+            <div style="background-color:#FFFFCC; width:720px; margin-left: -5px; padding:5px;">
+                <div style="color:red; font-weight:bold; font-size:13px; margin-bottom:8px; text-decoration:underline">Recommended Ad Sizes:</div>
+                <?php foreach($this->size as $key => $iter):?>
+                    <?php if($iter->id==2 || $iter->id==1 || $iter->id==3 || $iter->id==9 || $iter->id==15): ?>
+                        <?php if(!empty($this->PulsePubID[$iter->description]) &&
+                            !empty($this->PulseTagID[$iter->description]) ): ?>
+                        <strong>
+                            <?php if('300x250'==$iter->width.'x'.$iter->height): ?>
+                                <?php echo $iter->name;?> (<b>Highest CPM Ad Size</b>):
+                            <?php elseif ('728x90'==$iter->width.'x'.$iter->height):?>
+                                <?php echo $iter->name;?> (<b>2nd Highest CPM Ad Size</b>):
+                            <?php elseif ('160x600'==$iter->width.'x'.$iter->height):?>
+                                <?php echo $iter->name;?> (<b>3rd Highest CPM Ad Size</b>):
+                            <?php else:?>
+                                <?php echo $iter->name;?>:
+                            <?php endif;?>
+                        </strong><br>
+                        <textarea id="textare-iframe-<?php echo $iter['description']?>" style="width:500px; height:125px;">
+&lt;!-- MadAdsMedia.com Iframe Ad Tag For <?php echo $this->siteName['name'] ?> --&gt;
+&lt;!-- Size: <?php echo $iter->description;?> --&gt;
+<?php if($this->type['type']=='2'): ?>&lt;div style=&quot;width:<?php echo $iter->width ?>px; height:<?php echo $iter->height ?>px; text-align:left;&quot;&gt;<?php endif; ?>
+&lt;iframe src=&quot;http://ads-by.madadsmedia.com/tags/<?php echo $this->userID ?>/<?php echo $this->siteID ?>/iframe/<?php echo $iter->file_name;?>.html&quot; width=&quot;<?php echo $iter->width ?>&quot; height=&quot;<?php echo $iter->height ?>&quot; scrolling=&quot;no&quot; frameborder=&quot;0&quot; marginwidth=&quot;0&quot; marginheight=&quot;0&quot; &gt;&lt;/iframe&gt;
+<?php if($this->type['type']=='2'): ?>&lt;a target=&quot;_top&quot; href=&quot;http://www.madadsmedia.com/tumblr-ads&quot; style=&quot;color:#414141; font: small-caps 10px 'Arial', Helvetica, sans-serif; text-decoration:none;&quot;>Ads for &lt;font color=&quot;#FF0000&quot;&gt;Tumblr&lt;/font&gt;&lt;/a&gt;&lt;/div&gt;<?php endif; ?>
+&lt;!-- MadAdsMedia.com Iframe Ad Tag For <?php echo $this->siteName['name'] ?> --&gt;
+									</textarea><br />
+                            <?php endif; ?>
+                    <?php endif; ?>
+                <?php endforeach; ?>
+            </div>
+
+        <?php endif;?>
+					<div style="border:1px solid #CCCCCC; background-color:#EEEEEE; padding:3px; width:70%; margin:5px 0; margin-left: 0px;"><b style="color:#CB0008">If your ads are contained in iframes:</b> Since our ads load asynchronously (meaning your website won't 'wait' for them to load), we don't suggest using iframes.  If you must use iframes, the &lt;head>&lt;/head> code will need to be placed in the &lt;head> of each iframe file.</div>
+					</p>
+				<?php else: ?>
+					<?php if($this->wanted_iframe_for_site===true): ?>
+					<a class="IframeRequest" style="float:left; width: 170px;" title="" onclick="return false;" href="#">Request Submitted</a>					
+					<?php elseif($this->siteName['siteType']==6 && $this->siteName['new_burst_tags']!=1): ?>
+						<p>Your ad tags need to be upgraded to our latest platform.</p>
+						<br>
+						<?php if($this->wanted_new_burst_site): ?>
+						<a class="sendMasBtn" style="float:left; width: 170px;" title="" onclick="return false;" href="#">Request Submitted</a><br><br><br>						
+						<?php else: ?>
+						<a class="sendMasBtn BurstRequest" style="float:left; width: 170px;" title="" onclick="return false;" href="#">Request New Ad Tags</a><br><br><br>					
+						<?php endif; ?>
+					<?php else: ?>
+					<a class="IframeRequest" style="float:left; width: 170px;" title="" onclick="return false;" href="#">Request Iframe Tags</a>										
+					<?php endif; ?>
+				<?php endif; ?>
+			</div>            
+			</div>
+		</div>
+<?php endif; ?>
+		<?php //shou end if showTags ?>
+<?php else: ?>
+<p class="topSlog">Ad tags for <?php echo $this->siteName['name'] ?> have been disabled due to inactivity.  Please contact us to have them reactivated.</p>
+<?php endif; ?> 
+                                                      
+                                                        
+<?php else: ?>
+<p class="topSlog">Your ad codes are currently being setup.<br> Please check back shortly.</p>
+<?php endif; ?>             
+
+
+<script type="text/javascript" src="/font/cufon-yui.js"></script>
+<script type="text/javascript" src="/font/Bebas_400.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#topMenu a', {hover: true});	
+		Cufon.replace('#topMenu a');
+</script>
+<script type="text/javascript" src="/font/Headline_Two_400.font.js"></script>
+<script type="text/javascript">
+	Cufon.replace('.footerBann h5');		
+	Cufon.replace('.footerBann p');	
+	Cufon.replace('.footerBann a', {hover: true});	
+	Cufon.replace('#content h1');		
+				
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Lt_300.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('#footCopyr');	
+		Cufon.replace('.fMenu a', {textDecoration: 'underline'});		
+		Cufon.replace('.topSlog');	
+		Cufon.replace('.applInfo label');	
+		Cufon.replace('.subAplBtn',{textShadow: '-1px -1px #5F5F5F'});
+		Cufon.replace('.applSideR li a');		
+		Cufon.replace('.applRbox p');		
+		Cufon.replace('.applRbox p a');				
+</script>
+<script type="text/javascript" src="/font/Proxima_Nova_Rg_700.font.js"></script>
+<script type="text/javascript">
+		Cufon.replace('.fMenu h4');
+		Cufon.replace('.applInn h3');		
+		
+</script>
+<script type="text/javascript">
+$(document).ready(function() {
+Cufon.set("fontFamily", "Proxima_Nova_Lt_300.font.js");
+	$(".subAplBtn").hover(
+		function(){
+		$(this).addClass('subAplBtnHov');
+		Cufon.refresh();		
+		Cufon.replace('.subAplBtnHov', {textShadow: '-1px -1px #A21A1A'});	
+		}, 
+	  function () {
+		$(this).removeClass('subAplBtnHov');
+		Cufon.refresh();			
+		Cufon.replace('.subAplBtnHov', {textShadow: '-1px -1px #5F5F5F'});	
+	  }
+	);
+});
+</script>
